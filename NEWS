@@ -1,0 +1,111 @@
+v. 1.8 (compatible with OpenFst 1.6.5)
+======================================
+
+* Fixes C++ headers that may have caused compilation problems for some users
+* Adds string_file support '#' comments; use "\#" for a '#' literal
+* Removes `FstSymbolTableMergeError`; merging is now automatic
+
+v. 1.7 (compatible with OpenFst 1.6.3)
+======================================
+
+* Exposes `NO_STATE_ID`, `NO_LABEL`, etc., constants
+* Modifies `SymbolTable.find` to mimic C++ behavior
+* Modifies `replace` to mimic C++ behavior
+* Adds `match` function
+
+v. 1.6 (compatible with OpenFst 1.6.3)
+======================================
+
+* Fix to `closure`
+* Adds complete documentation
+* Corrects many sundry module-level documentation errors
+* `string_file` now properly reads a final line without a newline terminator
+
+v. 1.5 (compatible with OpenFst 1.6.2)
+======================================
+
+* Avoids unnecessary arc-sorting before composition
+* Avoids unnecessary symbol table copies before binary operations
+* Standardizes method names for compatibility with OpenFst binaries
+
+v. 1.4 (compatible with OpenFst 1.6.1)
+======================================
+
+* Compatibility fixes for OpenFst 1.6.1
+
+v. 1.3 (compatible with OpenFst 1.6.0)
+======================================
+
+* Fix to `StringPaths`
+* Compatibility fixes for OpenFst 1.6.0
+
+v. 1.2 (compatible with OpenFst 1.5.4)
+======================================
+
+* Correctly optimizes RHS argument of a `difference` operation: epsilon-removal and determinization (but not minimization or arc-sum mapping)
+* Removes platform-dependent `HugeBracketedNumber` test units
+* Adds optional path-weight argument to `epsilon_machine`
+
+v. 1.1
+======
+
+* Correctly handles final weights in `transducer`
+* Fixes inconsistency whereby the use of incorrect arc or weight types raised `FstOpError` unless the error occurred during string compilation, in which case it'd raise `FstStringCompilationError`; now all arc/weight errors raise `FstOpError` and `FstStringCompilationError` is reserved for problems parsing strings
+* Adds publication information and `pynini.pdf` (the Pynini paper)
+
+v. 1.0
+======
+
+* Weight objects now support semiring arithmetic
+* Fixes bug whereby using an incompatible weight argument to `acceptor`/`transducer` would result in segmentation fault
+* In any binary operation with a string and an FST, the FST's arc type is used to compile the string, rather than assuming the string is a standard arc FST
+* Extensive low-level improvements to all string libraries
+* Adds traditional getter methods in place of Python properties in nearly all cases
+* Adds `containment` and `leniently_compose` methods
+* Adds `epsilon_machine` function
+* Adds `from_pywrapfst` method for downcasting pywrapfst FSTs
+* Adds `ilabels` and `olabels` methods to `StringPaths`
+
+v. 0.9 (fifth public beta)
+==========================
+
+* Pynini's got a fever, and the only prescription is more smart pointers
+* Fixes several null pointer dereference bugs wherein an object referring to FSTs or their symbol tables (such as arc, path, and state iterators) could outlive their FSTs; shared pointers are used to extend objects' lives where needed
+* Adds `CHEATSHEET`
+
+v. 0.8 (fourth public beta)
+===========================
+
+* All destructive operations can be chained
+* Improves `string_map` to use a prefix tree construction; as a result the output FST is deterministic
+* Adds `string_file` for creating string maps from tab-separated values files on disk; it too uses a prefix tree construction
+* Following Thrax, `difference` performs optimization on its right-hand argument as the algorithm demands that it be epsilon-free and deterministic
+* Adds improved `Arc` object and modifies `Fst.add_arc` so that it takes a source state and an `Arc` instance as its arguments
+* Consolidates compatibility functions and classes into `gtl.h` and `gtl.cc`
+* Improves and extends unit tests
+
+v. 0.7 (third public beta)
+==========================
+
+* Fixes symbol table handling in `pdt_replace`
+* Optimizes symbol table merging for the most common case
+* Adds output-projection and epsilon-removal to `stringify`, so the resulting string will not be padded with null bytes
+
+v. 0.6 (second public beta)
+===========================
+
+* Adds `string_map` function (cf. Thrax's StringFile)
+* Adds the ability to use symbol tables as the `token_type` for `acceptor` and the `input_token_type` and/or `output_token_type` for `transducer` or `string_map`
+* Adds some Python 3 compatibility fixes
+* Adds `NEWS`
+
+v. 0.5 (first public beta)
+==========================
+
+* Fixes platform-specific integer precision nits
+* Makes consistent use of `token_type` arguments for string parsing/printing
+
+v. 0.1-0.4 (public alphas)
+=========================
+
+* Fixes user-reported bugs
