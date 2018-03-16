@@ -17,8 +17,8 @@ you cite the following `paper <./pynini.pdf>`__:
     K. Gorman. 2016. Pynini: A Python library for weighted finite-state grammar compilation. In
     *Proc. ACL Workshop on Statistical NLP and Weighted Automata*, 75-80.
 
-This is a (primarily read-only) mirror of Pynini, to enable bug reports
-and contributions from outside collaborators. Feel free to submit bugs
+Note that the GitHub respository is a (primarily read-only) mirror to enable bug
+reports and contributions from outside collaborators. Feel free to submit bugs
 here.
 
 Dependencies
@@ -86,4 +86,3 @@ Mandatory disclaimer
 --------------------
 
 This is not an official Google product.
-
