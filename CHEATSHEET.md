@@ -16,11 +16,13 @@
                         `Y8P"
 
 IO:
+
     f = Fst.read(...)
     f.write(...)
     f = string_file(...)
 
 Compilation:
+
     a("Do you have Camembert?", ...)
     t("Do you have Camembert?", "No.", ...)
     string_map(((f, g), (h, i), ...))
@@ -29,6 +31,7 @@ Compilation:
             NP=u("dog", "cat", "mouse"))
 
 Sample operations:
+
     closure(f, ...)                      f.closure(...)
     compose(f, g, ...)      f * g
     concat(f, g)            f + g        f.concat(g)
@@ -40,3 +43,4 @@ Sample operations:
     shortestpath(f, ...)                 f.shortestpath(...)
                                          f.stringify(...)
     u(f, f, ...)            f | g        f.union(g)
+

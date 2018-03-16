@@ -74,8 +74,7 @@ for more information.
 Interested in contributing?
 ---------------------------
 
-See `CONTRIBUTING <CONTRIBUTING>`__ for more information.
-
+See `CONTRIBUTING.md <CONTRIBUTING.md>`__ for more information.
 We would greatly appreciate contributions focusing on Python 3
 compatibility, but we can’t accept pull request which break Python 2.7
 compatibility.
