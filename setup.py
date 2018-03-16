@@ -19,20 +19,39 @@
 from setuptools import Extension
 from setuptools import setup
 
+import os
+
+PROJ_DIR = os.path.dirname(os.path.realpath(__file__))
+
+
 
 COMPILE_ARGS = ["-std=c++11",
                 "-Wno-unused-function",
                 "-Wno-unused-local-typedef",
                 "-funsigned-char"]
 
+INCLUDE_DIRS = [os.path.join(PROJ_DIR, p) for p in [
+    "mason_packages/osx-x86_64/openfst/1.6.7/include",
+    "mason_packages/osx-x86_64/re2/2017-08-01/include/re2",
+]]
+
+LIBRARY_DIRS = [os.path.join(PROJ_DIR, p) for p in [
+    "mason_packages/osx-x86_64/openfst/1.6.7/lib",
+    "mason_packages/osx-x86_64/re2/2017-08-01/lib",
+]]
+
 pywrapfst = Extension(name="pywrapfst", language="c++",
                       extra_compile_args=COMPILE_ARGS,
+                      library_dirs=LIBRARY_DIRS,
+                      include_dirs=INCLUDE_DIRS,
                       libraries=["fstfarscript", "fstfar", "fstscript",
                                  "fst", "m", "dl"],
                       sources=["src/pywrapfst.cc"])
 
 pynini = Extension(name="pynini", language="c++",
                    extra_compile_args=COMPILE_ARGS,
+                   library_dirs=LIBRARY_DIRS,
+                   include_dirs=INCLUDE_DIRS,
                    libraries=["re2",
                               "fstfarscript",
                               "fstpdtscript",
