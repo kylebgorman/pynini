@@ -7,7 +7,6 @@ NEWS
 README.rst
 pynini.pdf
 pynini_test.py
-setup.cfg
 setup.py
 pynini.egg-info/PKG-INFO
 pynini.egg-info/SOURCES.txt
@@ -15,9 +14,6 @@ pynini.egg-info/dependency_links.txt
 pynini.egg-info/top_level.txt
 src/basictypes.pxd
 src/cdrewrite.h
-src/containment.h
-src/containmentscript.cc
-src/containmentscript.h
 src/crossproduct.h
 src/crossproductscript.cc
 src/crossproductscript.h
@@ -73,4 +69,4 @@ src/stringprintscript.h
 src/stringtokentype.cc
 src/stringtokentype.h
 src/stripcomment.h
-testdata/cheese.map
+testdata/str.map

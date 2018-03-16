@@ -59,12 +59,11 @@ pynini = Extension(name="pynini", language="c++",
                             "src/lenientlycomposescript.cc",
                             "src/gtl.cc",
                             "src/getters.cc",
-                            "src/crossproductscript.cc",
-                            "src/containmentscript.cc"])
+                            "src/crossproductscript.cc"])
 
 setup(
     name="pynini",
-    version="1.8",
+    version="1.9.1",
     description="Finite-state grammar compilation library",
     author="Kyle Gorman",
     author_email="kbg@google.com",

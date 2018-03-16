@@ -37,20 +37,20 @@ using std::string;
 namespace fst {
 namespace internal {
 
-inline string StripComment(const string line) {
+inline string StripComment(const string &line) {
   char prev_char = '\0';
   for (size_t i = 0; i < line.size(); ++i) {
     const char this_char = line[i];
     if (this_char == '#' && prev_char != '\\') {
       // Strips comment and any trailing whitespace.
-      return strings::StripTrailingAsciiWhitespace(line.substr(0, i));
+      return string(strings::StripTrailingAsciiWhitespace(line.substr(0, i)));
     }
     prev_char = this_char;
   }
   return line;
 }
 
-inline string RemoveEscape(const string line) {
+inline string RemoveEscape(const string &line) {
   return strings::StringReplace(StripComment(line), "\\#", "#", true);
 }
 

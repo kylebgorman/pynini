@@ -21,10 +21,76 @@
 // string compilation. Not all are declared in the corresponding header.
 
 DEFINE_int32(generated_label_index_start, 0x100000,
-             "The lowest index a generated label is assigned to.");
+             "The lowest index a generated label is assigned to");
 
 namespace fst {
+
+SymbolTable *GetByteSymbolTable() {
+  static const auto *const kFactory =
+      new internal::SymbolTableFactory("**Byte symbols");
+  return kFactory->GetTable();
+}
+
+SymbolTable *GetUTF8SymbolTable() {
+  static const auto *const kFactory =
+      new internal::SymbolTableFactory("**UTF8 symbols");
+  return kFactory->GetTable();
+}
+
 namespace internal {
+
+SymbolTableFactory::SymbolTableFactory(const string &name) : syms_(name) {
+  // Label zero is reserved for epsilon.
+  syms_.AddSymbol("<epsilon>", 0);
+  // ASCII control characters.
+  syms_.AddSymbol("<SOH>", 0x01);
+  syms_.AddSymbol("<STX>", 0x02);
+  syms_.AddSymbol("<ETX>", 0x03);
+  syms_.AddSymbol("<EOT>", 0x04);
+  syms_.AddSymbol("<ENQ>", 0x05);
+  syms_.AddSymbol("<ACK>", 0x06);
+  syms_.AddSymbol("<BEL>", 0x07);
+  syms_.AddSymbol("<BS>", 0x08);
+  syms_.AddSymbol("<HT>", 0x09);
+  syms_.AddSymbol("<LF>", 0x0a);
+  syms_.AddSymbol("<VT>", 0x0b);
+  syms_.AddSymbol("<FF>", 0x0c);
+  syms_.AddSymbol("<CR>", 0x0d);
+  syms_.AddSymbol("<SO>", 0x0e);
+  syms_.AddSymbol("<SI>", 0x0f);
+  syms_.AddSymbol("<DLE>", 0x10);
+  syms_.AddSymbol("<DC1>", 0x11);
+  syms_.AddSymbol("<DC2>", 0x12);
+  syms_.AddSymbol("<DC3>", 0x13);
+  syms_.AddSymbol("<DC4>", 0x14);
+  syms_.AddSymbol("<NAK>", 0x15);
+  syms_.AddSymbol("<SYN>", 0x16);
+  syms_.AddSymbol("<ETB>", 0x17);
+  syms_.AddSymbol("<CAN>", 0x18);
+  syms_.AddSymbol("<EM>", 0x19);
+  syms_.AddSymbol("<SUB>", 0x1a);
+  syms_.AddSymbol("<ESC>", 0x1b);
+  syms_.AddSymbol("<FS>", 0x1c);
+  syms_.AddSymbol("<GS>", 0x1d);
+  syms_.AddSymbol("<RS>", 0x1e);
+  syms_.AddSymbol("<US>", 0x1f);
+  // Space doesn't print very nice.
+  syms_.AddSymbol("<SPACE>", 32);
+  // Printable ASCII.
+  for (auto ch = 33; ch < 127; ++ch) syms_.AddSymbol(string(1, ch), ch);
+  // One last control character.
+  syms_.AddSymbol("<DEL>", 0x7f);
+  // Adds supra-ASCII characters as hexidecimal strings.
+  for (int ch = 128; ch < 256; ++ch) {
+    std::stringstream sstrm;
+    sstrm << "<0x" << std::hex << ch << ">";
+    syms_.AddSymbol(sstrm.str(), ch);
+  }
+  // This advances the next label for the one-argument form of AddSymbols
+  // (used for user-generated symbols) to beyond the code points for the
+  // Basic Multilingual Plane.
+  syms_.AddSymbol(kDummySymbol, FLAGS_generated_label_index_start);
+}
 
 SymbolTable *GetSymbolTable(StringTokenType ttype, const SymbolTable *syms) {
   switch (ttype) {
@@ -32,10 +98,10 @@ SymbolTable *GetSymbolTable(StringTokenType ttype, const SymbolTable *syms) {
       return syms->Copy();
     }
     case BYTE: {
-      return internal::byte_table_factory.GetTable();
+      return GetByteSymbolTable();
     }
     case UTF8: {
-      return internal::utf8_table_factory.GetTable();
+      return GetUTF8SymbolTable();
     }
   }
   // Unreachable.

@@ -1,4 +1,18 @@
-v. 1.8 (compatible with OpenFst 1.6.5)
+v. 1.9.1 (compatible with OpenFst 1.6.7)
+========================================
+
+* Simplifies construction used in `closure` operator.
+* Removes unused `containment` operator
+
+v. 1.9 (compatible with OpenFst 1.6.6)
+======================================
+
+* Adds optional ability to disable symbol table attachment after string compilation
+* The string_map and string_file functions now support one to three columns
+* FSTs gain methods for (un)pickling and (de)serialization
+* Fixes issues with arbitrary-type FAR inputs
+
+v. 1.8 (compatible with OpenFst 1.6.4)
 ======================================
 
 * Fixes C++ headers that may have caused compilation problems for some users

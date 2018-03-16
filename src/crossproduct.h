@@ -61,12 +61,12 @@ void CrossProduct(
   // Concatenates the mapped lower language into the output FST.
   Concat(ofst, tfst);
   static constexpr auto props = kAcceptor | kString;
-  // Optimizes output, if both inputs are known to be string FSAs.
+  // Optimizes output, if both inputs are string FSAs.
   if (ifst1.Properties(props, true) == props &&
       ifst2.Properties(props, true) == props) {
     OptimizeStringCrossProducts(ofst);
   }
-  // Copies symbol tables.
+  // Copies symbol tables (if present).
   ofst->SetInputSymbols(ifst1.InputSymbols());
   ofst->SetOutputSymbols(ifst2.OutputSymbols());
 }

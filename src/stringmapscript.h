@@ -33,7 +33,7 @@ namespace script {
 
 using StringFileInnerArgs = std::tuple<const string &, StringTokenType,
     StringTokenType, MutableFstClass *, const SymbolTable *,
-    const SymbolTable *, bool>;
+    const SymbolTable *, bool, bool>;
 
 using StringFileArgs = WithReturnValue<bool, StringFileInnerArgs>;
 
@@ -43,19 +43,20 @@ void StringFile(StringFileArgs *args) {
   args->retval = CompileStringFile(
       std::get<0>(args->args), std::get<1>(args->args), std::get<2>(args->args),
       fst, std::get<4>(args->args), std::get<5>(args->args),
-      std::get<6>(args->args));
+      std::get<6>(args->args), std::get<7>(args->args));
 }
 
 bool StringFile(const string &fname, StringTokenType itype,
                 StringTokenType otype, MutableFstClass *fst,
                 const SymbolTable *isyms = nullptr,
                 const SymbolTable *osyms = nullptr,
-                bool attach_symbols = true);
+                bool attach_input_symbols = true,
+                bool attach_output_symbols = true);
 
 using StringMapInnerArgs = std::tuple<
-    const std::vector<std::pair<string, string>> &, StringTokenType,
+    const std::vector<std::vector<string>> &, StringTokenType,
     StringTokenType, MutableFstClass *, const SymbolTable *,
-    const SymbolTable *, bool>;
+    const SymbolTable *, bool, bool>;
 
 using StringMapArgs = WithReturnValue<bool, StringMapInnerArgs>;
 
@@ -65,13 +66,15 @@ void StringMap(StringMapArgs *args) {
   args->retval = CompileStringMap(
       std::get<0>(args->args), std::get<1>(args->args), std::get<2>(args->args),
       fst, std::get<4>(args->args), std::get<5>(args->args),
-      std::get<6>(args->args));
+      std::get<6>(args->args), std::get<7>(args->args));
 }
 
-bool StringMap(const std::vector<std::pair<string, string>> &pairs,
+bool StringMap(const std::vector<std::vector<string>> &lines,
                StringTokenType itype, StringTokenType otype,
                MutableFstClass *fst, const SymbolTable *isyms = nullptr,
-               const SymbolTable *osyms = nullptr, bool attach_symbols = true);
+               const SymbolTable *osyms = nullptr,
+               bool attach_input_symbols = true,
+               bool attach_output_symbols = true);
 
 }  // namespace script
 }  // namespace fst

@@ -15,8 +15,6 @@
 // For general information on the Pynini grammar compilation library, see
 // pynini.opengrm.org.
 
-#include <vector>
-
 #include "merge.h"
 
 namespace fst {
@@ -38,7 +36,8 @@ SymbolTable *MergeSymbols(const SymbolTable *syms1, const SymbolTable *syms2,
     const auto s2_key = siter.Value();
     const auto &s2_sym = siter.Symbol();
     const auto s1_key = merged->Find(s2_sym);
-    if (s1_key != SymbolTable::kNoSymbol && s1_key != s2_key) {
+    // Both have this symbol, but disagree where it goes.
+    if (s1_key != kNoSymbol && s1_key != s2_key) {
       *relabel = true;
       continue;
     }

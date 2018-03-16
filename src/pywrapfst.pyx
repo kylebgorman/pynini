@@ -184,7 +184,7 @@ cdef string tostring(data, encoding="utf8") except *:
   raise FstArgError("Cannot encode as string: {!r}".format(data))
 
 
-cdef string weighttostring(data, encoding="utf8") except *:
+cdef string weight_tostring(data, encoding="utf8") except *:
   """Converts strings or numerics to bytestrings.
 
   This function converts Python bytestrings, Unicode strings, and numerics
@@ -380,7 +380,7 @@ cdef class Weight(object):
 
   def __init__(self, weight_type, weight):
     self._weight.reset(new fst.WeightClass(tostring(weight_type),
-                                           weighttostring(weight)))
+                                           weight_tostring(weight)))
     self._check_weight()
 
   cdef void _check_weight(self) except *:
@@ -396,8 +396,7 @@ cdef class Weight(object):
     Returns a copy of the Weight.
     """
     cdef Weight result = Weight.__new__(Weight)
-    result._weight.reset(new
-        fst.WeightClass(<fst.WeightClass> deref(self._weight)))
+    result._weight.reset(new fst.WeightClass(deref(self._weight)))
     return result
 
   # To get around the inability to declare cdef class methods, we define the
@@ -410,7 +409,7 @@ cdef class Weight(object):
 
     Constructs semiring zero.
     """
-    return _Weight_Zero(weight_type)
+    return _Zero(weight_type)
 
   @classmethod
   def One(cls, weight_type):
@@ -419,7 +418,7 @@ cdef class Weight(object):
 
     Constructs semiring One.
     """
-    return _Weight_One(weight_type)
+    return _One(weight_type)
 
   @classmethod
   def NoWeight(cls, weight_type):
@@ -428,16 +427,13 @@ cdef class Weight(object):
 
     Constructs a non-member weight in the semiring.
     """
-    return _Weight_NoWeight(weight_type)
+    return _NoWeight(weight_type)
 
-  def __richcmp__(Weight w1, Weight w2, int op):
-    # TODO(kbg): Replace this with __eq__ once Cython 0.27 is widely available.
-    if op == 2:  # `==`
-      return fst.Eq(deref(w1._weight), deref(w2._weight))
-    elif op == 3:  # `!=`
-      return fst.Ne(deref(w1._weight), deref(w2._weight))
-    else:
-      raise NotImplementedError("Invalid operator {!r}".format(op))
+  def __eq__(Weight w1, Weight w2):
+    return fst.Eq(deref(w1._weight), deref(w2._weight))
+
+  def __ne__(Weight w1, Weight w2):
+    return not w1 == w2
 
   cpdef string to_string(self):
     return self._weight.get().ToString()
@@ -599,9 +595,9 @@ cdef fst.WeightClass _get_WeightClass_or_Zero(const string &weight_type,
   elif isinstance(weight, Weight):
     result = deref(<fst.WeightClass *> (<Weight> weight)._weight.get())
   else:
-    result = fst.WeightClass(weight_type, weighttostring(weight))
+    result = fst.WeightClass(weight_type, weight_tostring(weight))
     if result.ToString() == b"BadNumber":
-      raise FstBadWeightError(weighttostring(weight))
+      raise FstBadWeightError(weight_tostring(weight))
   return result
 
 
@@ -628,13 +624,13 @@ cdef fst.WeightClass _get_WeightClass_or_One(const string &weight_type,
   elif isinstance(weight, Weight):
     result = deref(<fst.WeightClass *> (<Weight> weight)._weight.get())
   else:
-    result = fst.WeightClass(weight_type, weighttostring(weight))
+    result = fst.WeightClass(weight_type, weight_tostring(weight))
     if result.ToString() == b"BadNumber":
-      raise FstBadWeightError(weighttostring(weight))
+      raise FstBadWeightError(weight_tostring(weight))
   return result
 
 
-cdef Weight _Weight_Zero(weight_type):
+cdef Weight _Zero(weight_type):
   cdef Weight result = Weight.__new__(Weight)
   result._weight.reset(new fst.WeightClass(fst.WeightClass.Zero(
       tostring(weight_type))))
@@ -643,7 +639,7 @@ cdef Weight _Weight_Zero(weight_type):
   return result
 
 
-cdef Weight _Weight_One(weight_type):
+cdef Weight _One(weight_type):
   cdef Weight result = Weight.__new__(Weight)
   result._weight.reset(new fst.WeightClass(
         fst.WeightClass.One(tostring(weight_type))))
@@ -652,7 +648,7 @@ cdef Weight _Weight_One(weight_type):
   return result
 
 
-cdef Weight _Weight_NoWeight(weight_type):
+cdef Weight _NoWeight(weight_type):
   cdef Weight result = Weight.__new__(Weight)
   result._weight.reset(new fst.WeightClass(
         fst.WeightClass.NoWeight(tostring(weight_type))))
@@ -1410,13 +1406,14 @@ cdef class _Fst(object):
     raise FstDeletedConstructorError(
         "Cannot construct {}".format(self.__class__.__name__))
 
-   # Other magic methods.
-
   def __str__(self):
-    return self.text(acceptor=self._fst.get().Properties(fst.kAcceptor, True) ==
-        fst.kAcceptor,
-        show_weight_one=self._fst.get().Properties(fst.kWeighted, True) ==
-        fst.kWeighted)
+    return self.text()
+
+  # Registers the class for pickling; must be repeated in any subclass which
+  # can't be derived by _init_XFst.
+
+  def __reduce__(self):
+    return (_read_from_string, (self.write_to_string(),))
 
   cpdef string arc_type(self):
     """
@@ -1763,9 +1760,15 @@ cdef class _Fst(object):
     Returns:
       A string.
 
+    Raises:
+      FstIOError: Write to string failed.
+
     See also: `read_from_string`.
     """
-    return self._fst.get().WriteToString()
+    cdef stringstream sstrm
+    if not self._fst.get().Write(sstrm, "write_to_string"):
+      raise FstIOError("Write to string failed")
+    return sstrm.str()
 
 
 cdef class _MutableFst(_Fst):
@@ -2058,15 +2061,15 @@ cdef class _MutableFst(_Fst):
     self._invert()
     return self
 
-  cdef void _minimize(self, float delta=fst.kDelta,
+  cdef void _minimize(self, float delta=fst.kShortestDelta,
                       bool allow_nondet=False) except *:
     # This runs in-place when the second argument is null.
     fst.Minimize(self._mfst.get(), NULL, delta, allow_nondet)
     self._check_mutating_imethod()
 
-  def minimize(self, float delta=fst.kDelta, bool allow_nondet=False):
+  def minimize(self, float delta=fst.kShortestDelta, bool allow_nondet=False):
     """
-    minimize(self, delta=0.0009765625, allow_nondet=False)
+    minimize(self, delta=1e-6, allow_nondet=False)
 
     Minimizes the FST.
 
@@ -2090,7 +2093,7 @@ cdef class _MutableFst(_Fst):
     Returns:
       self.
     """
-    self._minimize(delta)
+    self._minimize(delta, allow_nondet)
     return self
 
   cpdef MutableArcIterator mutable_arcs(self, int64 state):
@@ -2447,7 +2450,7 @@ cdef class _MutableFst(_Fst):
                        bool connect=True,
                        weight=None,
                        int64 nstate=fst.kNoStateId,
-                       float delta=fst.kDelta) except *:
+                       float delta=fst.kShortestDelta) except *:
     cdef fst.WeightClass wc = _get_WeightClass_or_Zero(self.weight_type(),
                                                        weight)
     cdef unique_ptr[fst.RmEpsilonOptions] opts
@@ -2461,10 +2464,10 @@ cdef class _MutableFst(_Fst):
                 bool connect=True,
                 weight=None,
                 int64 nstate=fst.kNoStateId,
-                float delta=fst.kDelta):
+                float delta=fst.kShortestDelta):
     """
     rmepsilon(self, queue_type="auto", connect=True, weight=None,
-              nstate=NO_STATE_ID, delta=0.0009765625):
+              nstate=NO_STATE_ID, delta=1e-6):
 
     Removes epsilon transitions.
 
@@ -2689,7 +2692,7 @@ cdef _Fst _init_Fst(FstClass_ptr tfst):
   if tfst.Properties(fst.kError, True):
     raise FstOpError("Operation failed")
   cdef _Fst ofst = _Fst.__new__(_Fst)
-  ofst._fst.reset(<FstClass_ptr> tfst)
+  ofst._fst.reset(tfst)
   return ofst
 
 
@@ -2697,7 +2700,7 @@ cdef _MutableFst _init_MutableFst(MutableFstClass_ptr tfst):
   if tfst.Properties(fst.kError, True):
     raise FstOpError("Operation failed")
   cdef _MutableFst ofst = _MutableFst.__new__(_MutableFst)
-  ofst._fst.reset(<MutableFstClass_ptr> tfst)
+  ofst._fst.reset(tfst)
   # Makes a copy of it as the derived type! Cool.
   ofst._mfst = static_pointer_cast[fst.MutableFstClass, fst.FstClass](ofst._fst)
   return ofst
@@ -2712,38 +2715,28 @@ cdef _Fst _init_XFst(FstClass_ptr tfst):
 
 cdef _MutableFst _create_Fst(arc_type=b"standard"):
   cdef unique_ptr[fst.VectorFstClass] tfst
-  tfst.reset(new fst.VectorFstClass(<string> tostring(arc_type)))
+  tfst.reset(new fst.VectorFstClass(tostring(arc_type)))
   if tfst.get() == NULL:
     raise FstOpError("Unknown arc type: {!r}".format(arc_type))
   return _init_MutableFst(tfst.release())
 
 
-cdef _Fst _read_Fst(filename, fst_type=None):
+cpdef _Fst _read(filename):
   cdef unique_ptr[fst.FstClass] tfst
   tfst.reset(fst.FstClass.Read(tostring(filename)))
   if tfst.get() == NULL:
     raise FstIOError("Read failed: {!r}".format(filename))
-  # Converts if requested.
-  cdef string fst_type_string
-  if fst_type:
-    fst_type_string = tostring(fst_type)
-    if fst_type_string != tfst.get().FstType():
-      tfst.reset(fst.Convert(deref(tfst), fst_type_string))
-      if tfst.get() == NULL:
-        raise FstOpError("Conversion to {!r} failed.".format(fst_type))
   return _init_XFst(tfst.release())
 
 
-cdef _Fst _deserialize_Fst(fst_string, fst_type=None):
-  cdef unique_ptr[fst.FstClass] ofst
-  ofst.reset(fst.FstClass.ReadFromString(fst_string))
-  if fst_type is not None:
-    fst_type_string = tostring(fst_type)
-    if fst_type_string != ofst.get().FstType():
-      ofst.reset(fst.Convert(deref(ofst), fst_type_string))
-      if ofst.get() == NULL:
-        raise FstOpError("Conversion to {!r} failed.".format(fst_type))
-  return _init_XFst(ofst.release())
+cpdef _Fst _read_from_string(state):
+  cdef stringstream sstrm
+  sstrm << tostring(state)
+  cdef unique_ptr[fst.FstClass] tfst
+  tfst.reset(fst.FstClass.ReadFromStream(sstrm, b"<pywrapfst>"))
+  if tfst.get() == NULL:
+    raise FstIOError("Read failed: <string>")
+  return _init_XFst(tfst.release())
 
 
 class Fst(object):
@@ -2767,37 +2760,32 @@ class Fst(object):
     return _create_Fst(arc_type)
 
    @staticmethod
-   def read(filename, fst_type=None):
+   def read(filename):
      """
-     read(filename, fst_type=None)
+     read(filename):
 
      Reads an FST from a file.
 
      Args:
        filename: The string location of the input file.
-       fst_type: A string indicating the FST type to convert to; no conversion
-         is performed if omitted or if the FST is already of the desired type.
 
      Returns:
        An FST object.
 
      Raises:
        FstIOError: Read failed.
-       FstOpError: Read-time conversion failed.
      """
-     return _read_Fst(filename, fst_type)
+     return _read(filename)
 
    @staticmethod
-   def read_from_string(fst_string, fst_type=None):
+   def read_from_string(state):
      """
-     read_from_string(fst_string, fst_type=None)
+     read_from_string(string, fst_type=None)
 
      Reads an FST from a serialized string.
 
      Args:
-       fst_string: The string containing the serialized FST.
-       fst_type: A string indicating the FST type to convert to; no conversion
-         is performed if omitted or if the FST is already of the desired type.
+       state: A string containing the serialized FST.
 
      Returns:
        An FST object.
@@ -2808,7 +2796,7 @@ class Fst(object):
 
      See also: `write_to_string`.
      """
-     return _deserialize_Fst(fst_string, fst_type)
+     return _read_from_string(state)
 
 
 ## FST constants.
@@ -2971,8 +2959,7 @@ cdef class Arc(object):
 cdef Arc _init_Arc(const fst.ArcClass &arc):
   cdef Weight weight = Weight.__new__(Weight)
   weight._weight.reset(new fst.WeightClass(arc.weight))
-  return Arc(<int64> arc.ilabel, <int64> arc.olabel, weight,
-             <int64> arc.nextstate)
+  return Arc(arc.ilabel, arc.olabel, weight, arc.nextstate)
 
 
 cdef class ArcIterator(object):
@@ -3270,6 +3257,7 @@ cdef class StateIterator(object):
 cdef _Fst _map(_Fst ifst,
                float delta=fst.kDelta,
                map_type=b"identity",
+               double power=1.,
                weight=None):
   cdef fst.MapType map_type_enum
   if not fst.GetMapType(tostring(map_type), addr(map_type_enum)):
@@ -3277,12 +3265,13 @@ cdef _Fst _map(_Fst ifst,
   cdef fst.WeightClass wc = (_get_WeightClass_or_One(ifst.weight_type(),
       weight) if map_type_enum == fst.TIMES_MAPPER else
       _get_WeightClass_or_Zero(ifst.weight_type(), weight))
-  return _init_XFst(fst.Map(deref(ifst._fst), map_type_enum, delta, wc))
+  return _init_XFst(fst.Map(deref(ifst._fst), map_type_enum, delta, power, wc))
 
 
 cpdef _Fst arcmap(_Fst ifst,
                   float delta=fst.kDelta,
                   map_type=b"identity",
+                  double power=1.,
                   weight=None):
   """
   arcmap(ifst, delta=0.0009765625, map_type="identity", weight=None)
@@ -3295,9 +3284,11 @@ cpdef _Fst arcmap(_Fst ifst,
     * identity: maps to self.
     * input_epsilon: replaces all input labels with epsilon.
     * invert: reciprocates all non-Zero weights.
+    * float_power: raises all weights to a floating-point power.
     * output_epsilon: replaces all output labels with epsilon.
-    * plus: adds a constant to all weights.
     * quantize: quantizes weights.
+    * plus: adds a constant to all weights.
+    * power: raises all weights to an integral power.
     * rmweight: replaces all non-Zero weights with 1.
     * superfinal: redirects final states to a new superfinal state.
     * times: right-multiplies a constant to all weights.
@@ -3310,6 +3301,8 @@ cpdef _Fst arcmap(_Fst ifst,
     delta: Comparison/quantization delta (ignored unless `map_type` is
         `quantize`).
     map_type: A string matching a known mapping operation (see above).
+    power: A positive scalar or integer power; ignored unless `map_type` is
+        `float_power` or `power` (in which case it defaults to 1).
     weight: A Weight or weight string passed to the arc-mapper; ignored unless
         `map_type` is `plus` (in which case it defaults to semiring Zero) or
         `times` (in which case it defaults to semiring One).
@@ -3322,7 +3315,7 @@ cpdef _Fst arcmap(_Fst ifst,
 
   See also: `statemap`.
   """
-  return _map(ifst, delta, map_type, weight)
+  return _map(ifst, delta, map_type, power, weight)
 
 
 cpdef _MutableFst compose(_Fst ifst1,
@@ -3381,21 +3374,21 @@ cpdef _Fst convert(_Fst ifst, fst_type=None):
   cdef string fst_type_string = b"" if fst_type is None else tostring(fst_type)
   cdef unique_ptr[fst.FstClass] tfst
   tfst.reset(fst.Convert(deref(ifst._fst), fst_type_string))
-  # Script-land Convert returns the null pointer to signal failure.
+  # Script-land Convert returns a null pointer to signal failure.
   if tfst.get() == NULL:
     raise FstOpError("Conversion to {!r} failed".format(fst_type))
   return _init_XFst(tfst.release())
 
 
 cpdef _MutableFst determinize(_Fst ifst,
-                              float delta=fst.kDelta,
+                              float delta=fst.kShortestDelta,
                               det_type=b"functional",
                               int64 nstate=fst.kNoStateId,
                               int64 subsequential_label=0,
                               weight=None,
                               bool increment_subsequential_label=False):
   """
-  determinize(ifst, delta=0.0009765625, det_type="functional",
+  determinize(ifst, delta=1e-6, det_type="functional",
               nstate=NO_STATE_ID, subsequential_label=0, weight=None,
               incremental_subsequential_label=False)
 
@@ -3932,8 +3925,10 @@ cpdef _MutableFst reverse(_Fst ifst, bool require_superinitial=True):
 
 
 cdef vector[fst.WeightClass] *_shortestdistance(_Fst ifst,
-    float delta=fst.kDelta, int64 nstate=fst.kNoStateId, queue_type=b"auto",
-    bool reverse=False) except *:
+                                                float delta=fst.kShortestDelta,
+                                                int64 nstate=fst.kNoStateId,
+                                                queue_type=b"auto",
+                                                bool reverse=False) except *:
   cdef unique_ptr[vector[fst.WeightClass]] distance
   distance.reset(new vector[fst.WeightClass]())
   # For scoping reasons, these have to be declared here even though they may
@@ -3952,12 +3947,12 @@ cdef vector[fst.WeightClass] *_shortestdistance(_Fst ifst,
 
 
 def shortestdistance(_Fst ifst,
-                     float delta=fst.kDelta,
+                     float delta=fst.kShortestDelta,
                      int64 nstate=fst.kNoStateId,
                      queue_type=b"auto",
                      bool reverse=False):
   """
-  shortestdistance(ifst, delta=0.0009765625, nstate=NO_STATE_ID,
+  shortestdistance(ifst, delta=1e-6, nstate=NO_STATE_ID,
                    queue_type="auto", reverse=False)
 
   Compute the shortest distance from the initial or final state.
@@ -3989,14 +3984,14 @@ def shortestdistance(_Fst ifst,
 
 
 cpdef _MutableFst shortestpath(_Fst ifst,
-                               float delta=fst.kDelta,
+                               float delta=fst.kShortestDelta,
                                int32 nshortest=1,
                                int64 nstate=fst.kNoStateId,
                                queue_type=b"auto",
                                bool unique=False,
                                weight=None):
   """
-  shortestpath(ifst, delta=0.0009765625, nshortest=1, nstate=NO_STATE_ID,
+  shortestpath(ifst, delta=1e-6, nshortest=1, nstate=NO_STATE_ID,
                queue_type="auto", unique=False, weight=None)
 
   Construct an FST containing the shortest path(s) in the input FST.
@@ -4059,7 +4054,7 @@ cpdef _Fst statemap(_Fst ifst, map_type):
 
   See also: `arcmap`.
   """
-  return _map(ifst, fst.kDelta, map_type, None)
+  return _map(ifst, fst.kDelta, map_type, 1., None)
 
 
 cpdef _MutableFst synchronize(_Fst ifst):
@@ -4268,19 +4263,6 @@ cdef class FarReader(object):
     result._reader.reset(tfar.release())
     return result
 
-  # This just registers this class as a possible iterator.
-  def __iter__(self):
-    return self
-
-  # Magic method used to get a Pythonic API out of the C++ API.
-  def __next__(self):
-    if self.done():
-      raise StopIteration
-    cdef string k = self.get_key()
-    cdef _Fst f = self.get_fst()
-    self.next()
-    return (k, f)
-
   cpdef string arc_type(self):
     """
     arc_type(self)
@@ -4314,7 +4296,7 @@ cdef class FarReader(object):
   cpdef string far_type(self):
     return fst.GetFarTypeString(self._reader.get().Type())
 
-  cpdef bool find(self, key):
+  cpdef bool find(self, key) except *:
     """
     find(self, key)
 
@@ -4368,11 +4350,11 @@ cdef class FarReader(object):
     """
     self._reader.get().Reset()
 
-  # Dictionary-like access by combining `find` and `get_fst`.
   def __getitem__(self, key):
-    if not self.find(key):
-      raise KeyError(key)
-    return self.get_fst()
+    cdef string ckey = tostring(key)
+    if self.get_key() == ckey or self._reader.get().Find(ckey):
+      return self.get_fst()
+    raise KeyError(key)
 
 
 cdef class FarWriter(object):
@@ -4433,9 +4415,9 @@ cdef class FarWriter(object):
     result._writer.reset(tfar)
     return result
 
-  # NB: Invoking this method is DANGEROUS: calling any other method on the
+  # NB: Invoking this method may be dangerous: calling any other method on the
   # instance after this is invoked may result in a null dereference.
-  cdef void _close(self):
+  cdef void close(self):
     self._writer.reset()
 
   cpdef void add(self, key, _Fst ifst) except *:

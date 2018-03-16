@@ -61,6 +61,8 @@ cdef extern from "<fst/string.h>" \
     BYTE
     UTF8
 
+  SymbolTable *GetByteSymbolTable()
+
 
 cdef extern from "pathsscript.h" \
     namespace "fst::script" nogil:
@@ -89,12 +91,6 @@ cdef extern from "pathsscript.h" \
     bool Done()
 
 
-cdef extern from "containmentscript.h" \
-    namespace "fst::script" nogil:
-
-  void Containment(const FstClass &, const FstClass &, MutableFstClass *)
-
-
 cdef extern from "lenientlycomposescript.h" \
     namespace "fst::script" nogil:
 
@@ -117,19 +113,17 @@ cdef extern from "stringcompilescript.h" \
                      const SymbolTable *, bool)
 
 
-ctypedef pair[string, string] StringPair
-
-
 cdef extern from "stringmapscript.h" \
     namespace "fst::script" nogil:
 
   bool StringFile(const string &, StringTokenType, StringTokenType,
                   MutableFstClass *, const SymbolTable *, const SymbolTable *,
-                  bool)
+                  bool, bool)
 
-  bool StringMap(const vector[StringPair] &, StringTokenType, StringTokenType,
-                 MutableFstClass *, const SymbolTable *, const SymbolTable *,
-                 bool)
+  bool StringMap(const vector[vector[string]] &,
+                 StringTokenType, StringTokenType, MutableFstClass *,
+                 const SymbolTable *, const SymbolTable *,
+                 bool, bool)
 
 
 cdef extern from "stringprintscript.h" \

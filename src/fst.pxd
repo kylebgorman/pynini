@@ -117,8 +117,10 @@ cdef extern from "<fst/fstlib.h>" namespace "fst" nogil:
 
   # Default argument constants.
   const float kDelta
-  const int64 kNoLabel
-  const int64 kNoStateId
+  const float kShortestDelta
+  const int kNoLabel
+  const int kNoStateId
+  const int64 kNoSymbol
 
   enum ClosureType:
     CLOSURE_STAR
@@ -195,7 +197,6 @@ cdef extern from "<fst/fstlib.h>" namespace "fst" nogil:
 
     SymbolTableTextOptions(bool)
 
-
   # Symbol tables.
   cdef cppclass SymbolTable:
 
@@ -215,16 +216,16 @@ cdef extern from "<fst/fstlib.h>" namespace "fst" nogil:
 
     SymbolTable *Copy()
 
-    # Aliased so the Cython transpiler can sort out the overloading.
-
+    # Aliased for overload.
     string FindSymbol "Find"(int64)
 
+    # Aliased for overload.
     int64 FindIndex "Find"(string)
 
-    # Aliased so the Cython transpiler can sort out the overloading.
-
+    # Aliased for overload.
     bool MemberSymbol "Member"(string)
 
+    # Aliased for overload.
     bool MemberIndex "Member"(int64)
 
     void AddTable(const SymbolTable &)
@@ -235,9 +236,9 @@ cdef extern from "<fst/fstlib.h>" namespace "fst" nogil:
 
     void SetName(const string &)
 
-    string CheckSum()
+    const string &CheckSum()
 
-    string LabeledCheckSum()
+    const string &LabeledCheckSum()
 
     bool Write(const string &)
 
@@ -296,10 +297,10 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
     @staticmethod
     const WeightClass &NoWeight(const string &)
 
-  # Aliased so the Cython transpiler can sort out the overloading.
-
+  # Alias.
   cdef bool Eq "operator=="(const WeightClass &, const WeightClass &)
 
+  # Alias.
   cdef bool Ne "operator!="(const WeightClass &, const WeightClass &)
 
   cdef WeightClass Plus(const WeightClass &, const WeightClass &)
@@ -333,8 +334,9 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
     @staticmethod
     FstClass *Read(const string &)
 
+    # Aliased for overload.
     @staticmethod
-    FstClass *ReadFromString(const string &)
+    FstClass *ReadFromStream "Read"(istream &, const string &)
 
     int64 Start()
 
@@ -358,7 +360,7 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
     bool Write(const string &)
 
-    const string WriteToString()
+    bool Write(ostream &, const string &)
 
     uint64 Properties(uint64, bool)
 
@@ -411,8 +413,7 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
     EncodeMapperClass(const string &, uint32, EncodeType)
 
-    # Aliases this to "__call__", since Cython doesn't have good support for
-    # this C++ operator.
+    # Aliased to __call__ as Cython doesn't have good support for operator().
     ArcClass __call__ "operator()"(const ArcClass &)
 
     const string &ArcType()
@@ -587,7 +588,8 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
     TO_LOG64_MAPPER
     TO_STD_MAPPER
 
-  cdef FstClass *Map(const FstClass &, MapType, float, const WeightClass &)
+  cdef FstClass *Map(const FstClass &, MapType, float, double,
+                     const WeightClass &)
 
   cdef void Minimize(MutableFstClass *, MutableFstClass *, float, bool)
 

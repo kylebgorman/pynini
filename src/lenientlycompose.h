@@ -36,15 +36,16 @@ namespace internal {
 //     Q(a) -> b
 //     R(a) -> c
 //
-// Then, if U is the the vanilla union of Q and R, U(a) -> {b, c}. But if P is
-// the priority union of Q and R, U(a) -> b (not c).
+// Then, if U is the vanilla union of Q and R, U(a) -> {b, c}. But if P is the
+// priority union of Q and R, U(a) -> b (not c).
 //
 // Here we compute the priority union of two FSTs with respect to sigma_star, a
 // cyclic, unweighted acceptor representing the universal language. Then
 // priority union is simply:
 //
-// func PriorityUnion[C, D, sigma_star] {
-//   return C | ((sigma_star - RmEpsilon[Project[C, 'input']]) @ R);
+// func PriorityUnion[Q, R, sigma_star] {
+//   input = Determinize[RmEpsilon[Project[Q, 'input']]];
+//   return Q | ((sigma_star - input) @ R);
 // }
 
 template <class Arc>
@@ -54,15 +55,16 @@ void PriorityUnion(MutableFst<Arc> *fst1, const Fst<Arc> &fst2,
     fst1->SetProperties(kError, kError);
     return;
   }
-  ProjectFst<Arc> projection(*fst1, PROJECT_INPUT);
-  RmEpsilonFst<Arc> rmepsilon(projection);
-  DifferenceFst<Arc> difference(sigma_star, rmepsilon);
+  const ProjectFst<Arc> project(*fst1, PROJECT_INPUT);
+  const RmEpsilonFst<Arc> rmepsilon(project);
+  const DeterminizeFst<Arc> determinize(rmepsilon);
+  const DifferenceFst<Arc> difference(sigma_star, determinize);
   // We bail out if the contract for Difference was not satisfied.
   if (difference.Properties(kError, true) == kError) {
     fst1->SetProperties(kError, kError);
     return;
   }
-  ComposeFst<Arc> compose(difference, fst2);
+  const ComposeFst<Arc> compose(difference, fst2);
   Union(fst1, compose);
 }
 
@@ -73,8 +75,8 @@ void PriorityUnion(MutableFst<Arc> *fst1, const Fst<Arc> &fst2,
 // Thus it is a composition which gives priority to X @ Y, falling back upon X.
 // Then lenient composition is simply:
 //
-// func LenientlyCompose[A, B, sigma_star] {
-//   return PriorityUnion[A @ B, A, sigma_star];
+// func LenientlyCompose[X, Y, sigma_star] {
+//   return PriorityUnion[X @ Y, X, sigma_star];
 // }
 
 template <class Arc>

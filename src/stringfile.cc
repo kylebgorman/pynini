@@ -17,11 +17,8 @@
 
 #include "stringfile.h"
 
-#include <vector>
-
 #include "stripcomment.h"
 #include "gtl.h"
-#include <re2/stringpiece.h>
 
 namespace fst {
 namespace internal {
@@ -32,32 +29,23 @@ void StringFile::Reset() {
   Next();
 }
 
+// Tries to read a non-empty line until EOF.
 void StringFile::Next() {
-  // Reads a line; if it's empty, reads until it runs out of file or it finds a
-  // non-empty one.
-  ++linenum_;
-  if (!ReadLineOrClear()) return;
-  while (line_.empty()) {
+  do {
     ++linenum_;
-    if (!ReadLineOrClear()) return;
-  }
+    if (!std::getline(istrm_, line_)) return;
+    line_ = StripCommentAndRemoveEscape(line_);
+  } while (line_.empty());
 }
 
-bool StringFile::ReadLineOrClear() {
-  if (!std::getline(istrm_, line_)) {
-    line_.clear();
-    return false;
-  }
-  line_ = StripCommentAndRemoveEscape(line_);
-  return true;
+void ColumnStringFile::Reset() {
+  sf_.Reset();
+  Next();
 }
 
-bool PairStringFile::Parse() {
-  std::vector<string> pieces = strings::Split(sf_.GetString(), "\t");
-  if (pieces.size() != 2) return false;
-  left_ = pieces[0];
-  right_ = pieces[1];
-  return true;
+void ColumnStringFile::Next() {
+  sf_.Next();
+  Parse();
 }
 
 }  // namespace internal

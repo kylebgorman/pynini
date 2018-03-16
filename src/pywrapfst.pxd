@@ -34,19 +34,13 @@ cimport fst as fst
 from ios cimport stringstream
 
 
-# Constants not imported from elsewhere.
-# TODO(kbg): Figure out how to access static class variables so I don't have
-# to do it this way.
-
-cdef int64 kNoSymbol
-
 
 # Exportable helper functions.
 
 
 cdef string tostring(data, encoding=?) except *
 
-cdef string weighttostring(data, encoding=?) except *
+cdef string weight_tostring(data, encoding=?) except *
 
 cdef fst.ComposeFilter _get_compose_filter(
     const string &compose_filter) except *
@@ -85,11 +79,11 @@ cdef class Weight(object):
   cpdef string type(self)
 
 
-cdef Weight _Weight_Zero(weight_type)
+cdef Weight _Zero(weight_type)
 
-cdef Weight _Weight_One(weight_type)
+cdef Weight _One(weight_type)
 
-cdef Weight _Weight_NoWeight(weight_type)
+cdef Weight _NoWeight(weight_type)
 
 cdef Weight _plus(Weight lhs, Weight rhs)
 
@@ -358,9 +352,9 @@ cdef _Fst _init_XFst(FstClass_ptr tfst)
 
 cdef _MutableFst _create_Fst(arc_type=?)
 
-cdef _Fst _read_Fst(filename, fst_type=?)
+cpdef _Fst _read(filename)
 
-cdef _Fst _deserialize_Fst(fst_string, fst_type=?)
+cpdef _Fst _read_from_string(State)
 
 
 # Iterators.
@@ -439,9 +433,9 @@ cdef class StateIterator(object):
 # Constructive operations on Fst.
 
 
-cdef _Fst _map(_Fst ifst, float delta=?, map_type=?, weight=?)
+cdef _Fst _map(_Fst ifst, float delta=?, map_type=?, double power=?, weight=?)
 
-cpdef _Fst arcmap(_Fst ifst, float delta=?, map_type=?, weight=?)
+cpdef _Fst arcmap(_Fst ifst, float delta=?, map_type=?, double power=?, weight=?)
 
 cpdef _MutableFst compose(_Fst ifst1, _Fst ifst2, compose_filter=?,
                           bool connect=?)
@@ -541,7 +535,7 @@ cdef class FarReader(object):
 
   cpdef string far_type(self)
 
-  cpdef bool find(self, key)
+  cpdef bool find(self, key) except *
 
   cpdef _Fst get_fst(self)
 
@@ -560,7 +554,7 @@ cdef class FarWriter(object):
 
   cpdef string arc_type(self)
 
-  cdef void _close(self)
+  cdef void close(self)
 
   cpdef void add(self, key, _Fst ifst) except *
 

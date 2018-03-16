@@ -58,7 +58,7 @@ bool PrepareReplacePairs(
     const std::vector<std::pair<string, const Fst<Arc> *>> &pairs,
     std::vector<std::pair<typename Arc::Label, const Fst<Arc> *>> *new_pairs) {
   using Label = typename Arc::Label;
-  const size_t size = pairs.size();
+  const auto size = pairs.size();
   new_pairs->resize(size + 1);
   // During replacement, all symbols are kept in "global" input and output
   // tables attached to the root while symbol tables attached to the
@@ -70,9 +70,10 @@ bool PrepareReplacePairs(
   // The first time through, we put a dummy index index into the first slot of
   // each pair, as we don't have the complete symbol table yet.
   for (size_t i = 0; i < size; ++i) {
-    auto replace_fst = new VectorFst<Arc>(*pairs[i].second);
+    auto *replace_fst = new VectorFst<Arc>(*pairs[i].second);
     isyms.reset(PrepareInputSymbols(isyms.get(), replace_fst));
     osyms.reset(PrepareOutputSymbols(osyms.get(), replace_fst));
+    DeleteSymbols(replace_fst);
     (*new_pairs)[i + 1] = std::make_pair(kNoLabel, replace_fst);
   }
   // Now we set all non-initial replacement labels using the global symbol
@@ -89,7 +90,7 @@ bool PrepareReplacePairs(
   }
   // Finally, we add the root FST to the RTN set, using kNoLabel as the root
   // label.
-  auto root_copy = new VectorFst<Arc>(root);
+  auto *root_copy = new VectorFst<Arc>(root);
   root_copy->SetInputSymbols(isyms.get());
   root_copy->SetOutputSymbols(osyms.get());
   (*new_pairs)[0] = std::make_pair(kNoLabel, root_copy);
@@ -111,7 +112,7 @@ void PyniniReplace(
     const Fst<Arc> &root,
     const std::vector<std::pair<string, const Fst<Arc> *>> &pairs,
     MutableFst<Arc> *ofst, ReplaceFstOptions<Arc> *opts) {
-  const size_t size = pairs.size();
+  const auto size = pairs.size();
   if (size < 1) {
     FSTERROR() << "PyniniReplace: Expected at least 1 replacement, "
                << "got " << size;
@@ -146,7 +147,7 @@ void PyniniReplace(
     std::vector<std::pair<typename Arc::Label, typename Arc::Label>> *parens,
     PdtParserType type = PDT_LEFT_PARSER) {
   using Label = typename Arc::Label;
-  const size_t size = pairs.size();
+  const auto size = pairs.size();
   if (size < 1) {
     FSTERROR() << "PyniniReplace: Expected at least 1 replacement, "
                << "got " << size;

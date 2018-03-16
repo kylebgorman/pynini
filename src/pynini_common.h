@@ -34,10 +34,11 @@ namespace internal {
 template <class Arc>
 SymbolTable *PrepareInputSymbols(SymbolTable *syms, MutableFst<Arc> *fst) {
   bool relabel = false;
-  SymbolTable *new_syms = MergeSymbols(syms, fst->InputSymbols(), &relabel);
-  if (!new_syms) return syms ? syms->Copy() : nullptr;
+  auto *new_syms = MergeSymbols(syms, fst->InputSymbols(), &relabel);
+  if (!new_syms) {
+    return syms ? syms->Copy() : nullptr;
+  }
   if (relabel) Relabel(fst, new_syms, nullptr);
-  fst->SetInputSymbols(nullptr);
   return new_syms;
 }
 
@@ -46,11 +47,19 @@ SymbolTable *PrepareInputSymbols(SymbolTable *syms, MutableFst<Arc> *fst) {
 template <class Arc>
 SymbolTable *PrepareOutputSymbols(SymbolTable *syms, MutableFst<Arc> *fst) {
   bool relabel = false;
-  SymbolTable *new_syms = MergeSymbols(syms, fst->OutputSymbols(), &relabel);
-  if (!new_syms) return syms ? syms->Copy() : nullptr;
+  auto *new_syms = MergeSymbols(syms, fst->OutputSymbols(), &relabel);
+  if (!new_syms) {
+    return syms ? syms->Copy() : nullptr;
+  }
   if (relabel) Relabel(fst, nullptr, new_syms);
-  fst->SetOutputSymbols(nullptr);
   return new_syms;
+}
+
+// Removes both symbol tables.
+template <class Arc>
+void DeleteSymbols(MutableFst<Arc> *fst) {
+  fst->SetInputSymbols(nullptr);
+  fst->SetOutputSymbols(nullptr);
 }
 
 }  // namespace internal

@@ -139,7 +139,7 @@ class PrefixTree {
   }
 
   // Write the current prefix tree transducer to a mutable FST.
-  void ToFst(MutableFst<Arc> *fst) {
+  void ToFst(MutableFst<Arc> *fst) const {
     fst->DeleteStates();
     if (num_states_ == 0) {
       CHECK(!root_);

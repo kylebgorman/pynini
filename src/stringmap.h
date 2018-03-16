@@ -21,6 +21,7 @@
 // This file contains functions for compiling FSTs from pairs of strings
 // using a prefix tree.
 
+#include <sstream>
 #include <string>
 using std::string;
 #include <utility>
@@ -36,96 +37,145 @@ using std::string;
 namespace fst {
 namespace internal {
 
-// Adaptor for using a vector argument below.
-class StringPairIterator {
+// Helper class for constructing string maps.
+template <class Arc>
+class StringMapCompiler {
  public:
-  using V = std::vector<std::pair<string, string>>;
-  using I = typename V::const_iterator;
+  using Label = typename Arc::Label;
+  using Weight = typename Arc::Weight;
 
-  explicit StringPairIterator(const V &v) : it_(v.cbegin()), end_(v.cend()) {}
+  StringMapCompiler(StringTokenType itype,
+                    StringTokenType otype,
+                    const SymbolTable *isyms,
+                    const SymbolTable *osyms) :
+     itype_(itype),
+     otype_(otype),
+     isyms_(GetSymbolTable(itype_, isyms)),
+     osyms_(GetSymbolTable(otype_, osyms)) {}
 
-  void Next() { ++it_; }
+  bool Add(const string &istring, const string &ostring,
+           const Weight &weight = Weight::One()) {
+    if (!StringToLabels<Label>(istring, itype_, &ilabels_, isyms_.get())) {
+      return false;
+    }
+    if (!StringToLabels<Label>(ostring, otype_, &olabels_, osyms_.get())) {
+      return false;
+    }
+    ptree_.Add(ilabels_.begin(), ilabels_.end(),
+               olabels_.begin(), olabels_.end(),
+               weight);
+    return true;
+  }
 
-  bool Done() const { return it_ == end_; }
+  // Also parses a weight string.
+  bool Add(const string &istring, const string &ostring,
+           const string &weight) {
+    std::istringstream strm(weight);
+    Weight w;
+    strm >> w;
+    if (!strm) {
+      LOG(ERROR) << "StringMapCompiler::Add: Bad weight: " << weight;
+      return false;
+    }
+    return Add(istring, ostring, w);
+  }
 
-  const string GetLeftString() { return it_->first; }
-
-  const string GetRightString() { return it_->second; }
+  void Compile(MutableFst<Arc> *fst,
+               bool attach_input_symbols = true,
+               bool attach_output_symbols = true) const {
+    ptree_.ToFst(fst);
+    OptimizeStringCrossProducts(fst);
+    // Optionally symbol tables.
+    if (attach_input_symbols) fst->SetInputSymbols(isyms_.get());
+    if (attach_output_symbols) fst->SetOutputSymbols(osyms_.get());
+  }
 
  private:
-  I it_;
-  I end_;
+  const StringTokenType itype_;
+  const StringTokenType otype_;
+  const std::unique_ptr<SymbolTable> isyms_;
+  const std::unique_ptr<SymbolTable> osyms_;
+  PrefixTree<Arc> ptree_;
+
+  // Transient data.
+  std::vector<Label> ilabels_;
+  std::vector<Label> olabels_;
 };
 
 }  // namespace internal
 
-// Compiles minimal deterministic FST representing the union of the
-// cross-product of pairs of strings.
-template <class Arc, class Data>
-bool CompileStringMap(Data *data, StringTokenType itype, StringTokenType otype,
-                      MutableFst<Arc> *fst, const SymbolTable *isyms = nullptr,
-                      const SymbolTable *osyms = nullptr,
-                      bool attach_symbols = true) {
-  using Label = typename Arc::Label;
-  using Weight = typename Arc::Weight;
-  PrefixTree<Arc> ptree;
-  std::unique_ptr<SymbolTable> new_isyms(
-      internal::GetSymbolTable(itype, isyms));
-  std::unique_ptr<SymbolTable> new_osyms(
-      internal::GetSymbolTable(otype, osyms));
-  // Converts the string pairs to vectors of arc labels.
-  std::vector<Label> ilabels;
-  std::vector<Label> olabels;
-  for (; !data->Done(); data->Next()) {
-    if (!StringToLabels<Label>(data->GetLeftString(), itype, &ilabels,
-                               new_isyms.get())) {
-      return false;
+// Compiles deterministic FST representing the union of the cross-product of
+// pairs of weighted string cross-products from a TSV file of string triples.
+template <class Arc>
+bool CompileStringFile(const string &fname,
+    StringTokenType itype, StringTokenType otype, MutableFst<Arc> *fst,
+    const SymbolTable *isyms = nullptr, const SymbolTable *osyms = nullptr,
+    bool attach_input_symbols = true, bool attach_output_symbols = true) {
+  internal::StringMapCompiler<Arc> compiler(itype, otype, isyms, osyms);
+  internal::ColumnStringFile csf(fname);
+  if (csf.Done()) return false;  // File opening failed.
+  for (; !csf.Done(); csf.Next()) {
+    const auto &line = csf.Row();
+    switch (line.size()) {
+      case 1: {
+        const string iostring(line[0]);
+        if (!compiler.Add(iostring, iostring)) return false;
+        break;
+      }
+      case 2: {
+        if (!compiler.Add(string(line[0]), string(line[1]))) return false;
+        break;
+      }
+      case 3: {
+        if (!compiler.Add(string(line[0]), string(line[1]),
+                          string(line[2]))) {
+          return false;
+        }
+        break;
+      }
+      default: {
+        LOG(ERROR) << "CompileStringFile: Ill-formed line "
+                   << csf.LineNumber() << " in file "
+                   << csf.Filename();
+        return false;
+      }
     }
-    if (!StringToLabels<Label>(data->GetRightString(), otype, &olabels,
-                               new_osyms.get())) {
-      return false;
-    }
-    ptree.Add(ilabels.begin(), ilabels.end(), olabels.begin(), olabels.end(),
-              Weight::One());
   }
-  // Compiles the prefix tree into an FST.
-  ptree.ToFst(fst);
-  OptimizeStringCrossProducts(fst);
-  // Optionally symbol tables.
-  if (attach_symbols) {
-    fst->SetInputSymbols(new_isyms.get());
-    fst->SetOutputSymbols(new_osyms.get());
-  }
+  compiler.Compile(fst);
   return true;
 }
 
-// Specialization for a vector of string pairs.
+// Compiles deterministic FST representing the union of the cross-product of
+// pairs of weighted string cross-products from a vector of vector of strings.
 template <class Arc>
-bool CompileStringMap(const std::vector<std::pair<string, string>> &data,
-                      StringTokenType itype, StringTokenType otype,
-                      MutableFst<Arc> *fst, const SymbolTable *isyms = nullptr,
-                      const SymbolTable *osyms = nullptr,
-                      bool attach_symbols = true) {
-  internal::StringPairIterator spiter(data);
-  return CompileStringMap(&spiter, itype, otype, fst, isyms, osyms,
-                          attach_symbols);
-}
-
-// A helper for doing this from a TSV file.
-template <class Arc>
-bool CompileStringFile(const string &fname, StringTokenType itype,
-                       StringTokenType otype, MutableFst<Arc> *fst,
-                       const SymbolTable *isyms = nullptr,
-                       const SymbolTable *osyms = nullptr,
-                       bool attach_symbols = true) {
-  std::ifstream istrm(fname);
-    if (!istrm.good()) {    
-    LOG(ERROR) << "Can't open file " << fname;
-    return false;
+bool CompileStringMap(
+    const std::vector<std::vector<string>> &lines,
+    StringTokenType itype, StringTokenType otype, MutableFst<Arc> *fst,
+    const SymbolTable *isyms = nullptr, const SymbolTable *osyms = nullptr,
+    bool attach_input_symbols = true, bool attach_output_symbols = true) {
+  internal::StringMapCompiler<Arc> compiler(itype, otype, isyms, osyms);
+  for (const auto &line : lines) {
+    switch (line.size()) {
+      case 1: {
+        if (!compiler.Add(line[0], line[0])) return false;
+        break;
+      }
+      case 2: {
+        if (!compiler.Add(line[0], line[1])) return false;
+        break;
+      }
+      case 3: {
+        if (!compiler.Add(line[0], line[1], line[2])) return false;
+        break;
+      }
+      default: {
+        LOG(ERROR) << "CompileStringMap: Illformed line";
+        return false;
+      }
+    }
   }
-  internal::PairStringFile psf(istrm, fname);
-  return CompileStringMap(&psf, itype, otype, fst, isyms, osyms,
-                          attach_symbols);
+  compiler.Compile(fst);
+  return true;
 }
 
 }  // namespace fst

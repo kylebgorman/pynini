@@ -55,36 +55,24 @@ namespace fst {
 //     /x{,N}/     Repeat(x, 0, N)
 
 template <class Arc>
-void Repeat(MutableFst<Arc> *fst, int32 lower, int32 upper) {
+void Repeat(MutableFst<Arc> *fst, int32 lower = 0, int32 upper = 0) {
   using Weight = typename Arc::Weight;
-  // Special cases.
-  // Empty FST.
   if (fst->Start() == kNoStateId) return;
-  // Star- or plus-closures.
-  if (upper <= 0) {
-    if (lower <= 0) {
-      Closure(fst, CLOSURE_STAR);
-      return;
-    } else if (lower == 1) {
-      Closure(fst, CLOSURE_PLUS);
-      return;
-    }
-  }
-  // Generic cases.
-  // Lower bound includes 0.
-  if (lower <= 0) {
+  const std::unique_ptr<const MutableFst<Arc>> copy(fst->Copy());
+  if (upper == 0) {
+    // Infinite upper bound.
+    // The last element in the concatenation is star-closed; any remainder
+    // concatenations are normal copies.
+    Closure(fst, CLOSURE_STAR);
+    for (int32 i = 0; i < lower; ++i) Concat(*copy, fst);
+  } else {
+    // Finite upper bound.
     fst->SetFinal(fst->Start(), Weight::One());
-  }
-  std::unique_ptr<MutableFst<Arc>> tfst(fst->Copy());
-  for (int32 i = 0; i < lower - 1; ++i) Concat(fst, *tfst);
-  if (upper <= 0) {  // Upper bound is infinite.
-    // Concatenates a *-ed copy.
-    Closure(tfst.get(), CLOSURE_STAR);
-    Concat(fst, *tfst);
-  } else {  // Upper bound is finite.
-    // Concatenates ?-ed copies.
-    tfst->SetFinal(tfst->Start(), Weight::One());
-    for (int32 i = lower; i < upper; ++i) Concat(fst, *tfst);
+    for (int32 i = lower; i < upper - 1; ++i) {
+      Concat(*copy, fst);
+      fst->SetFinal(fst->Start(), Weight::One());
+    }
+    for (int32 i = 0; i < lower; ++i) Concat(*copy, fst);
   }
 }
 

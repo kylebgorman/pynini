@@ -33,7 +33,7 @@ void Repeat(RepeatArgs *args) {
   Repeat(fst, std::get<1>(*args), std::get<2>(*args));
 }
 
-void Repeat(MutableFstClass *fst, int32 lower, int32 upper);
+void Repeat(MutableFstClass *fst, int32 lower = 0, int32 upper = 0);
 
 }  // namespace script
 }  // namespace fst

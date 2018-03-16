@@ -6,14 +6,18 @@
 """Tests for the Pynini grammar compilation module."""
 
 
+import functools
 import math
+import os
+import pickle
 import string
+import tempfile
 import unittest
-
 
 # This module is designed to be import-safe.
 from pynini import *
 
+import pywrapfst
 
 SEED = 212
 
@@ -94,10 +98,8 @@ class PyniniCDRewriteTest(unittest.TestCase):
 
   def testWeightedLambdaRaisesFstOpError(self):
     with self.assertRaises(FstOpError):
-      unused_f = (
-          cdrewrite(
-              transducer("[phi]", "[psi]"), acceptor("[lambda]", 2),
-              "[rho]", self.sigstar))
+      unused_f = cdrewrite(transducer("[phi]", "[psi]"),
+                           acceptor("[lambda]", 2), "[rho]", self.sigstar)
 
   def testWeightedRhoRaisesFstOpError(self):
     with self.assertRaises(FstOpError):
@@ -123,24 +125,34 @@ class PyniniClosureTest(unittest.TestCase):
     self.assertEqual(compose(ac, cheese * (n + 1)).num_states(), 0)
 
 
-class PyniniContainmentTest(unittest.TestCase):
-
-  def testContainment(self):
-    ifst = a("Limburger")
-    sigma_star = u(*string.ascii_letters + ".?! ").closure().optimize()
-    cont = containment(ifst, sigma_star)
-    istring = ("Have you got...SHUT THAT BLOODY BOUZOUKI UP?!..."
-               "have you got any Limburger?")
-    ostring = (istring * cont).stringify()
-    self.assertEqual(istring, ostring)
-
-
 class PyniniDifferenceTest(unittest.TestCase):
 
   def testDifferenceWithUnion(self):
-    ab = u("a", "b")
-    abc = u(ab, "c")
+    ab = union("a", "b")
+    abc = union(ab, "c")
     self.assertEqual(difference(abc, ab).optimize(), "c")
+
+
+class PyniniDowncastTest(unittest.TestCase):
+
+  @classmethod
+  def setUpClass(cls):
+    cls.f = pywrapfst.Fst()
+    # Epsilon machine.
+    s = cls.f.add_state()
+    cls.f.set_start(s)
+    cls.f.set_final(s)
+
+  def testDowncastTypesAreCorrect(self):
+    self.assertEqual(type(self.f), pywrapfst._MutableFst)
+    f_downcast = Fst.from_pywrapfst(self.f)
+    self.assertEqual(type(f_downcast), Fst)
+
+  def testDowncastedMutationTriggersDeepCopy(self):
+    f_downcast = Fst.from_pywrapfst(self.f)
+    f_downcast.delete_states()
+    self.assertEqual(f_downcast.num_states(), 0)
+    self.assertNotEqual(self.f.num_states(), 0)
 
 
 class PyniniEpsilonMachineTest(unittest.TestCase):
@@ -176,7 +188,6 @@ class PyniniEqualTest(unittest.TestCase):
     self.assertFalse(self.f != self.f.copy())
 
 
-
 class PyniniExceptionsTest(unittest.TestCase):
 
   @classmethod
@@ -184,7 +195,7 @@ class PyniniExceptionsTest(unittest.TestCase):
     cls.exchange = transducer("Liptauer", "No")
     cls.f = Fst()
     cls.s = SymbolTable()
-    cls.map_file = "testdata/cheese.map"
+    cls.map_file = "testdata/str.map"
 
   def testBadDestinationIndexAddArcDoesNotRaiseFstIndexError(self):
     f = self.f.copy()
@@ -249,7 +260,6 @@ class PyniniExceptionsTest(unittest.TestCase):
     with self.assertRaises(FstArgError):
       unused_f = replace(
           self.f, (("f", self.f),), call_arc_labeling="nonexistent")
-
 
   def testGarbageReturnArcLabelingReplaceRaisesFstArgError(self):
     with self.assertRaises(FstArgError):
@@ -320,11 +330,54 @@ class PyniniExceptionsTest(unittest.TestCase):
       unused_w = Weight("nonexistent", 1)
 
 
+class PyniniGetByteSymbolTable(unittest.TestCase):
+
+  def testGetByteSymbolTable(self):
+    syms = get_byte_symbol_table()
+    size = sum(1 for _ in syms)
+    self.assertEqual(257, size)
+
+
+class PyniniIOTest(unittest.TestCase):
+
+  @classmethod
+  def setUpClass(cls):
+    cls.f = Fst()
+
+  # Non-static helper.
+  def TestFstAndTypeEquality(self, g):
+    self.assertEqual(self.f, g)
+    self.assertEqual(type(self.f), type(g))
+
+  def testFileIO(self):
+    tmp = os.path.join(tempfile.gettempdir(), "tmp.fst")
+    self.f.write(tmp)
+    try:
+      g = Fst.read(tmp)
+      self.TestFstAndTypeEquality(g)
+    finally:
+      os.remove(tmp)
+
+  def testGarbageReadRaisesFstIOError(self):
+    with self.assertRaises(FstIOError):
+      unused_f = Fst.read("nonexistent")
+
+  def testStringIO(self):
+    sink = self.f.write_to_string()
+    g = Fst.read_from_string(sink)
+    self.TestFstAndTypeEquality(g)
+
+  def testPickleIO(self):
+    sink = pickle.dumps(self.f)
+    g = pickle.loads(sink)
+    self.TestFstAndTypeEquality(g)
+
+
 class PyniniLenientlyComposeTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.sigstar = u(*string.ascii_letters + " ").closure().optimize()
+    cls.sigstar = union(*string.ascii_letters + " ").closure().optimize()
     cls.cheese_geography = string_map((("Red Leicester", "England"),
                                        ("Tilsit", "Russia"),
                                        ("Caerphilly", "Wales"),
@@ -360,12 +413,12 @@ class PyniniMatchesTest(unittest.TestCase):
 
   def testMatches(self):
     m1 = "abc123"
-    m2 = u("a", "b", "c", "1", "2", "3").closure()
+    m2 = union("a", "b", "c", "1", "2", "3").closure()
     self.assertTrue(matches(m1, m2))
 
   def testNotMatch(self):
     m1 = "abc123"
-    m2 = u("a", "b", "c").closure()
+    m2 = union("a", "b", "c").closure()
     self.assertFalse(matches(m1, m2))
 
 
@@ -602,42 +655,51 @@ class PyniniStringTest(unittest.TestCase):
       unused_tr = transducer("Venezuelan Beaver Cheese", "Not today sir, no",
                              arc_type="log64", weight=Weight.One("tropical"))
 
+  def testAcceptorWithoutAttachedSymbolTables(self):
+    ac = acceptor("Cheshire", attach_symbols=False)
+    self.assertIsNone(ac.input_symbols())
+    self.assertIsNone(ac.output_symbols())
+
+  def testTransducerWithoutAttachedSymbolTables(self):
+    tr = transducer("Gouda", "No", attach_input_symbols=False,
+                    attach_output_symbols=False)
+    self.assertIsNone(tr.input_symbols())
+    self.assertIsNone(tr.output_symbols())
+
 
 class PyniniStringFileTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.map_file =  "testdata/cheese.map"
+    cls.map_file =  "testdata/str.map"
+
+  def ContainsMapping(self, istring, mapper, ostring):
+    lattice = compose(istring, mapper).project(True)
+    self.assertTrue(matches(lattice, ostring))
 
   def testByteToByteStringFile(self):
     mapper = string_file(self.map_file)
-    self.assertEqual(optimize(project("[Bel Paese]" * mapper, True)), "Sorry")
-    self.assertEqual(optimize(project("Cheddar" * mapper, True)), "Cheddar")
-    self.assertEqual(optimize(project("Caithness" * mapper, True)),
-                     "Pont-l'Évêque")
-    self.assertEqual(optimize(project("Pont-l'Évêque" * mapper, True)),
-                     "Camembert")
+    self.ContainsMapping("[Bel Paese]", mapper, "Sorry")
+    self.ContainsMapping("Cheddar", mapper, "Cheddar")
+    self.ContainsMapping("Caithness", mapper, "Pont-l'Évêque")
+    self.ContainsMapping("Pont-l'Évêque", mapper, "Camembert")
 
   def testByteToUtf8StringFile(self):
+    utf8 = functools.partial(acceptor, token_type="utf8")
     mapper = string_file(self.map_file, output_token_type="utf8")
-    self.assertEqual(optimize(project("[Bel Paese]" * mapper, True)), "Sorry")
-    self.assertEqual(optimize(project("Cheddar" * mapper, True)), "Cheddar")
-    self.assertEqual(optimize(project("Caithness" * mapper, True)),
-                     acceptor("Pont-l'Évêque", token_type="utf8"))
-    self.assertEqual(optimize(project("Pont-l'Évêque" * mapper, True)),
-                     "Camembert")
+    self.ContainsMapping("[Bel Paese]", mapper, utf8("Sorry"))
+    self.ContainsMapping("Cheddar", mapper, utf8("Cheddar"))
+    self.ContainsMapping("Caithness", mapper, utf8("Pont-l'Évêque"))
+    self.ContainsMapping("Pont-l'Évêque", mapper, utf8("Camembert"))
 
   def testUtf8ToUtf8StringFile(self):
-    mapper = string_file(self.map_file, input_token_type="utf8",
+    utf8 = functools.partial(acceptor, token_type="utf8")
+    mapper = string_file(self.map_file,
+                         input_token_type="utf8",
                          output_token_type="utf8")
-    self.assertEqual(optimize(project("[Bel Paese]" * mapper, True)), "Sorry")
-    self.assertEqual(optimize(project("Cheddar" * mapper, True)), "Cheddar")
-    self.assertEqual(optimize(project("Caithness" * mapper, True)),
-                     acceptor("Pont-l'Évêque", token_type="utf8"))
-    self.assertEqual(optimize(project(acceptor("Pont-l'Évêque",
-                                               token_type="utf8") * mapper,
-                                      True)),
-                     "Camembert")
+    self.ContainsMapping(utf8("[Bel Paese]"), mapper, utf8("Sorry"))
+    self.ContainsMapping(utf8("Pont-l'Évêque"), mapper, utf8("Camembert"))
+
 
   def testByteToSymbolStringFile(self):
     syms = SymbolTable()
@@ -647,65 +709,52 @@ class PyniniStringFileTest(unittest.TestCase):
     syms.add_symbol("Pont-l'Évêque")
     syms.add_symbol("Camembert")
     mapper = string_file(self.map_file, output_token_type=syms)
-    sorry = acceptor("Sorry", token_type=syms)
-    self.assertEqual(optimize(project("[Bel Paese]" * mapper, True)), sorry)
-    cheddar = acceptor("Cheddar", token_type=syms)
-    self.assertEqual(optimize(project("Cheddar" * mapper, True)), cheddar)
-    pont_levesque = acceptor("Pont-l'Évêque", token_type=syms)
-    self.assertEqual(optimize(project("Caithness" * mapper, True)),
-                     pont_levesque)
+    symc = functools.partial(acceptor, token_type=syms)
+    self.ContainsMapping("[Bel Paese]", mapper, symc("Sorry"))
+    self.ContainsMapping("Pont-l'Évêque", mapper, symc("Camembert"))
 
 
 class PyniniStringMapTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.pairs = (("[Bel Paese]", "Sorry"), ("Cheddar",),
-                 ("Caithness", "Pont-l'Évêque"),
-                 ("Pont-l'Évêque", "Camembert"))
+    # In-Python version of str.map.
+    cls.lines = (("[Bel Paese]", "Sorry",),
+                 ("Cheddar",),
+                 ("Caithness", "Pont-l'Évêque", ".666",),
+                 ("Pont-l'Évêque", "Camembert",))
 
-  def testHeterogeneousStringMap(self):
-    mapper = string_map([self.pairs[0],   # Tuple.
-                         self.pairs[1]])  # String.
-    self.assertEqual(optimize(project("[Bel Paese]" * mapper, True)), "Sorry")
-    self.assertEqual(optimize(project("Cheddar" * mapper, True)), "Cheddar")
+  def ContainsMapping(self, istring, mapper, ostring):
+    lattice = compose(istring, mapper).project(True)
+    self.assertTrue(matches(lattice, ostring))
 
   def testByteToByteStringMap(self):
-    mapper = string_map(self.pairs)
-    self.assertEqual(optimize(project("[Bel Paese]" * mapper, True)), "Sorry")
-    self.assertEqual(optimize(project("Cheddar" * mapper, True)), "Cheddar")
-    self.assertEqual(optimize(project("Caithness" * mapper, True)),
-                     "Pont-l'Évêque")
-    self.assertEqual(optimize(project("Pont-l'Évêque" * mapper, True)),
-                     "Camembert")
+    mapper = string_map(self.lines)
+    self.ContainsMapping("[Bel Paese]", mapper, "Sorry")
+    self.ContainsMapping("Cheddar", mapper, "Cheddar")
+    self.ContainsMapping("Caithness", mapper, "Pont-l'Évêque")
+    self.ContainsMapping("Pont-l'Évêque", mapper, "Camembert")
 
   def testDictionaryStringMap(self):
-    mydict = {self.pairs[0][0]: self.pairs[0][1],
-              self.pairs[1][0]: self.pairs[1][0]}
+    mydict = {self.lines[0][0]: self.lines[0][1],
+              self.lines[1][0]: self.lines[1][0]}
     mapper = string_map(mydict)
-    self.assertEqual(optimize(project("[Bel Paese]" * mapper, True)), "Sorry")
-    self.assertEqual(optimize(project("Cheddar" * mapper, True)), "Cheddar")
+    self.ContainsMapping("[Bel Paese]", mapper, "Sorry")
 
   def testByteToUtf8StringMap(self):
-    mapper = string_map(self.pairs, output_token_type="utf8")
-    self.assertEqual(optimize(project("[Bel Paese]" * mapper, True)), "Sorry")
-    self.assertEqual(optimize(project("Cheddar" * mapper, True)), "Cheddar")
-    self.assertEqual(optimize(project("Caithness" * mapper, True)),
-                     acceptor("Pont-l'Évêque", token_type="utf8"))
-    self.assertEqual(optimize(project("Pont-l'Évêque" * mapper, True)),
-                     "Camembert")
+    mapper = string_map(self.lines, output_token_type="utf8")
+    utf8 = functools.partial(acceptor, token_type="utf8")
+    self.ContainsMapping("[Bel Paese]", mapper, utf8("Sorry"))
+    self.ContainsMapping("Cheddar", mapper, utf8("Cheddar"))
+    self.ContainsMapping("Caithness", mapper, utf8("Pont-l'Évêque"))
+    self.ContainsMapping("Pont-l'Évêque", mapper, utf8("Camembert"))
 
   def testUtf8ToUtf8StringMap(self):
-    mapper = string_map(self.pairs, input_token_type="utf8",
+    mapper = string_map(self.lines, input_token_type="utf8",
                         output_token_type="utf8")
-    self.assertEqual(optimize(project("[Bel Paese]" * mapper, True)), "Sorry")
-    self.assertEqual(optimize(project("Cheddar" * mapper, True)), "Cheddar")
-    self.assertEqual(optimize(project("Caithness" * mapper, True)),
-                     acceptor("Pont-l'Évêque", token_type="utf8"))
-    self.assertEqual(optimize(project(acceptor("Pont-l'Évêque",
-                                               token_type="utf8") * mapper,
-                                      True)),
-                     "Camembert")
+    utf8 = functools.partial(acceptor, token_type="utf8")
+    self.ContainsMapping(utf8("[Bel Paese]"), mapper, utf8("Sorry"))
+    self.ContainsMapping(utf8("Pont-l'Évêque"), mapper, utf8("Camembert"))
 
   def testByteToSymbolStringMap(self):
     syms = SymbolTable()
@@ -714,14 +763,10 @@ class PyniniStringMapTest(unittest.TestCase):
     syms.add_symbol("Cheddar")
     syms.add_symbol("Pont-l'Évêque")
     syms.add_symbol("Camembert")
-    mapper = string_map(self.pairs, output_token_type=syms)
-    sorry = acceptor("Sorry", token_type=syms)
-    self.assertEqual(optimize(project("[Bel Paese]" * mapper, True)), sorry)
-    cheddar = acceptor("Cheddar", token_type=syms)
-    self.assertEqual(optimize(project("Cheddar" * mapper, True)), cheddar)
-    pont_levesque = acceptor("Pont-l'Évêque", token_type=syms)
-    self.assertEqual(optimize(project("Caithness" * mapper, True)),
-                     pont_levesque)
+    mapper = string_map(self.lines, output_token_type=syms)
+    symc = functools.partial(acceptor, token_type=syms)
+    self.ContainsMapping("[Bel Paese]", mapper, symc("Sorry"))
+    self.ContainsMapping("Pont-l'Évêque", mapper, symc("Camembert"))
 
 
 class PyniniStringPathsTest(unittest.TestCase):
@@ -752,14 +797,14 @@ class PyniniStringPathsTest(unittest.TestCase):
                           (str(t[2]) for t in self.triples))
 
   def testStringPathsAfterFstDeletion(self):
-    f = u("Pipo Crem'", "Fynbo")
+    f = union("Pipo Crem'", "Fynbo")
     sp = StringPaths(f)
     del f   # Should be garbage-collected immediately.
     self.assertEqual(len(list(sp)), 2)
 
   def testStringPathLabelsWithoutEpsilons(self):
     cheese = "Cheddar"
-    f = a(cheese)
+    f = acceptor(cheese)
     chars = [ord(i) for i in cheese]
     sp = StringPaths(f)
     eps_free_ilabels = sp.ilabels()
@@ -775,7 +820,7 @@ class PyniniStringPathsTest(unittest.TestCase):
     # Note that the Thompson construction for union connects the initial state
     # of the first FST to the initial state of the second FST with an
     # epsilon-arc, a fact we take advantage of here.
-    f = u("Ilchester", "Limburger")
+    f = union("Ilchester", "Limburger")
     sp = StringPaths(f)
     self.assertEqual(sp.ilabels(), sp.ilabels())
     sp.next()

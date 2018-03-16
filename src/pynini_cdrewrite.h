@@ -131,8 +131,8 @@ void PyniniCDRewrite(MutableFst<Arc> *tau, MutableFst<Arc> *lambda,
   std::unique_ptr<SymbolTable> syms(sigma_star->InputSymbols()
                                         ? sigma_star->InputSymbols()->Copy()
                                         : nullptr);
-  sigma_star->SetInputSymbols(nullptr);
   syms.reset(PrepareOutputSymbols(syms.get(), sigma_star));
+  DeleteSymbols(sigma_star);
   // Gives a consistent labeling to boundary symbols in lambda and/or rho.
   if (syms) {
     syms->AddSymbol(FLAGS_left_boundary_symbol, FLAGS_left_boundary_index);
@@ -141,10 +141,13 @@ void PyniniCDRewrite(MutableFst<Arc> *tau, MutableFst<Arc> *lambda,
   // Prepares remaining output.
   syms.reset(PrepareInputSymbols(syms.get(), tau));
   syms.reset(PrepareOutputSymbols(syms.get(), tau));
+  DeleteSymbols(tau);
   syms.reset(PrepareInputSymbols(syms.get(), lambda));
   syms.reset(PrepareOutputSymbols(syms.get(), lambda));
+  DeleteSymbols(lambda);
   syms.reset(PrepareInputSymbols(syms.get(), rho));
   syms.reset(PrepareOutputSymbols(syms.get(), rho));
+  DeleteSymbols(rho);
   AddBoundarySymbolArcsToSigmaStar(sigma_star);
   // Actually compiles the rewrite rule.
   CDRewriteCompile(*tau, *lambda, *rho, *sigma_star, ofst, cd, cm);

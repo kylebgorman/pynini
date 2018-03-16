@@ -24,9 +24,10 @@ namespace script {
 bool StringFile(const string &fname, StringTokenType itype,
                 StringTokenType otype, MutableFstClass *fst,
                 const SymbolTable *isyms, const SymbolTable *osyms,
-                bool attach_symbols) {
+                bool attach_input_symbols,
+                bool attach_output_symbols) {
   StringFileInnerArgs iargs(fname, itype, otype, fst, isyms, osyms,
-                            attach_symbols);
+                            attach_input_symbols, attach_output_symbols);
   StringFileArgs args(iargs);
   Apply<Operation<StringFileArgs>>("StringFile", fst->ArcType(), &args);
   return args.retval;
@@ -36,12 +37,13 @@ REGISTER_FST_OPERATION(StringFile, StdArc, StringFileArgs);
 REGISTER_FST_OPERATION(StringFile, LogArc, StringFileArgs);
 REGISTER_FST_OPERATION(StringFile, Log64Arc, StringFileArgs);
 
-bool StringMap(const std::vector<std::pair<string, string>> &pairs,
+bool StringMap(const std::vector<std::vector<string>> &lines,
                StringTokenType itype, StringTokenType otype,
                MutableFstClass *fst, const SymbolTable *isyms,
-               const SymbolTable *osyms, bool attach_symbols) {
-  StringMapInnerArgs iargs(pairs, itype, otype, fst, isyms, osyms,
-                           attach_symbols);
+               const SymbolTable *osyms, bool attach_input_symbols,
+               bool attach_output_symbols) {
+  StringMapInnerArgs iargs(lines, itype, otype, fst, isyms, osyms,
+                           attach_input_symbols, attach_output_symbols);
   StringMapArgs args(iargs);
   Apply<Operation<StringMapArgs>>("StringMap", fst->ArcType(), &args);
   return args.retval;
