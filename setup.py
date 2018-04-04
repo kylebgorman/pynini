@@ -28,6 +28,9 @@ if platform.system() == 'Linux':
     OS='linux'
 elif platform.system() == 'Darwin':
     OS='osx'
+    from distutils import sysconfig
+    config_vars = sysconfig.get_config_vars()
+    config_vars['LDSHARED'] = config_vars['LDSHARED'].replace('-bundle', '-dynamiclib')
 
 COMPILE_ARGS = ["-std=c++11",
                 "-Wno-unused-function",
