@@ -942,6 +942,7 @@ struct __pyx_obj_9pywrapfst_StateIterator;
 struct __pyx_obj_9pywrapfst_Compiler;
 struct __pyx_obj_9pywrapfst_FarReader;
 struct __pyx_obj_9pywrapfst_FarWriter;
+struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__;
 
 /* "fst.pxd":512
  * 
@@ -1843,6 +1844,19 @@ struct __pyx_obj_9pywrapfst_FarWriter {
 };
 
 
+/* "pywrapfst.pyx":3115
+ * 
+ *   # Magic method used to get a Pythonic Iterator API out of the C++ API
+ *   def __iter__(self):             # <<<<<<<<<<<<<<
+ *     while not self.done():
+ *       yield self.value()
+ */
+struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__ {
+  PyObject_HEAD
+  struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self;
+};
+
+
 
 /* "pywrapfst.pyx":334
  * 
@@ -2132,7 +2146,7 @@ struct __pyx_vtabstruct_9pywrapfst_MutableArcIterator {
 static struct __pyx_vtabstruct_9pywrapfst_MutableArcIterator *__pyx_vtabptr_9pywrapfst_MutableArcIterator;
 
 
-/* "pywrapfst.pyx":3209
+/* "pywrapfst.pyx":3215
  * 
  * 
  * cdef class StateIterator(object):             # <<<<<<<<<<<<<<
@@ -2149,7 +2163,7 @@ struct __pyx_vtabstruct_9pywrapfst_StateIterator {
 static struct __pyx_vtabstruct_9pywrapfst_StateIterator *__pyx_vtabptr_9pywrapfst_StateIterator;
 
 
-/* "pywrapfst.pyx":4107
+/* "pywrapfst.pyx":4113
  * 
  * 
  * cdef class Compiler(object):             # <<<<<<<<<<<<<<
@@ -2164,7 +2178,7 @@ struct __pyx_vtabstruct_9pywrapfst_Compiler {
 static struct __pyx_vtabstruct_9pywrapfst_Compiler *__pyx_vtabptr_9pywrapfst_Compiler;
 
 
-/* "pywrapfst.pyx":4237
+/* "pywrapfst.pyx":4243
  * 
  * 
  * cdef class FarReader(object):             # <<<<<<<<<<<<<<
@@ -2186,7 +2200,7 @@ struct __pyx_vtabstruct_9pywrapfst_FarReader {
 static struct __pyx_vtabstruct_9pywrapfst_FarReader *__pyx_vtabptr_9pywrapfst_FarReader;
 
 
-/* "pywrapfst.pyx":4384
+/* "pywrapfst.pyx":4390
  * 
  * 
  * cdef class FarWriter(object):             # <<<<<<<<<<<<<<
@@ -2529,6 +2543,9 @@ static CYTHON_INLINE int __Pyx_ListComp_Append(PyObject* list, PyObject* x) {
 #define __Pyx_ListComp_Append(L,x) PyList_Append(L,x)
 #endif
 
+/* IncludeStringH.proto */
+#include <string.h>
+
 /* PyObject_GenericGetAttrNoDict.proto */
 #if CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP && PY_VERSION_HEX < 0x03070000
 static CYTHON_INLINE PyObject* __Pyx_PyObject_GenericGetAttrNoDict(PyObject* obj, PyObject* attr_name);
@@ -2750,6 +2767,87 @@ static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
 /* CIntFromPy.proto */
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
 
+/* PyObjectGetMethod.proto */
+static int __Pyx_PyObject_GetMethod(PyObject *obj, PyObject *name, PyObject **method);
+
+/* PyObjectCallMethod1.proto */
+static PyObject* __Pyx_PyObject_CallMethod1(PyObject* obj, PyObject* method_name, PyObject* arg);
+
+/* CoroutineBase.proto */
+typedef PyObject *(*__pyx_coroutine_body_t)(PyObject *, PyThreadState *, PyObject *);
+#if CYTHON_USE_EXC_INFO_STACK
+#define __Pyx_ExcInfoStruct  _PyErr_StackItem
+#else
+typedef struct {
+    PyObject *exc_type;
+    PyObject *exc_value;
+    PyObject *exc_traceback;
+} __Pyx_ExcInfoStruct;
+#endif
+typedef struct {
+    PyObject_HEAD
+    __pyx_coroutine_body_t body;
+    PyObject *closure;
+    __Pyx_ExcInfoStruct gi_exc_state;
+    PyObject *gi_weakreflist;
+    PyObject *classobj;
+    PyObject *yieldfrom;
+    PyObject *gi_name;
+    PyObject *gi_qualname;
+    PyObject *gi_modulename;
+    PyObject *gi_code;
+    int resume_label;
+    char is_running;
+} __pyx_CoroutineObject;
+static __pyx_CoroutineObject *__Pyx__Coroutine_New(
+    PyTypeObject *type, __pyx_coroutine_body_t body, PyObject *code, PyObject *closure,
+    PyObject *name, PyObject *qualname, PyObject *module_name);
+static __pyx_CoroutineObject *__Pyx__Coroutine_NewInit(
+            __pyx_CoroutineObject *gen, __pyx_coroutine_body_t body, PyObject *code, PyObject *closure,
+            PyObject *name, PyObject *qualname, PyObject *module_name);
+static CYTHON_INLINE void __Pyx_Coroutine_ExceptionClear(__Pyx_ExcInfoStruct *self);
+static int __Pyx_Coroutine_clear(PyObject *self);
+static PyObject *__Pyx_Coroutine_Send(PyObject *self, PyObject *value);
+static PyObject *__Pyx_Coroutine_Close(PyObject *self);
+static PyObject *__Pyx_Coroutine_Throw(PyObject *gen, PyObject *args);
+#if CYTHON_USE_EXC_INFO_STACK
+#define __Pyx_Coroutine_SwapException(self)
+#define __Pyx_Coroutine_ResetAndClearException(self)  __Pyx_Coroutine_ExceptionClear(&(self)->gi_exc_state)
+#else
+#define __Pyx_Coroutine_SwapException(self) {\
+    __Pyx_ExceptionSwap(&(self)->gi_exc_state.exc_type, &(self)->gi_exc_state.exc_value, &(self)->gi_exc_state.exc_traceback);\
+    __Pyx_Coroutine_ResetFrameBackpointer(&(self)->gi_exc_state);\
+    }
+#define __Pyx_Coroutine_ResetAndClearException(self) {\
+    __Pyx_ExceptionReset((self)->gi_exc_state.exc_type, (self)->gi_exc_state.exc_value, (self)->gi_exc_state.exc_traceback);\
+    (self)->gi_exc_state.exc_type = (self)->gi_exc_state.exc_value = (self)->gi_exc_state.exc_traceback = NULL;\
+    }
+#endif
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_PyGen_FetchStopIterationValue(pvalue)\
+    __Pyx_PyGen__FetchStopIterationValue(__pyx_tstate, pvalue)
+#else
+#define __Pyx_PyGen_FetchStopIterationValue(pvalue)\
+    __Pyx_PyGen__FetchStopIterationValue(__Pyx_PyThreadState_Current, pvalue)
+#endif
+static int __Pyx_PyGen__FetchStopIterationValue(PyThreadState *tstate, PyObject **pvalue);
+static CYTHON_INLINE void __Pyx_Coroutine_ResetFrameBackpointer(__Pyx_ExcInfoStruct *exc_state);
+
+/* PatchModuleWithCoroutine.proto */
+static PyObject* __Pyx_Coroutine_patch_module(PyObject* module, const char* py_code);
+
+/* PatchGeneratorABC.proto */
+static int __Pyx_patch_abc(void);
+
+/* Generator.proto */
+#define __Pyx_Generator_USED
+static PyTypeObject *__pyx_GeneratorType = 0;
+#define __Pyx_Generator_CheckExact(obj) (Py_TYPE(obj) == __pyx_GeneratorType)
+#define __Pyx_Generator_New(body, code, closure, name, qualname, module_name)\
+    __Pyx__Coroutine_New(__pyx_GeneratorType, body, code, closure, name, qualname, module_name)
+static PyObject *__Pyx_Generator_Next(PyObject *self);
+static int __pyx_Generator_init(void);
+
 /* CheckBinaryVersion.proto */
 static int __Pyx_check_binary_version(void);
 
@@ -2931,6 +3029,7 @@ static PyTypeObject *__pyx_ptype_9pywrapfst_StateIterator = 0;
 static PyTypeObject *__pyx_ptype_9pywrapfst_Compiler = 0;
 static PyTypeObject *__pyx_ptype_9pywrapfst_FarReader = 0;
 static PyTypeObject *__pyx_ptype_9pywrapfst_FarWriter = 0;
+static PyTypeObject *__pyx_ptype_9pywrapfst___pyx_scope_struct____iter__ = 0;
 static std::string __pyx_f_9pywrapfst_tostring(PyObject *, struct __pyx_opt_args_9pywrapfst_tostring *__pyx_optional_args); /*proto*/
 static std::string __pyx_f_9pywrapfst_weight_tostring(PyObject *, struct __pyx_opt_args_9pywrapfst_weight_tostring *__pyx_optional_args); /*proto*/
 static enum fst::ComposeFilter __pyx_f_9pywrapfst__get_compose_filter(std::string const &); /*proto*/
@@ -3025,12 +3124,14 @@ static const char __pyx_k_PIPE[] = "PIPE";
 static const char __pyx_k_Tsvg[] = "-Tsvg";
 static const char __pyx_k_Zero[] = "Zero";
 static const char __pyx_k_arcs[] = "arcs";
+static const char __pyx_k_args[] = "args";
 static const char __pyx_k_auto[] = "auto";
 static const char __pyx_k_copy[] = "copy";
 static const char __pyx_k_done[] = "done";
 static const char __pyx_k_draw[] = "draw";
 static const char __pyx_k_find[] = "find";
 static const char __pyx_k_ifst[] = "ifst";
+static const char __pyx_k_iter[] = "__iter__";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_mask[] = "mask";
 static const char __pyx_k_name[] = "__name__";
@@ -3040,6 +3141,7 @@ static const char __pyx_k_plus[] = "plus";
 static const char __pyx_k_read[] = "read";
 static const char __pyx_k_seed[] = "seed";
 static const char __pyx_k_seek[] = "seek";
+static const char __pyx_k_send[] = "send";
 static const char __pyx_k_syms[] = "syms";
 static const char __pyx_k_test[] = "test";
 static const char __pyx_k_text[] = "text";
@@ -3049,6 +3151,7 @@ static const char __pyx_k_ERROR[] = "ERROR";
 static const char __pyx_k_Fst_2[] = "Fst";
 static const char __pyx_k_Popen[] = "Popen";
 static const char __pyx_k_class[] = "__class__";
+static const char __pyx_k_close[] = "close";
 static const char __pyx_k_delta[] = "delta";
 static const char __pyx_k_error[] = "error";
 static const char __pyx_k_final[] = "final";
@@ -3064,6 +3167,7 @@ static const char __pyx_k_reset[] = "reset";
 static const char __pyx_k_start[] = "start";
 static const char __pyx_k_state[] = "state";
 static const char __pyx_k_stdin[] = "stdin";
+static const char __pyx_k_throw[] = "throw";
 static const char __pyx_k_times[] = "times";
 static const char __pyx_k_title[] = "title";
 static const char __pyx_k_value[] = "value";
@@ -3347,6 +3451,7 @@ static const char __pyx_k_ADD_SUPERFINAL_PROPERTIES[] = "ADD_SUPERFINAL_PROPERTI
 static const char __pyx_k_Cannot_encode_as_string_r[] = "Cannot encode as string: {!r}";
 static const char __pyx_k_Cannot_topsort_cyclic_FST[] = "Cannot topsort cyclic FST";
 static const char __pyx_k_Fst_SymbolTable_r_at_0x_x[] = "<Fst SymbolTable {!r} at 0x{:x}>";
+static const char __pyx_k_MutableArcIterator___iter[] = "MutableArcIterator.__iter__";
 static const char __pyx_k_FstDeletedConstructorError[] = "FstDeletedConstructorError";
 static const char __pyx_k_MutableArcIterator_at_0x_x[] = "<MutableArcIterator at 0x{:x}>";
 static const char __pyx_k_SymbolTableIterator_at_0x_x[] = "<SymbolTableIterator at 0x{:x}>";
@@ -3457,6 +3562,7 @@ static PyObject *__pyx_n_s_KeyError;
 static PyObject *__pyx_kp_u_Key_out_of_order;
 static PyObject *__pyx_n_s_MUTABLE;
 static PyObject *__pyx_n_s_MutableArcIterator;
+static PyObject *__pyx_n_s_MutableArcIterator___iter;
 static PyObject *__pyx_kp_u_MutableArcIterator_at_0x_x;
 static PyObject *__pyx_n_s_MutableFst;
 static PyObject *__pyx_n_s_MutableFstSymbolTable;
@@ -3545,6 +3651,7 @@ static PyObject *__pyx_n_s_allow_nondet;
 static PyObject *__pyx_n_s_arc;
 static PyObject *__pyx_n_s_arc_type;
 static PyObject *__pyx_n_s_arcs;
+static PyObject *__pyx_n_s_args;
 static PyObject *__pyx_n_s_attach_new_isymbols;
 static PyObject *__pyx_n_s_attach_new_osymbols;
 static PyObject *__pyx_n_b_auto;
@@ -3553,6 +3660,7 @@ static PyObject *__pyx_n_s_call_arc_labeling;
 static PyObject *__pyx_n_s_checksum;
 static PyObject *__pyx_n_s_class;
 static PyObject *__pyx_n_s_cline_in_traceback;
+static PyObject *__pyx_n_s_close;
 static PyObject *__pyx_n_s_closure_plus;
 static PyObject *__pyx_n_s_cls;
 static PyObject *__pyx_n_s_communicate;
@@ -3608,6 +3716,7 @@ static PyObject *__pyx_n_s_input_symbols;
 static PyObject *__pyx_n_s_input_table;
 static PyObject *__pyx_n_s_ipairs;
 static PyObject *__pyx_n_s_isymbols;
+static PyObject *__pyx_n_s_iter;
 static PyObject *__pyx_n_s_keep_isymbols;
 static PyObject *__pyx_n_s_keep_osymbols;
 static PyObject *__pyx_n_s_keep_state_numbering;
@@ -3701,6 +3810,7 @@ static PyObject *__pyx_kp_s_self__reader_cannot_be_converted;
 static PyObject *__pyx_kp_s_self__siter_self__table_cannot_b;
 static PyObject *__pyx_kp_s_self__weight_cannot_be_converted;
 static PyObject *__pyx_kp_s_self__writer_cannot_be_converted;
+static PyObject *__pyx_n_s_send;
 static PyObject *__pyx_n_s_set_flags;
 static PyObject *__pyx_n_s_set_input_symbols;
 static PyObject *__pyx_n_s_set_name;
@@ -3726,6 +3836,7 @@ static PyObject *__pyx_n_s_syms;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_test_2;
 static PyObject *__pyx_n_s_text;
+static PyObject *__pyx_n_s_throw;
 static PyObject *__pyx_n_s_times;
 static PyObject *__pyx_n_s_title;
 static PyObject *__pyx_n_s_to_final;
@@ -3912,17 +4023,18 @@ static PyObject *__pyx_pf_9pywrapfst_11ArcIterator_24__reduce_cython__(CYTHON_UN
 static PyObject *__pyx_pf_9pywrapfst_11ArcIterator_26__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9pywrapfst_ArcIterator *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator___repr__(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
 static int __pyx_pf_9pywrapfst_18MutableArcIterator_2__init__(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, struct __pyx_obj_9pywrapfst__MutableFst *__pyx_v_ifst, __pyx_t_10basictypes_int64 __pyx_v_state); /* proto */
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_4done(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_6flags(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_8next(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_10position(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_12reset(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_14seek(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, size_t __pyx_v_a); /* proto */
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_16set_flags(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, __pyx_t_10basictypes_uint32 __pyx_v_flags, __pyx_t_10basictypes_uint32 __pyx_v_mask); /* proto */
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_18set_value(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, struct __pyx_obj_9pywrapfst_Arc *__pyx_v_arc); /* proto */
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_20value(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_22__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_24__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_4__iter__(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_7done(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_9flags(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_11next(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_13position(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_15reset(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_17seek(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, size_t __pyx_v_a); /* proto */
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_19set_flags(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, __pyx_t_10basictypes_uint32 __pyx_v_flags, __pyx_t_10basictypes_uint32 __pyx_v_mask); /* proto */
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_21set_value(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, struct __pyx_obj_9pywrapfst_Arc *__pyx_v_arc); /* proto */
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_23value(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_25__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_27__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_9pywrapfst_13StateIterator___repr__(struct __pyx_obj_9pywrapfst_StateIterator *__pyx_v_self); /* proto */
 static int __pyx_pf_9pywrapfst_13StateIterator_2__init__(struct __pyx_obj_9pywrapfst_StateIterator *__pyx_v_self, struct __pyx_obj_9pywrapfst__Fst *__pyx_v_ifst); /* proto */
 static PyObject *__pyx_pf_9pywrapfst_13StateIterator_4__iter__(struct __pyx_obj_9pywrapfst_StateIterator *__pyx_v_self); /* proto */
@@ -4002,6 +4114,7 @@ static PyObject *__pyx_tp_new_9pywrapfst_StateIterator(PyTypeObject *t, PyObject
 static PyObject *__pyx_tp_new_9pywrapfst_Compiler(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_9pywrapfst_FarReader(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_9pywrapfst_FarWriter(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_9pywrapfst___pyx_scope_struct____iter__(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static __pyx_t_10basictypes_int64 __pyx_k__3;
 static float __pyx_k__11;
 static float __pyx_k__12;
@@ -32690,7 +32803,7 @@ static int __pyx_pf_9pywrapfst_18MutableArcIterator_2__init__(struct __pyx_obj_9
  *     self._mfst = ifst._mfst
  *     self._aiter.reset(new fst.MutableArcIteratorClass(ifst._mfst.get(), state))             # <<<<<<<<<<<<<<
  * 
- *   cpdef bool done(self):
+ *   # Magic method used to get a Pythonic Iterator API out of the C++ API
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_aiter");
@@ -32723,16 +32836,168 @@ static int __pyx_pf_9pywrapfst_18MutableArcIterator_2__init__(struct __pyx_obj_9
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
+static PyObject *__pyx_gb_9pywrapfst_18MutableArcIterator_6generator(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
 
-/* "pywrapfst.pyx":3114
- *     self._aiter.reset(new fst.MutableArcIteratorClass(ifst._mfst.get(), state))
+/* "pywrapfst.pyx":3115
+ * 
+ *   # Magic method used to get a Pythonic Iterator API out of the C++ API
+ *   def __iter__(self):             # <<<<<<<<<<<<<<
+ *     while not self.done():
+ *       yield self.value()
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_5__iter__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_5__iter__(PyObject *__pyx_v_self) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__iter__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_4__iter__(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_4__iter__(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
+  struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__ *__pyx_cur_scope;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__iter__", 0);
+  __pyx_cur_scope = (struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__ *)__pyx_tp_new_9pywrapfst___pyx_scope_struct____iter__(__pyx_ptype_9pywrapfst___pyx_scope_struct____iter__, __pyx_empty_tuple, NULL);
+  if (unlikely(!__pyx_cur_scope)) {
+    __pyx_cur_scope = ((struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__ *)Py_None);
+    __Pyx_INCREF(Py_None);
+    __PYX_ERR(0, 3115, __pyx_L1_error)
+  } else {
+    __Pyx_GOTREF(__pyx_cur_scope);
+  }
+  __pyx_cur_scope->__pyx_v_self = __pyx_v_self;
+  __Pyx_INCREF((PyObject *)__pyx_cur_scope->__pyx_v_self);
+  __Pyx_GIVEREF((PyObject *)__pyx_cur_scope->__pyx_v_self);
+  {
+    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_9pywrapfst_18MutableArcIterator_6generator, NULL, (PyObject *) __pyx_cur_scope, __pyx_n_s_iter, __pyx_n_s_MutableArcIterator___iter, __pyx_n_s_pywrapfst_2); if (unlikely(!gen)) __PYX_ERR(0, 3115, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_cur_scope);
+    __Pyx_RefNannyFinishContext();
+    return (PyObject *) gen;
+  }
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("pywrapfst.MutableArcIterator.__iter__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __Pyx_DECREF(((PyObject *)__pyx_cur_scope));
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_gb_9pywrapfst_18MutableArcIterator_6generator(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
+{
+  struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__ *__pyx_cur_scope = ((struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__ *)__pyx_generator->closure);
+  PyObject *__pyx_r = NULL;
+  int __pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__iter__", 0);
+  switch (__pyx_generator->resume_label) {
+    case 0: goto __pyx_L3_first_run;
+    case 1: goto __pyx_L6_resume_from_yield;
+    default: /* CPython raises the right error here */
+    __Pyx_RefNannyFinishContext();
+    return NULL;
+  }
+  __pyx_L3_first_run:;
+  if (unlikely(!__pyx_sent_value)) __PYX_ERR(0, 3115, __pyx_L1_error)
+
+  /* "pywrapfst.pyx":3116
+ *   # Magic method used to get a Pythonic Iterator API out of the C++ API
+ *   def __iter__(self):
+ *     while not self.done():             # <<<<<<<<<<<<<<
+ *       yield self.value()
+ *       self.next()
+ */
+  while (1) {
+    if (unlikely(((PyObject *)__pyx_cur_scope->__pyx_v_self) == Py_None)) {
+      PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "done");
+      __PYX_ERR(0, 3116, __pyx_L1_error)
+    }
+    __pyx_t_1 = ((!(((struct __pyx_vtabstruct_9pywrapfst_MutableArcIterator *)__pyx_cur_scope->__pyx_v_self->__pyx_vtab)->done(__pyx_cur_scope->__pyx_v_self, 0) != 0)) != 0);
+    if (!__pyx_t_1) break;
+
+    /* "pywrapfst.pyx":3117
+ *   def __iter__(self):
+ *     while not self.done():
+ *       yield self.value()             # <<<<<<<<<<<<<<
+ *       self.next()
+ * 
+ */
+    if (unlikely(((PyObject *)__pyx_cur_scope->__pyx_v_self) == Py_None)) {
+      PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "value");
+      __PYX_ERR(0, 3117, __pyx_L1_error)
+    }
+    __pyx_t_2 = ((struct __pyx_vtabstruct_9pywrapfst_MutableArcIterator *)__pyx_cur_scope->__pyx_v_self->__pyx_vtab)->value(__pyx_cur_scope->__pyx_v_self, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3117, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_r = __pyx_t_2;
+    __pyx_t_2 = 0;
+    __Pyx_XGIVEREF(__pyx_r);
+    __Pyx_RefNannyFinishContext();
+    __Pyx_Coroutine_ResetAndClearException(__pyx_generator);
+    /* return from generator, yielding value */
+    __pyx_generator->resume_label = 1;
+    return __pyx_r;
+    __pyx_L6_resume_from_yield:;
+    if (unlikely(!__pyx_sent_value)) __PYX_ERR(0, 3117, __pyx_L1_error)
+
+    /* "pywrapfst.pyx":3118
+ *     while not self.done():
+ *       yield self.value()
+ *       self.next()             # <<<<<<<<<<<<<<
+ * 
+ *   cpdef bool done(self):
+ */
+    if (unlikely(((PyObject *)__pyx_cur_scope->__pyx_v_self) == Py_None)) {
+      PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "next");
+      __PYX_ERR(0, 3118, __pyx_L1_error)
+    }
+    ((struct __pyx_vtabstruct_9pywrapfst_MutableArcIterator *)__pyx_cur_scope->__pyx_v_self->__pyx_vtab)->next(__pyx_cur_scope->__pyx_v_self, 0);
+  }
+  CYTHON_MAYBE_UNUSED_VAR(__pyx_cur_scope);
+
+  /* "pywrapfst.pyx":3115
+ * 
+ *   # Magic method used to get a Pythonic Iterator API out of the C++ API
+ *   def __iter__(self):             # <<<<<<<<<<<<<<
+ *     while not self.done():
+ *       yield self.value()
+ */
+
+  /* function exit code */
+  PyErr_SetNone(PyExc_StopIteration);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_AddTraceback("__iter__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_r); __pyx_r = 0;
+  #if !CYTHON_USE_EXC_INFO_STACK
+  __Pyx_Coroutine_ResetAndClearException(__pyx_generator);
+  #endif
+  __pyx_generator->resume_label = -1;
+  __Pyx_Coroutine_clear((PyObject*)__pyx_generator);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "pywrapfst.pyx":3120
+ *       self.next()
  * 
  *   cpdef bool done(self):             # <<<<<<<<<<<<<<
  *     """
  *     done(self)
  */
 
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_5done(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_8done(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
 static bool __pyx_f_9pywrapfst_18MutableArcIterator_done(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, int __pyx_skip_dispatch) {
   bool __pyx_r;
   __Pyx_RefNannyDeclarations
@@ -32752,9 +33017,9 @@ static bool __pyx_f_9pywrapfst_18MutableArcIterator_done(struct __pyx_obj_9pywra
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_done); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3114, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_done); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3120, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_5done)) {
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_8done)) {
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
         if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
@@ -32768,10 +33033,10 @@ static bool __pyx_f_9pywrapfst_18MutableArcIterator_done(struct __pyx_obj_9pywra
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3114, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3120, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3114, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3120, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -32790,7 +33055,7 @@ static bool __pyx_f_9pywrapfst_18MutableArcIterator_done(struct __pyx_obj_9pywra
     #endif
   }
 
-  /* "pywrapfst.pyx":3123
+  /* "pywrapfst.pyx":3129
  *       True if the iterator is exhausted, False otherwise.
  *     """
  *     return self._aiter.get().Done()             # <<<<<<<<<<<<<<
@@ -32799,13 +33064,13 @@ static bool __pyx_f_9pywrapfst_18MutableArcIterator_done(struct __pyx_obj_9pywra
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_aiter");
-    __PYX_ERR(0, 3123, __pyx_L1_error)
+    __PYX_ERR(0, 3129, __pyx_L1_error)
   }
   __pyx_r = __pyx_v_self->_aiter.get()->Done();
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3114
- *     self._aiter.reset(new fst.MutableArcIteratorClass(ifst._mfst.get(), state))
+  /* "pywrapfst.pyx":3120
+ *       self.next()
  * 
  *   cpdef bool done(self):             # <<<<<<<<<<<<<<
  *     """
@@ -32826,26 +33091,26 @@ static bool __pyx_f_9pywrapfst_18MutableArcIterator_done(struct __pyx_obj_9pywra
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_5done(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_9pywrapfst_18MutableArcIterator_4done[] = "\n    done(self)\n\n    Indicates whether the iterator is exhausted or not.\n\n    Returns:\n      True if the iterator is exhausted, False otherwise.\n    ";
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_5done(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_8done(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_9pywrapfst_18MutableArcIterator_7done[] = "\n    done(self)\n\n    Indicates whether the iterator is exhausted or not.\n\n    Returns:\n      True if the iterator is exhausted, False otherwise.\n    ";
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_8done(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("done (wrapper)", 0);
-  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_4done(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
+  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_7done(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_4done(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_7done(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("done", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_9pywrapfst_18MutableArcIterator_done(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3114, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_9pywrapfst_18MutableArcIterator_done(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3120, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -32862,7 +33127,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_4done(struct __pyx_obj
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3125
+/* "pywrapfst.pyx":3131
  *     return self._aiter.get().Done()
  * 
  *   cpdef uint32 flags(self):             # <<<<<<<<<<<<<<
@@ -32870,7 +33135,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_4done(struct __pyx_obj
  *     flags(self)
  */
 
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_7flags(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_10flags(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
 static __pyx_t_10basictypes_uint32 __pyx_f_9pywrapfst_18MutableArcIterator_flags(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, int __pyx_skip_dispatch) {
   __pyx_t_10basictypes_uint32 __pyx_r;
   __Pyx_RefNannyDeclarations
@@ -32890,9 +33155,9 @@ static __pyx_t_10basictypes_uint32 __pyx_f_9pywrapfst_18MutableArcIterator_flags
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_flags); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3125, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_flags); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3131, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_7flags)) {
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_10flags)) {
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
         if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
@@ -32906,10 +33171,10 @@ static __pyx_t_10basictypes_uint32 __pyx_f_9pywrapfst_18MutableArcIterator_flags
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3125, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3131, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __Pyx_PyInt_As_uint32_t(__pyx_t_2); if (unlikely((__pyx_t_5 == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3125, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyInt_As_uint32_t(__pyx_t_2); if (unlikely((__pyx_t_5 == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3131, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -32928,7 +33193,7 @@ static __pyx_t_10basictypes_uint32 __pyx_f_9pywrapfst_18MutableArcIterator_flags
     #endif
   }
 
-  /* "pywrapfst.pyx":3134
+  /* "pywrapfst.pyx":3140
  *       The current iterator behavioral flags as an integer.
  *     """
  *     return self._aiter.get().Flags()             # <<<<<<<<<<<<<<
@@ -32937,12 +33202,12 @@ static __pyx_t_10basictypes_uint32 __pyx_f_9pywrapfst_18MutableArcIterator_flags
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_aiter");
-    __PYX_ERR(0, 3134, __pyx_L1_error)
+    __PYX_ERR(0, 3140, __pyx_L1_error)
   }
   __pyx_r = __pyx_v_self->_aiter.get()->Flags();
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3125
+  /* "pywrapfst.pyx":3131
  *     return self._aiter.get().Done()
  * 
  *   cpdef uint32 flags(self):             # <<<<<<<<<<<<<<
@@ -32964,26 +33229,26 @@ static __pyx_t_10basictypes_uint32 __pyx_f_9pywrapfst_18MutableArcIterator_flags
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_7flags(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_9pywrapfst_18MutableArcIterator_6flags[] = "\n    flags(self)\n\n    Returns the current iterator behavioral flags.\n\n    Returns:\n      The current iterator behavioral flags as an integer.\n    ";
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_7flags(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_10flags(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_9pywrapfst_18MutableArcIterator_9flags[] = "\n    flags(self)\n\n    Returns the current iterator behavioral flags.\n\n    Returns:\n      The current iterator behavioral flags as an integer.\n    ";
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_10flags(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("flags (wrapper)", 0);
-  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_6flags(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
+  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_9flags(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_6flags(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_9flags(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("flags", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_uint32_t(__pyx_f_9pywrapfst_18MutableArcIterator_flags(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3125, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_uint32_t(__pyx_f_9pywrapfst_18MutableArcIterator_flags(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3131, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -33000,7 +33265,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_6flags(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3136
+/* "pywrapfst.pyx":3142
  *     return self._aiter.get().Flags()
  * 
  *   cpdef void next(self):             # <<<<<<<<<<<<<<
@@ -33008,7 +33273,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_6flags(struct __pyx_ob
  *     next(self)
  */
 
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_9next(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_12next(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
 static void __pyx_f_9pywrapfst_18MutableArcIterator_next(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, int __pyx_skip_dispatch) {
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -33026,9 +33291,9 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_next(struct __pyx_obj_9pywra
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_next); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3136, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_next); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3142, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_9next)) {
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_12next)) {
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
         if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
@@ -33042,7 +33307,7 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_next(struct __pyx_obj_9pywra
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3136, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3142, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -33062,7 +33327,7 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_next(struct __pyx_obj_9pywra
     #endif
   }
 
-  /* "pywrapfst.pyx":3142
+  /* "pywrapfst.pyx":3148
  *     Advances the iterator.
  *     """
  *     self._aiter.get().Next()             # <<<<<<<<<<<<<<
@@ -33071,11 +33336,11 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_next(struct __pyx_obj_9pywra
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_aiter");
-    __PYX_ERR(0, 3142, __pyx_L1_error)
+    __PYX_ERR(0, 3148, __pyx_L1_error)
   }
   __pyx_v_self->_aiter.get()->Next();
 
-  /* "pywrapfst.pyx":3136
+  /* "pywrapfst.pyx":3142
  *     return self._aiter.get().Flags()
  * 
  *   cpdef void next(self):             # <<<<<<<<<<<<<<
@@ -33096,26 +33361,26 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_next(struct __pyx_obj_9pywra
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_9next(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_9pywrapfst_18MutableArcIterator_8next[] = "\n    next(self)\n\n    Advances the iterator.\n    ";
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_9next(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_12next(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_9pywrapfst_18MutableArcIterator_11next[] = "\n    next(self)\n\n    Advances the iterator.\n    ";
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_12next(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("next (wrapper)", 0);
-  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_8next(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
+  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_11next(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_8next(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_11next(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("next", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_18MutableArcIterator_next(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3136, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_18MutableArcIterator_next(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3142, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -33132,7 +33397,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_8next(struct __pyx_obj
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3144
+/* "pywrapfst.pyx":3150
  *     self._aiter.get().Next()
  * 
  *   cpdef size_t position(self):             # <<<<<<<<<<<<<<
@@ -33140,7 +33405,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_8next(struct __pyx_obj
  *     position(self)
  */
 
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_11position(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_14position(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
 static size_t __pyx_f_9pywrapfst_18MutableArcIterator_position(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, int __pyx_skip_dispatch) {
   size_t __pyx_r;
   __Pyx_RefNannyDeclarations
@@ -33160,9 +33425,9 @@ static size_t __pyx_f_9pywrapfst_18MutableArcIterator_position(struct __pyx_obj_
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_position); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3144, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_position); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3150, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_11position)) {
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_14position)) {
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
         if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
@@ -33176,10 +33441,10 @@ static size_t __pyx_f_9pywrapfst_18MutableArcIterator_position(struct __pyx_obj_
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3144, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3150, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_2); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 3144, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_2); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 3150, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -33198,7 +33463,7 @@ static size_t __pyx_f_9pywrapfst_18MutableArcIterator_position(struct __pyx_obj_
     #endif
   }
 
-  /* "pywrapfst.pyx":3153
+  /* "pywrapfst.pyx":3159
  *       The iterator's position, expressed as an integer.
  *     """
  *     return self._aiter.get().Position()             # <<<<<<<<<<<<<<
@@ -33207,12 +33472,12 @@ static size_t __pyx_f_9pywrapfst_18MutableArcIterator_position(struct __pyx_obj_
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_aiter");
-    __PYX_ERR(0, 3153, __pyx_L1_error)
+    __PYX_ERR(0, 3159, __pyx_L1_error)
   }
   __pyx_r = __pyx_v_self->_aiter.get()->Position();
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3144
+  /* "pywrapfst.pyx":3150
  *     self._aiter.get().Next()
  * 
  *   cpdef size_t position(self):             # <<<<<<<<<<<<<<
@@ -33234,26 +33499,26 @@ static size_t __pyx_f_9pywrapfst_18MutableArcIterator_position(struct __pyx_obj_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_11position(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_9pywrapfst_18MutableArcIterator_10position[] = "\n    position(self)\n\n    Returns the position of the iterator.\n\n    Returns:\n      The iterator's position, expressed as an integer.\n    ";
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_11position(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_14position(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_9pywrapfst_18MutableArcIterator_13position[] = "\n    position(self)\n\n    Returns the position of the iterator.\n\n    Returns:\n      The iterator's position, expressed as an integer.\n    ";
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_14position(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("position (wrapper)", 0);
-  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_10position(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
+  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_13position(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_10position(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_13position(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("position", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_f_9pywrapfst_18MutableArcIterator_position(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3144, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_f_9pywrapfst_18MutableArcIterator_position(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3150, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -33270,7 +33535,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_10position(struct __py
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3155
+/* "pywrapfst.pyx":3161
  *     return self._aiter.get().Position()
  * 
  *   cpdef void reset(self):             # <<<<<<<<<<<<<<
@@ -33278,7 +33543,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_10position(struct __py
  *     reset(self)
  */
 
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_13reset(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_16reset(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
 static void __pyx_f_9pywrapfst_18MutableArcIterator_reset(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, int __pyx_skip_dispatch) {
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -33296,9 +33561,9 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_reset(struct __pyx_obj_9pywr
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_reset); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3155, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_reset); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3161, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_13reset)) {
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_16reset)) {
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
         if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
@@ -33312,7 +33577,7 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_reset(struct __pyx_obj_9pywr
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3155, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3161, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -33332,7 +33597,7 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_reset(struct __pyx_obj_9pywr
     #endif
   }
 
-  /* "pywrapfst.pyx":3161
+  /* "pywrapfst.pyx":3167
  *     Resets the iterator to the initial position.
  *     """
  *     self._aiter.get().Reset()             # <<<<<<<<<<<<<<
@@ -33341,11 +33606,11 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_reset(struct __pyx_obj_9pywr
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_aiter");
-    __PYX_ERR(0, 3161, __pyx_L1_error)
+    __PYX_ERR(0, 3167, __pyx_L1_error)
   }
   __pyx_v_self->_aiter.get()->Reset();
 
-  /* "pywrapfst.pyx":3155
+  /* "pywrapfst.pyx":3161
  *     return self._aiter.get().Position()
  * 
  *   cpdef void reset(self):             # <<<<<<<<<<<<<<
@@ -33366,26 +33631,26 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_reset(struct __pyx_obj_9pywr
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_13reset(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_9pywrapfst_18MutableArcIterator_12reset[] = "\n    reset(self)\n\n    Resets the iterator to the initial position.\n    ";
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_13reset(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_16reset(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_9pywrapfst_18MutableArcIterator_15reset[] = "\n    reset(self)\n\n    Resets the iterator to the initial position.\n    ";
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_16reset(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("reset (wrapper)", 0);
-  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_12reset(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
+  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_15reset(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_12reset(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_15reset(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("reset", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_18MutableArcIterator_reset(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3155, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_18MutableArcIterator_reset(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3161, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -33402,7 +33667,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_12reset(struct __pyx_o
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3163
+/* "pywrapfst.pyx":3169
  *     self._aiter.get().Reset()
  * 
  *   cpdef void seek(self, size_t a):             # <<<<<<<<<<<<<<
@@ -33410,7 +33675,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_12reset(struct __pyx_o
  *     seek(self, a)
  */
 
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_15seek(PyObject *__pyx_v_self, PyObject *__pyx_arg_a); /*proto*/
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_18seek(PyObject *__pyx_v_self, PyObject *__pyx_arg_a); /*proto*/
 static void __pyx_f_9pywrapfst_18MutableArcIterator_seek(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, size_t __pyx_v_a, int __pyx_skip_dispatch) {
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -33429,10 +33694,10 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_seek(struct __pyx_obj_9pywra
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_seek); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3163, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_seek); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3169, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_15seek)) {
-        __pyx_t_3 = __Pyx_PyInt_FromSize_t(__pyx_v_a); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3163, __pyx_L1_error)
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_18seek)) {
+        __pyx_t_3 = __Pyx_PyInt_FromSize_t(__pyx_v_a); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3169, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_4 = __pyx_t_1; __pyx_t_5 = NULL;
@@ -33448,7 +33713,7 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_seek(struct __pyx_obj_9pywra
         __pyx_t_2 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_5, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3);
         __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3163, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3169, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -33468,7 +33733,7 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_seek(struct __pyx_obj_9pywra
     #endif
   }
 
-  /* "pywrapfst.pyx":3172
+  /* "pywrapfst.pyx":3178
  *       a: The position to seek to.
  *     """
  *     self._aiter.get().Seek(a)             # <<<<<<<<<<<<<<
@@ -33477,11 +33742,11 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_seek(struct __pyx_obj_9pywra
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_aiter");
-    __PYX_ERR(0, 3172, __pyx_L1_error)
+    __PYX_ERR(0, 3178, __pyx_L1_error)
   }
   __pyx_v_self->_aiter.get()->Seek(__pyx_v_a);
 
-  /* "pywrapfst.pyx":3163
+  /* "pywrapfst.pyx":3169
  *     self._aiter.get().Reset()
  * 
  *   cpdef void seek(self, size_t a):             # <<<<<<<<<<<<<<
@@ -33503,15 +33768,15 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_seek(struct __pyx_obj_9pywra
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_15seek(PyObject *__pyx_v_self, PyObject *__pyx_arg_a); /*proto*/
-static char __pyx_doc_9pywrapfst_18MutableArcIterator_14seek[] = "\n    seek(self, a)\n\n    Advance the iterator to a new position.\n\n    Args:\n      a: The position to seek to.\n    ";
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_15seek(PyObject *__pyx_v_self, PyObject *__pyx_arg_a) {
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_18seek(PyObject *__pyx_v_self, PyObject *__pyx_arg_a); /*proto*/
+static char __pyx_doc_9pywrapfst_18MutableArcIterator_17seek[] = "\n    seek(self, a)\n\n    Advance the iterator to a new position.\n\n    Args:\n      a: The position to seek to.\n    ";
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_18seek(PyObject *__pyx_v_self, PyObject *__pyx_arg_a) {
   size_t __pyx_v_a;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("seek (wrapper)", 0);
   assert(__pyx_arg_a); {
-    __pyx_v_a = __Pyx_PyInt_As_size_t(__pyx_arg_a); if (unlikely((__pyx_v_a == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 3163, __pyx_L3_error)
+    __pyx_v_a = __Pyx_PyInt_As_size_t(__pyx_arg_a); if (unlikely((__pyx_v_a == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 3169, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -33519,20 +33784,20 @@ static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_15seek(PyObject *__pyx
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_14seek(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self), ((size_t)__pyx_v_a));
+  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_17seek(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self), ((size_t)__pyx_v_a));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_14seek(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, size_t __pyx_v_a) {
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_17seek(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, size_t __pyx_v_a) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("seek", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_18MutableArcIterator_seek(__pyx_v_self, __pyx_v_a, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3163, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_18MutableArcIterator_seek(__pyx_v_self, __pyx_v_a, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3169, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -33549,7 +33814,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_14seek(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3174
+/* "pywrapfst.pyx":3180
  *     self._aiter.get().Seek(a)
  * 
  *   cpdef void set_flags(self, uint32 flags, uint32 mask):             # <<<<<<<<<<<<<<
@@ -33557,7 +33822,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_14seek(struct __pyx_ob
  *     set_flags(self, flags, mask)
  */
 
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_17set_flags(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_20set_flags(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
 static void __pyx_f_9pywrapfst_18MutableArcIterator_set_flags(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, __pyx_t_10basictypes_uint32 __pyx_v_flags, __pyx_t_10basictypes_uint32 __pyx_v_mask, int __pyx_skip_dispatch) {
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -33579,12 +33844,12 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_set_flags(struct __pyx_obj_9
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_set_flags); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3174, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_set_flags); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3180, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_17set_flags)) {
-        __pyx_t_3 = __Pyx_PyInt_From_uint32_t(__pyx_v_flags); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3174, __pyx_L1_error)
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_20set_flags)) {
+        __pyx_t_3 = __Pyx_PyInt_From_uint32_t(__pyx_v_flags); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3180, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
-        __pyx_t_4 = __Pyx_PyInt_From_uint32_t(__pyx_v_mask); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3174, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyInt_From_uint32_t(__pyx_v_mask); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3180, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_5 = __pyx_t_1; __pyx_t_6 = NULL;
@@ -33602,7 +33867,7 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_set_flags(struct __pyx_obj_9
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_5)) {
           PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_t_3, __pyx_t_4};
-          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3174, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3180, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -33612,7 +33877,7 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_set_flags(struct __pyx_obj_9
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_5)) {
           PyObject *__pyx_temp[3] = {__pyx_t_6, __pyx_t_3, __pyx_t_4};
-          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3174, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_5, __pyx_temp+1-__pyx_t_7, 2+__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3180, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -33620,7 +33885,7 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_set_flags(struct __pyx_obj_9
         } else
         #endif
         {
-          __pyx_t_8 = PyTuple_New(2+__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 3174, __pyx_L1_error)
+          __pyx_t_8 = PyTuple_New(2+__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 3180, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_8);
           if (__pyx_t_6) {
             __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_6); __pyx_t_6 = NULL;
@@ -33631,7 +33896,7 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_set_flags(struct __pyx_obj_9
           PyTuple_SET_ITEM(__pyx_t_8, 1+__pyx_t_7, __pyx_t_4);
           __pyx_t_3 = 0;
           __pyx_t_4 = 0;
-          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_8, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3174, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_t_8, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3180, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
         }
@@ -33653,7 +33918,7 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_set_flags(struct __pyx_obj_9
     #endif
   }
 
-  /* "pywrapfst.pyx":3184
+  /* "pywrapfst.pyx":3190
  *       mask: A mask to be applied to the `flags` argument before setting them.
  *     """
  *     self._aiter.get().SetFlags(flags, mask)             # <<<<<<<<<<<<<<
@@ -33662,11 +33927,11 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_set_flags(struct __pyx_obj_9
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_aiter");
-    __PYX_ERR(0, 3184, __pyx_L1_error)
+    __PYX_ERR(0, 3190, __pyx_L1_error)
   }
   __pyx_v_self->_aiter.get()->SetFlags(__pyx_v_flags, __pyx_v_mask);
 
-  /* "pywrapfst.pyx":3174
+  /* "pywrapfst.pyx":3180
  *     self._aiter.get().Seek(a)
  * 
  *   cpdef void set_flags(self, uint32 flags, uint32 mask):             # <<<<<<<<<<<<<<
@@ -33690,9 +33955,9 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_set_flags(struct __pyx_obj_9
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_17set_flags(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_9pywrapfst_18MutableArcIterator_16set_flags[] = "\n    set_flags(self, flags, mask)\n\n    Sets the current iterator behavioral flags.\n\n    Args:\n      flags: The properties to be set.\n      mask: A mask to be applied to the `flags` argument before setting them.\n    ";
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_17set_flags(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_20set_flags(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_9pywrapfst_18MutableArcIterator_19set_flags[] = "\n    set_flags(self, flags, mask)\n\n    Sets the current iterator behavioral flags.\n\n    Args:\n      flags: The properties to be set.\n      mask: A mask to be applied to the `flags` argument before setting them.\n    ";
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_20set_flags(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   __pyx_t_10basictypes_uint32 __pyx_v_flags;
   __pyx_t_10basictypes_uint32 __pyx_v_mask;
   PyObject *__pyx_r = 0;
@@ -33721,11 +33986,11 @@ static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_17set_flags(PyObject *
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_mask)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("set_flags", 1, 2, 2, 1); __PYX_ERR(0, 3174, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("set_flags", 1, 2, 2, 1); __PYX_ERR(0, 3180, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "set_flags") < 0)) __PYX_ERR(0, 3174, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "set_flags") < 0)) __PYX_ERR(0, 3180, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -33733,31 +33998,31 @@ static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_17set_flags(PyObject *
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
     }
-    __pyx_v_flags = __Pyx_PyInt_As_uint32_t(values[0]); if (unlikely((__pyx_v_flags == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3174, __pyx_L3_error)
-    __pyx_v_mask = __Pyx_PyInt_As_uint32_t(values[1]); if (unlikely((__pyx_v_mask == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3174, __pyx_L3_error)
+    __pyx_v_flags = __Pyx_PyInt_As_uint32_t(values[0]); if (unlikely((__pyx_v_flags == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3180, __pyx_L3_error)
+    __pyx_v_mask = __Pyx_PyInt_As_uint32_t(values[1]); if (unlikely((__pyx_v_mask == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3180, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("set_flags", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3174, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("set_flags", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3180, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.MutableArcIterator.set_flags", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_16set_flags(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self), __pyx_v_flags, __pyx_v_mask);
+  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_19set_flags(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self), __pyx_v_flags, __pyx_v_mask);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_16set_flags(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, __pyx_t_10basictypes_uint32 __pyx_v_flags, __pyx_t_10basictypes_uint32 __pyx_v_mask) {
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_19set_flags(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, __pyx_t_10basictypes_uint32 __pyx_v_flags, __pyx_t_10basictypes_uint32 __pyx_v_mask) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("set_flags", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_18MutableArcIterator_set_flags(__pyx_v_self, __pyx_v_flags, __pyx_v_mask, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3174, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_18MutableArcIterator_set_flags(__pyx_v_self, __pyx_v_flags, __pyx_v_mask, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3180, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -33774,7 +34039,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_16set_flags(struct __p
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3186
+/* "pywrapfst.pyx":3192
  *     self._aiter.get().SetFlags(flags, mask)
  * 
  *   cpdef void set_value(self, Arc arc):             # <<<<<<<<<<<<<<
@@ -33782,7 +34047,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_16set_flags(struct __p
  *     set_value(self, arc)
  */
 
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_19set_value(PyObject *__pyx_v_self, PyObject *__pyx_v_arc); /*proto*/
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_22set_value(PyObject *__pyx_v_self, PyObject *__pyx_v_arc); /*proto*/
 static void __pyx_f_9pywrapfst_18MutableArcIterator_set_value(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, struct __pyx_obj_9pywrapfst_Arc *__pyx_v_arc, int __pyx_skip_dispatch) {
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -33800,9 +34065,9 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_set_value(struct __pyx_obj_9
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_set_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3186, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_set_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3192, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_19set_value)) {
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_22set_value)) {
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
         if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
@@ -33816,7 +34081,7 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_set_value(struct __pyx_obj_9
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, ((PyObject *)__pyx_v_arc)) : __Pyx_PyObject_CallOneArg(__pyx_t_3, ((PyObject *)__pyx_v_arc));
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3186, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3192, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -33836,7 +34101,7 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_set_value(struct __pyx_obj_9
     #endif
   }
 
-  /* "pywrapfst.pyx":3195
+  /* "pywrapfst.pyx":3201
  *       arc: The arc to replace the current arc with.
  *     """
  *     self._aiter.get().SetValue(deref(arc._arc))             # <<<<<<<<<<<<<<
@@ -33845,15 +34110,15 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_set_value(struct __pyx_obj_9
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_aiter");
-    __PYX_ERR(0, 3195, __pyx_L1_error)
+    __PYX_ERR(0, 3201, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_arc) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_arc");
-    __PYX_ERR(0, 3195, __pyx_L1_error)
+    __PYX_ERR(0, 3201, __pyx_L1_error)
   }
   __pyx_v_self->_aiter.get()->SetValue((*__pyx_v_arc->_arc));
 
-  /* "pywrapfst.pyx":3186
+  /* "pywrapfst.pyx":3192
  *     self._aiter.get().SetFlags(flags, mask)
  * 
  *   cpdef void set_value(self, Arc arc):             # <<<<<<<<<<<<<<
@@ -33874,14 +34139,14 @@ static void __pyx_f_9pywrapfst_18MutableArcIterator_set_value(struct __pyx_obj_9
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_19set_value(PyObject *__pyx_v_self, PyObject *__pyx_v_arc); /*proto*/
-static char __pyx_doc_9pywrapfst_18MutableArcIterator_18set_value[] = "\n    set_value(self, arc)\n\n    Replace the current arc with a new arc.\n\n    Args:\n      arc: The arc to replace the current arc with.\n    ";
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_19set_value(PyObject *__pyx_v_self, PyObject *__pyx_v_arc) {
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_22set_value(PyObject *__pyx_v_self, PyObject *__pyx_v_arc); /*proto*/
+static char __pyx_doc_9pywrapfst_18MutableArcIterator_21set_value[] = "\n    set_value(self, arc)\n\n    Replace the current arc with a new arc.\n\n    Args:\n      arc: The arc to replace the current arc with.\n    ";
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_22set_value(PyObject *__pyx_v_self, PyObject *__pyx_v_arc) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("set_value (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_arc), __pyx_ptype_9pywrapfst_Arc, 1, "arc", 0))) __PYX_ERR(0, 3186, __pyx_L1_error)
-  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_18set_value(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self), ((struct __pyx_obj_9pywrapfst_Arc *)__pyx_v_arc));
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_arc), __pyx_ptype_9pywrapfst_Arc, 1, "arc", 0))) __PYX_ERR(0, 3192, __pyx_L1_error)
+  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_21set_value(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self), ((struct __pyx_obj_9pywrapfst_Arc *)__pyx_v_arc));
 
   /* function exit code */
   goto __pyx_L0;
@@ -33892,13 +34157,13 @@ static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_19set_value(PyObject *
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_18set_value(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, struct __pyx_obj_9pywrapfst_Arc *__pyx_v_arc) {
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_21set_value(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, struct __pyx_obj_9pywrapfst_Arc *__pyx_v_arc) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("set_value", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_18MutableArcIterator_set_value(__pyx_v_self, __pyx_v_arc, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3186, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_18MutableArcIterator_set_value(__pyx_v_self, __pyx_v_arc, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3192, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -33915,7 +34180,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_18set_value(struct __p
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3197
+/* "pywrapfst.pyx":3203
  *     self._aiter.get().SetValue(deref(arc._arc))
  * 
  *   cpdef object value(self):             # <<<<<<<<<<<<<<
@@ -33923,7 +34188,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_18set_value(struct __p
  *     value(self)
  */
 
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_21value(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_24value(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
 static PyObject *__pyx_f_9pywrapfst_18MutableArcIterator_value(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, int __pyx_skip_dispatch) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -33942,9 +34207,9 @@ static PyObject *__pyx_f_9pywrapfst_18MutableArcIterator_value(struct __pyx_obj_
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3197, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3203, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_21value)) {
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_18MutableArcIterator_24value)) {
         __Pyx_XDECREF(__pyx_r);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
@@ -33959,7 +34224,7 @@ static PyObject *__pyx_f_9pywrapfst_18MutableArcIterator_value(struct __pyx_obj_
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3197, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3203, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __pyx_r = __pyx_t_2;
@@ -33980,7 +34245,7 @@ static PyObject *__pyx_f_9pywrapfst_18MutableArcIterator_value(struct __pyx_obj_
     #endif
   }
 
-  /* "pywrapfst.pyx":3203
+  /* "pywrapfst.pyx":3209
  *     Returns the current arc.
  *     """
  *     return _init_Arc(self._aiter.get().Value())             # <<<<<<<<<<<<<<
@@ -33990,15 +34255,15 @@ static PyObject *__pyx_f_9pywrapfst_18MutableArcIterator_value(struct __pyx_obj_
   __Pyx_XDECREF(__pyx_r);
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_aiter");
-    __PYX_ERR(0, 3203, __pyx_L1_error)
+    __PYX_ERR(0, 3209, __pyx_L1_error)
   }
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__init_Arc(__pyx_v_self->_aiter.get()->Value())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3203, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__init_Arc(__pyx_v_self->_aiter.get()->Value())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3209, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3197
+  /* "pywrapfst.pyx":3203
  *     self._aiter.get().SetValue(deref(arc._arc))
  * 
  *   cpdef object value(self):             # <<<<<<<<<<<<<<
@@ -34021,26 +34286,26 @@ static PyObject *__pyx_f_9pywrapfst_18MutableArcIterator_value(struct __pyx_obj_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_21value(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_9pywrapfst_18MutableArcIterator_20value[] = "\n    value(self)\n\n    Returns the current arc.\n    ";
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_21value(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_24value(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_9pywrapfst_18MutableArcIterator_23value[] = "\n    value(self)\n\n    Returns the current arc.\n    ";
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_24value(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("value (wrapper)", 0);
-  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_20value(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
+  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_23value(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_20value(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_23value(struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("value", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_9pywrapfst_18MutableArcIterator_value(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3197, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst_18MutableArcIterator_value(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3203, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -34064,19 +34329,19 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_20value(struct __pyx_o
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_23__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_23__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_26__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_26__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__reduce_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_22__reduce_cython__(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
+  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_25__reduce_cython__(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_22__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_25__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -34118,19 +34383,19 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_22__reduce_cython__(CY
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_25__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
-static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_25__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_28__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
+static PyObject *__pyx_pw_9pywrapfst_18MutableArcIterator_28__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__setstate_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_24__setstate_cython__(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
+  __pyx_r = __pyx_pf_9pywrapfst_18MutableArcIterator_27__setstate_cython__(((struct __pyx_obj_9pywrapfst_MutableArcIterator *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_24__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_27__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_9pywrapfst_MutableArcIterator *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -34164,7 +34429,7 @@ static PyObject *__pyx_pf_9pywrapfst_18MutableArcIterator_24__setstate_cython__(
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3217
+/* "pywrapfst.pyx":3223
  *   """
  * 
  *   def __repr__(self):             # <<<<<<<<<<<<<<
@@ -34194,7 +34459,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator___repr__(struct __pyx_obj_9
   PyObject *__pyx_t_4 = NULL;
   __Pyx_RefNannySetupContext("__repr__", 0);
 
-  /* "pywrapfst.pyx":3218
+  /* "pywrapfst.pyx":3224
  * 
  *   def __repr__(self):
  *     return "<StateIterator at 0x{:x}>".format(id(self))             # <<<<<<<<<<<<<<
@@ -34202,9 +34467,9 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator___repr__(struct __pyx_obj_9
  *   def __init__(self, _Fst ifst):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_StateIterator_at_0x_x, __pyx_n_s_format); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3218, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_StateIterator_at_0x_x, __pyx_n_s_format); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3224, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_builtin_id, ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3218, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_builtin_id, ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3224, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
@@ -34219,14 +34484,14 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator___repr__(struct __pyx_obj_9
   __pyx_t_1 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_4, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3218, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3224, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3217
+  /* "pywrapfst.pyx":3223
  *   """
  * 
  *   def __repr__(self):             # <<<<<<<<<<<<<<
@@ -34248,7 +34513,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator___repr__(struct __pyx_obj_9
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3220
+/* "pywrapfst.pyx":3226
  *     return "<StateIterator at 0x{:x}>".format(id(self))
  * 
  *   def __init__(self, _Fst ifst):             # <<<<<<<<<<<<<<
@@ -34282,7 +34547,7 @@ static int __pyx_pw_9pywrapfst_13StateIterator_3__init__(PyObject *__pyx_v_self,
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 3220, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 3226, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 1) {
       goto __pyx_L5_argtuple_error;
@@ -34293,13 +34558,13 @@ static int __pyx_pw_9pywrapfst_13StateIterator_3__init__(PyObject *__pyx_v_self,
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3220, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3226, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.StateIterator.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3220, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3226, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_13StateIterator_2__init__(((struct __pyx_obj_9pywrapfst_StateIterator *)__pyx_v_self), __pyx_v_ifst);
 
   /* function exit code */
@@ -34317,7 +34582,7 @@ static int __pyx_pf_9pywrapfst_13StateIterator_2__init__(struct __pyx_obj_9pywra
   std::shared_ptr<fst::script::FstClass>  __pyx_t_1;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "pywrapfst.pyx":3222
+  /* "pywrapfst.pyx":3228
  *   def __init__(self, _Fst ifst):
  *     # Makes copy of the shared_ptr, potentially extending the FST's lifetime.
  *     self._fst = ifst._fst             # <<<<<<<<<<<<<<
@@ -34326,16 +34591,16 @@ static int __pyx_pf_9pywrapfst_13StateIterator_2__init__(struct __pyx_obj_9pywra
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3222, __pyx_L1_error)
+    __PYX_ERR(0, 3228, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_v_ifst->_fst;
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3222, __pyx_L1_error)
+    __PYX_ERR(0, 3228, __pyx_L1_error)
   }
   __pyx_v_self->_fst = __pyx_t_1;
 
-  /* "pywrapfst.pyx":3223
+  /* "pywrapfst.pyx":3229
  *     # Makes copy of the shared_ptr, potentially extending the FST's lifetime.
  *     self._fst = ifst._fst
  *     self._siter.reset(new fst.StateIteratorClass(deref(self._fst)))             # <<<<<<<<<<<<<<
@@ -34344,15 +34609,15 @@ static int __pyx_pf_9pywrapfst_13StateIterator_2__init__(struct __pyx_obj_9pywra
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_siter");
-    __PYX_ERR(0, 3223, __pyx_L1_error)
+    __PYX_ERR(0, 3229, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3223, __pyx_L1_error)
+    __PYX_ERR(0, 3229, __pyx_L1_error)
   }
   __pyx_v_self->_siter.reset(new fst::script::StateIteratorClass((*__pyx_v_self->_fst)));
 
-  /* "pywrapfst.pyx":3220
+  /* "pywrapfst.pyx":3226
  *     return "<StateIterator at 0x{:x}>".format(id(self))
  * 
  *   def __init__(self, _Fst ifst):             # <<<<<<<<<<<<<<
@@ -34371,7 +34636,7 @@ static int __pyx_pf_9pywrapfst_13StateIterator_2__init__(struct __pyx_obj_9pywra
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3226
+/* "pywrapfst.pyx":3232
  * 
  *   # This just registers this class as a possible iterator.
  *   def __iter__(self):             # <<<<<<<<<<<<<<
@@ -34397,7 +34662,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_4__iter__(struct __pyx_obj_
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__iter__", 0);
 
-  /* "pywrapfst.pyx":3227
+  /* "pywrapfst.pyx":3233
  *   # This just registers this class as a possible iterator.
  *   def __iter__(self):
  *     return self             # <<<<<<<<<<<<<<
@@ -34409,7 +34674,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_4__iter__(struct __pyx_obj_
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3226
+  /* "pywrapfst.pyx":3232
  * 
  *   # This just registers this class as a possible iterator.
  *   def __iter__(self):             # <<<<<<<<<<<<<<
@@ -34424,7 +34689,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_4__iter__(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3230
+/* "pywrapfst.pyx":3236
  * 
  *   # Magic method used to get a Pythonic API out of the C++ API.
  *   def __next__(self):             # <<<<<<<<<<<<<<
@@ -34453,7 +34718,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_6__next__(struct __pyx_obj_
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("__next__", 0);
 
-  /* "pywrapfst.pyx":3231
+  /* "pywrapfst.pyx":3237
  *   # Magic method used to get a Pythonic API out of the C++ API.
  *   def __next__(self):
  *     if self.done():             # <<<<<<<<<<<<<<
@@ -34462,12 +34727,12 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_6__next__(struct __pyx_obj_
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "done");
-    __PYX_ERR(0, 3231, __pyx_L1_error)
+    __PYX_ERR(0, 3237, __pyx_L1_error)
   }
   __pyx_t_1 = (((struct __pyx_vtabstruct_9pywrapfst_StateIterator *)__pyx_v_self->__pyx_vtab)->done(__pyx_v_self, 0) != 0);
   if (unlikely(__pyx_t_1)) {
 
-    /* "pywrapfst.pyx":3232
+    /* "pywrapfst.pyx":3238
  *   def __next__(self):
  *     if self.done():
  *       raise StopIteration             # <<<<<<<<<<<<<<
@@ -34475,9 +34740,9 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_6__next__(struct __pyx_obj_
  *     self.next()
  */
     __Pyx_Raise(__pyx_builtin_StopIteration, 0, 0, 0);
-    __PYX_ERR(0, 3232, __pyx_L1_error)
+    __PYX_ERR(0, 3238, __pyx_L1_error)
 
-    /* "pywrapfst.pyx":3231
+    /* "pywrapfst.pyx":3237
  *   # Magic method used to get a Pythonic API out of the C++ API.
  *   def __next__(self):
  *     if self.done():             # <<<<<<<<<<<<<<
@@ -34486,7 +34751,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_6__next__(struct __pyx_obj_
  */
   }
 
-  /* "pywrapfst.pyx":3233
+  /* "pywrapfst.pyx":3239
  *     if self.done():
  *       raise StopIteration
  *     cdef int64 result = self.value()             # <<<<<<<<<<<<<<
@@ -34495,11 +34760,11 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_6__next__(struct __pyx_obj_
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "value");
-    __PYX_ERR(0, 3233, __pyx_L1_error)
+    __PYX_ERR(0, 3239, __pyx_L1_error)
   }
   __pyx_v_result = ((struct __pyx_vtabstruct_9pywrapfst_StateIterator *)__pyx_v_self->__pyx_vtab)->value(__pyx_v_self, 0);
 
-  /* "pywrapfst.pyx":3234
+  /* "pywrapfst.pyx":3240
  *       raise StopIteration
  *     cdef int64 result = self.value()
  *     self.next()             # <<<<<<<<<<<<<<
@@ -34508,11 +34773,11 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_6__next__(struct __pyx_obj_
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "next");
-    __PYX_ERR(0, 3234, __pyx_L1_error)
+    __PYX_ERR(0, 3240, __pyx_L1_error)
   }
   ((struct __pyx_vtabstruct_9pywrapfst_StateIterator *)__pyx_v_self->__pyx_vtab)->next(__pyx_v_self, 0);
 
-  /* "pywrapfst.pyx":3235
+  /* "pywrapfst.pyx":3241
  *     cdef int64 result = self.value()
  *     self.next()
  *     return result             # <<<<<<<<<<<<<<
@@ -34520,13 +34785,13 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_6__next__(struct __pyx_obj_
  *   cpdef bool done(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyInt_From_int64_t(__pyx_v_result); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3235, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int64_t(__pyx_v_result); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3241, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3230
+  /* "pywrapfst.pyx":3236
  * 
  *   # Magic method used to get a Pythonic API out of the C++ API.
  *   def __next__(self):             # <<<<<<<<<<<<<<
@@ -34545,7 +34810,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_6__next__(struct __pyx_obj_
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3237
+/* "pywrapfst.pyx":3243
  *     return result
  * 
  *   cpdef bool done(self):             # <<<<<<<<<<<<<<
@@ -34573,7 +34838,7 @@ static bool __pyx_f_9pywrapfst_13StateIterator_done(struct __pyx_obj_9pywrapfst_
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_done); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3237, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_done); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3243, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_13StateIterator_9done)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -34589,10 +34854,10 @@ static bool __pyx_f_9pywrapfst_13StateIterator_done(struct __pyx_obj_9pywrapfst_
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3237, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3243, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3237, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3243, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -34611,7 +34876,7 @@ static bool __pyx_f_9pywrapfst_13StateIterator_done(struct __pyx_obj_9pywrapfst_
     #endif
   }
 
-  /* "pywrapfst.pyx":3246
+  /* "pywrapfst.pyx":3252
  *       True if the iterator is exhausted, False otherwise.
  *     """
  *     return self._siter.get().Done()             # <<<<<<<<<<<<<<
@@ -34620,12 +34885,12 @@ static bool __pyx_f_9pywrapfst_13StateIterator_done(struct __pyx_obj_9pywrapfst_
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_siter");
-    __PYX_ERR(0, 3246, __pyx_L1_error)
+    __PYX_ERR(0, 3252, __pyx_L1_error)
   }
   __pyx_r = __pyx_v_self->_siter.get()->Done();
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3237
+  /* "pywrapfst.pyx":3243
  *     return result
  * 
  *   cpdef bool done(self):             # <<<<<<<<<<<<<<
@@ -34666,7 +34931,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_8done(struct __pyx_obj_9pyw
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("done", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_9pywrapfst_13StateIterator_done(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3237, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_9pywrapfst_13StateIterator_done(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3243, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -34683,7 +34948,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_8done(struct __pyx_obj_9pyw
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3248
+/* "pywrapfst.pyx":3254
  *     return self._siter.get().Done()
  * 
  *   cpdef void next(self):             # <<<<<<<<<<<<<<
@@ -34709,7 +34974,7 @@ static void __pyx_f_9pywrapfst_13StateIterator_next(struct __pyx_obj_9pywrapfst_
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_next); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3248, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_next); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3254, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_13StateIterator_11next)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -34725,7 +34990,7 @@ static void __pyx_f_9pywrapfst_13StateIterator_next(struct __pyx_obj_9pywrapfst_
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3248, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3254, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -34745,7 +35010,7 @@ static void __pyx_f_9pywrapfst_13StateIterator_next(struct __pyx_obj_9pywrapfst_
     #endif
   }
 
-  /* "pywrapfst.pyx":3254
+  /* "pywrapfst.pyx":3260
  *     Advances the iterator.
  *     """
  *     self._siter.get().Next()             # <<<<<<<<<<<<<<
@@ -34754,11 +35019,11 @@ static void __pyx_f_9pywrapfst_13StateIterator_next(struct __pyx_obj_9pywrapfst_
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_siter");
-    __PYX_ERR(0, 3254, __pyx_L1_error)
+    __PYX_ERR(0, 3260, __pyx_L1_error)
   }
   __pyx_v_self->_siter.get()->Next();
 
-  /* "pywrapfst.pyx":3248
+  /* "pywrapfst.pyx":3254
  *     return self._siter.get().Done()
  * 
  *   cpdef void next(self):             # <<<<<<<<<<<<<<
@@ -34798,7 +35063,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_10next(struct __pyx_obj_9py
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("next", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_13StateIterator_next(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3248, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_13StateIterator_next(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3254, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -34815,7 +35080,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_10next(struct __pyx_obj_9py
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3256
+/* "pywrapfst.pyx":3262
  *     self._siter.get().Next()
  * 
  *   cpdef void reset(self):             # <<<<<<<<<<<<<<
@@ -34841,7 +35106,7 @@ static void __pyx_f_9pywrapfst_13StateIterator_reset(struct __pyx_obj_9pywrapfst
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_reset); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3256, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_reset); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3262, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_13StateIterator_13reset)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -34857,7 +35122,7 @@ static void __pyx_f_9pywrapfst_13StateIterator_reset(struct __pyx_obj_9pywrapfst
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3256, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3262, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -34877,7 +35142,7 @@ static void __pyx_f_9pywrapfst_13StateIterator_reset(struct __pyx_obj_9pywrapfst
     #endif
   }
 
-  /* "pywrapfst.pyx":3262
+  /* "pywrapfst.pyx":3268
  *     Resets the iterator to the initial position.
  *     """
  *     self._siter.get().Reset()             # <<<<<<<<<<<<<<
@@ -34886,11 +35151,11 @@ static void __pyx_f_9pywrapfst_13StateIterator_reset(struct __pyx_obj_9pywrapfst
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_siter");
-    __PYX_ERR(0, 3262, __pyx_L1_error)
+    __PYX_ERR(0, 3268, __pyx_L1_error)
   }
   __pyx_v_self->_siter.get()->Reset();
 
-  /* "pywrapfst.pyx":3256
+  /* "pywrapfst.pyx":3262
  *     self._siter.get().Next()
  * 
  *   cpdef void reset(self):             # <<<<<<<<<<<<<<
@@ -34930,7 +35195,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_12reset(struct __pyx_obj_9p
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("reset", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_13StateIterator_reset(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3256, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_13StateIterator_reset(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3262, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -34947,7 +35212,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_12reset(struct __pyx_obj_9p
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3264
+/* "pywrapfst.pyx":3270
  *     self._siter.get().Reset()
  * 
  *   cpdef int64 value(self):             # <<<<<<<<<<<<<<
@@ -34975,7 +35240,7 @@ static __pyx_t_10basictypes_int64 __pyx_f_9pywrapfst_13StateIterator_value(struc
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3264, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_value); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3270, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_13StateIterator_15value)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -34991,10 +35256,10 @@ static __pyx_t_10basictypes_int64 __pyx_f_9pywrapfst_13StateIterator_value(struc
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3264, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3270, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __Pyx_PyInt_As_int64_t(__pyx_t_2); if (unlikely((__pyx_t_5 == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3264, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyInt_As_int64_t(__pyx_t_2); if (unlikely((__pyx_t_5 == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3270, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -35013,7 +35278,7 @@ static __pyx_t_10basictypes_int64 __pyx_f_9pywrapfst_13StateIterator_value(struc
     #endif
   }
 
-  /* "pywrapfst.pyx":3270
+  /* "pywrapfst.pyx":3276
  *     Returns the current state index.
  *     """
  *     return self._siter.get().Value()             # <<<<<<<<<<<<<<
@@ -35022,12 +35287,12 @@ static __pyx_t_10basictypes_int64 __pyx_f_9pywrapfst_13StateIterator_value(struc
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_siter");
-    __PYX_ERR(0, 3270, __pyx_L1_error)
+    __PYX_ERR(0, 3276, __pyx_L1_error)
   }
   __pyx_r = __pyx_v_self->_siter.get()->Value();
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3264
+  /* "pywrapfst.pyx":3270
  *     self._siter.get().Reset()
  * 
  *   cpdef int64 value(self):             # <<<<<<<<<<<<<<
@@ -35068,7 +35333,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_14value(struct __pyx_obj_9p
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("value", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int64_t(__pyx_f_9pywrapfst_13StateIterator_value(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3264, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int64_t(__pyx_f_9pywrapfst_13StateIterator_value(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3270, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -35192,7 +35457,7 @@ static PyObject *__pyx_pf_9pywrapfst_13StateIterator_18__setstate_cython__(CYTHO
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3276
+/* "pywrapfst.pyx":3282
  * 
  * 
  * cdef _Fst _map(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -35205,7 +35470,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst__map(struct __pyx_ob
   PyObject *__pyx_v_map_type = ((PyObject *)__pyx_n_b_identity);
   double __pyx_v_power = ((double)1.);
 
-  /* "pywrapfst.pyx":3280
+  /* "pywrapfst.pyx":3286
  *                map_type=b"identity",
  *                double power=1.,
  *                weight=None):             # <<<<<<<<<<<<<<
@@ -35242,27 +35507,27 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst__map(struct __pyx_ob
     }
   }
 
-  /* "pywrapfst.pyx":3282
+  /* "pywrapfst.pyx":3288
  *                weight=None):
  *   cdef fst.MapType map_type_enum
  *   if not fst.GetMapType(tostring(map_type), addr(map_type_enum)):             # <<<<<<<<<<<<<<
  *     raise FstArgError("Unknown map type: {!r}".format(map_type))
  *   cdef fst.WeightClass wc = (_get_WeightClass_or_One(ifst.weight_type(),
  */
-  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_map_type, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3282, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_map_type, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3288, __pyx_L1_error)
   __pyx_t_2 = ((!(fst::script::GetMapType(__pyx_t_1, (&__pyx_v_map_type_enum)) != 0)) != 0);
   if (unlikely(__pyx_t_2)) {
 
-    /* "pywrapfst.pyx":3283
+    /* "pywrapfst.pyx":3289
  *   cdef fst.MapType map_type_enum
  *   if not fst.GetMapType(tostring(map_type), addr(map_type_enum)):
  *     raise FstArgError("Unknown map type: {!r}".format(map_type))             # <<<<<<<<<<<<<<
  *   cdef fst.WeightClass wc = (_get_WeightClass_or_One(ifst.weight_type(),
  *       weight) if map_type_enum == fst.TIMES_MAPPER else
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_FstArgError); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3283, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_FstArgError); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3289, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_Unknown_map_type_r, __pyx_n_s_format); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 3283, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_Unknown_map_type_r, __pyx_n_s_format); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 3289, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_7 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_6))) {
@@ -35276,7 +35541,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst__map(struct __pyx_ob
     }
     __pyx_t_5 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_7, __pyx_v_map_type) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_map_type);
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 3283, __pyx_L1_error)
+    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 3289, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __pyx_t_6 = NULL;
@@ -35292,14 +35557,14 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst__map(struct __pyx_ob
     __pyx_t_3 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_6, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5);
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3283, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3289, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __PYX_ERR(0, 3283, __pyx_L1_error)
+    __PYX_ERR(0, 3289, __pyx_L1_error)
 
-    /* "pywrapfst.pyx":3282
+    /* "pywrapfst.pyx":3288
  *                weight=None):
  *   cdef fst.MapType map_type_enum
  *   if not fst.GetMapType(tostring(map_type), addr(map_type_enum)):             # <<<<<<<<<<<<<<
@@ -35308,7 +35573,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst__map(struct __pyx_ob
  */
   }
 
-  /* "pywrapfst.pyx":3285
+  /* "pywrapfst.pyx":3291
  *     raise FstArgError("Unknown map type: {!r}".format(map_type))
  *   cdef fst.WeightClass wc = (_get_WeightClass_or_One(ifst.weight_type(),
  *       weight) if map_type_enum == fst.TIMES_MAPPER else             # <<<<<<<<<<<<<<
@@ -35317,7 +35582,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst__map(struct __pyx_ob
  */
   if (((__pyx_v_map_type_enum == fst::script::TIMES_MAPPER) != 0)) {
 
-    /* "pywrapfst.pyx":3284
+    /* "pywrapfst.pyx":3290
  *   if not fst.GetMapType(tostring(map_type), addr(map_type_enum)):
  *     raise FstArgError("Unknown map type: {!r}".format(map_type))
  *   cdef fst.WeightClass wc = (_get_WeightClass_or_One(ifst.weight_type(),             # <<<<<<<<<<<<<<
@@ -35326,21 +35591,21 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst__map(struct __pyx_ob
  */
     if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "weight_type");
-      __PYX_ERR(0, 3284, __pyx_L1_error)
+      __PYX_ERR(0, 3290, __pyx_L1_error)
     }
 
-    /* "pywrapfst.pyx":3285
+    /* "pywrapfst.pyx":3291
  *     raise FstArgError("Unknown map type: {!r}".format(map_type))
  *   cdef fst.WeightClass wc = (_get_WeightClass_or_One(ifst.weight_type(),
  *       weight) if map_type_enum == fst.TIMES_MAPPER else             # <<<<<<<<<<<<<<
  *       _get_WeightClass_or_Zero(ifst.weight_type(), weight))
  *   return _init_XFst(fst.Map(deref(ifst._fst), map_type_enum, delta, power, wc))
  */
-    __pyx_t_9 = __pyx_f_9pywrapfst__get_WeightClass_or_One(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->weight_type(__pyx_v_ifst, 0), __pyx_v_weight); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3284, __pyx_L1_error)
+    __pyx_t_9 = __pyx_f_9pywrapfst__get_WeightClass_or_One(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->weight_type(__pyx_v_ifst, 0), __pyx_v_weight); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3290, __pyx_L1_error)
     __pyx_t_8 = __pyx_t_9;
   } else {
 
-    /* "pywrapfst.pyx":3286
+    /* "pywrapfst.pyx":3292
  *   cdef fst.WeightClass wc = (_get_WeightClass_or_One(ifst.weight_type(),
  *       weight) if map_type_enum == fst.TIMES_MAPPER else
  *       _get_WeightClass_or_Zero(ifst.weight_type(), weight))             # <<<<<<<<<<<<<<
@@ -35349,14 +35614,14 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst__map(struct __pyx_ob
  */
     if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "weight_type");
-      __PYX_ERR(0, 3286, __pyx_L1_error)
+      __PYX_ERR(0, 3292, __pyx_L1_error)
     }
-    __pyx_t_9 = __pyx_f_9pywrapfst__get_WeightClass_or_Zero(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->weight_type(__pyx_v_ifst, 0), __pyx_v_weight); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3286, __pyx_L1_error)
+    __pyx_t_9 = __pyx_f_9pywrapfst__get_WeightClass_or_Zero(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->weight_type(__pyx_v_ifst, 0), __pyx_v_weight); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3292, __pyx_L1_error)
     __pyx_t_8 = __pyx_t_9;
   }
   __pyx_v_wc = __pyx_t_8;
 
-  /* "pywrapfst.pyx":3287
+  /* "pywrapfst.pyx":3293
  *       weight) if map_type_enum == fst.TIMES_MAPPER else
  *       _get_WeightClass_or_Zero(ifst.weight_type(), weight))
  *   return _init_XFst(fst.Map(deref(ifst._fst), map_type_enum, delta, power, wc))             # <<<<<<<<<<<<<<
@@ -35366,15 +35631,15 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst__map(struct __pyx_ob
   __Pyx_XDECREF(((PyObject *)__pyx_r));
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3287, __pyx_L1_error)
+    __PYX_ERR(0, 3293, __pyx_L1_error)
   }
-  __pyx_t_3 = ((PyObject *)__pyx_f_9pywrapfst__init_XFst(fst::script::Map((*__pyx_v_ifst->_fst), __pyx_v_map_type_enum, __pyx_v_delta, __pyx_v_power, __pyx_v_wc))); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3287, __pyx_L1_error)
+  __pyx_t_3 = ((PyObject *)__pyx_f_9pywrapfst__init_XFst(fst::script::Map((*__pyx_v_ifst->_fst), __pyx_v_map_type_enum, __pyx_v_delta, __pyx_v_power, __pyx_v_wc))); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3293, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__Fst *)__pyx_t_3);
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3276
+  /* "pywrapfst.pyx":3282
  * 
  * 
  * cdef _Fst _map(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -35397,7 +35662,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst__map(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3290
+/* "pywrapfst.pyx":3296
  * 
  * 
  * cpdef _Fst arcmap(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -35411,7 +35676,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_arcmap(struct __pyx_
   PyObject *__pyx_v_map_type = ((PyObject *)__pyx_n_b_identity);
   double __pyx_v_power = ((double)1.);
 
-  /* "pywrapfst.pyx":3294
+  /* "pywrapfst.pyx":3300
  *                   map_type=b"identity",
  *                   double power=1.,
  *                   weight=None):             # <<<<<<<<<<<<<<
@@ -35439,7 +35704,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_arcmap(struct __pyx_
     }
   }
 
-  /* "pywrapfst.pyx":3337
+  /* "pywrapfst.pyx":3343
  *   See also: `statemap`.
  *   """
  *   return _map(ifst, delta, map_type, power, weight)             # <<<<<<<<<<<<<<
@@ -35452,13 +35717,13 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_arcmap(struct __pyx_
   __pyx_t_2.map_type = __pyx_v_map_type;
   __pyx_t_2.power = __pyx_v_power;
   __pyx_t_2.weight = __pyx_v_weight;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__map(__pyx_v_ifst, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3337, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__map(__pyx_v_ifst, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3343, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__Fst *)__pyx_t_1);
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3290
+  /* "pywrapfst.pyx":3296
  * 
  * 
  * cpdef _Fst arcmap(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -35494,7 +35759,7 @@ static PyObject *__pyx_pw_9pywrapfst_19arcmap(PyObject *__pyx_self, PyObject *__
     PyObject* values[5] = {0,0,0,0,0};
     values[2] = ((PyObject *)__pyx_n_b_identity);
 
-    /* "pywrapfst.pyx":3294
+    /* "pywrapfst.pyx":3300
  *                   map_type=b"identity",
  *                   double power=1.,
  *                   weight=None):             # <<<<<<<<<<<<<<
@@ -35550,7 +35815,7 @@ static PyObject *__pyx_pw_9pywrapfst_19arcmap(PyObject *__pyx_self, PyObject *__
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "arcmap") < 0)) __PYX_ERR(0, 3290, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "arcmap") < 0)) __PYX_ERR(0, 3296, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -35569,13 +35834,13 @@ static PyObject *__pyx_pw_9pywrapfst_19arcmap(PyObject *__pyx_self, PyObject *__
     }
     __pyx_v_ifst = ((struct __pyx_obj_9pywrapfst__Fst *)values[0]);
     if (values[1]) {
-      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[1]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3291, __pyx_L3_error)
+      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[1]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3297, __pyx_L3_error)
     } else {
       __pyx_v_delta = __pyx_k__32;
     }
     __pyx_v_map_type = values[2];
     if (values[3]) {
-      __pyx_v_power = __pyx_PyFloat_AsDouble(values[3]); if (unlikely((__pyx_v_power == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 3293, __pyx_L3_error)
+      __pyx_v_power = __pyx_PyFloat_AsDouble(values[3]); if (unlikely((__pyx_v_power == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 3299, __pyx_L3_error)
     } else {
       __pyx_v_power = ((double)1.);
     }
@@ -35583,16 +35848,16 @@ static PyObject *__pyx_pw_9pywrapfst_19arcmap(PyObject *__pyx_self, PyObject *__
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("arcmap", 0, 1, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3290, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("arcmap", 0, 1, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3296, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.arcmap", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3290, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3296, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_18arcmap(__pyx_self, __pyx_v_ifst, __pyx_v_delta, __pyx_v_map_type, __pyx_v_power, __pyx_v_weight);
 
-  /* "pywrapfst.pyx":3290
+  /* "pywrapfst.pyx":3296
  * 
  * 
  * cpdef _Fst arcmap(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -35621,7 +35886,7 @@ static PyObject *__pyx_pf_9pywrapfst_18arcmap(CYTHON_UNUSED PyObject *__pyx_self
   __pyx_t_2.map_type = __pyx_v_map_type;
   __pyx_t_2.power = __pyx_v_power;
   __pyx_t_2.weight = __pyx_v_weight;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_arcmap(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3290, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_arcmap(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3296, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -35638,7 +35903,7 @@ static PyObject *__pyx_pf_9pywrapfst_18arcmap(CYTHON_UNUSED PyObject *__pyx_self
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3340
+/* "pywrapfst.pyx":3346
  * 
  * 
  * cpdef _MutableFst compose(_Fst ifst1,             # <<<<<<<<<<<<<<
@@ -35650,7 +35915,7 @@ static PyObject *__pyx_pw_9pywrapfst_21compose(PyObject *__pyx_self, PyObject *_
 static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_compose(struct __pyx_obj_9pywrapfst__Fst *__pyx_v_ifst1, struct __pyx_obj_9pywrapfst__Fst *__pyx_v_ifst2, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_9pywrapfst_compose *__pyx_optional_args) {
   PyObject *__pyx_v_compose_filter = ((PyObject *)__pyx_n_b_auto);
 
-  /* "pywrapfst.pyx":3343
+  /* "pywrapfst.pyx":3349
  *                           _Fst ifst2,
  *                           compose_filter=b"auto",
  *                           bool connect=True):             # <<<<<<<<<<<<<<
@@ -35675,7 +35940,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_compose(struc
     }
   }
 
-  /* "pywrapfst.pyx":3368
+  /* "pywrapfst.pyx":3374
  *   """
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst1.arc_type()))             # <<<<<<<<<<<<<<
@@ -35684,21 +35949,21 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_compose(struc
  */
   if (unlikely(((PyObject *)__pyx_v_ifst1) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "arc_type");
-    __PYX_ERR(0, 3368, __pyx_L1_error)
+    __PYX_ERR(0, 3374, __pyx_L1_error)
   }
   __pyx_v_tfst.reset(new fst::script::VectorFstClass(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst1->__pyx_vtab)->arc_type(__pyx_v_ifst1, 0)));
 
-  /* "pywrapfst.pyx":3371
+  /* "pywrapfst.pyx":3377
  *   cdef unique_ptr[fst.ComposeOptions] opts
  *   opts.reset(new fst.ComposeOptions(connect,
  *       _get_compose_filter(tostring(compose_filter))))             # <<<<<<<<<<<<<<
  *   fst.Compose(deref(ifst1._fst), deref(ifst2._fst), tfst.get(), deref(opts))
  *   return _init_MutableFst(tfst.release())
  */
-  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_compose_filter, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3371, __pyx_L1_error)
-  __pyx_t_2 = __pyx_f_9pywrapfst__get_compose_filter(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3371, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_compose_filter, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3377, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_9pywrapfst__get_compose_filter(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3377, __pyx_L1_error)
 
-  /* "pywrapfst.pyx":3370
+  /* "pywrapfst.pyx":3376
  *   tfst.reset(new fst.VectorFstClass(ifst1.arc_type()))
  *   cdef unique_ptr[fst.ComposeOptions] opts
  *   opts.reset(new fst.ComposeOptions(connect,             # <<<<<<<<<<<<<<
@@ -35707,7 +35972,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_compose(struc
  */
   __pyx_v_opts.reset(new fst::ComposeOptions(__pyx_v_connect, __pyx_t_2));
 
-  /* "pywrapfst.pyx":3372
+  /* "pywrapfst.pyx":3378
  *   opts.reset(new fst.ComposeOptions(connect,
  *       _get_compose_filter(tostring(compose_filter))))
  *   fst.Compose(deref(ifst1._fst), deref(ifst2._fst), tfst.get(), deref(opts))             # <<<<<<<<<<<<<<
@@ -35716,15 +35981,15 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_compose(struc
  */
   if (unlikely(((PyObject *)__pyx_v_ifst1) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3372, __pyx_L1_error)
+    __PYX_ERR(0, 3378, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_ifst2) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3372, __pyx_L1_error)
+    __PYX_ERR(0, 3378, __pyx_L1_error)
   }
   fst::script::Compose((*__pyx_v_ifst1->_fst), (*__pyx_v_ifst2->_fst), __pyx_v_tfst.get(), (*__pyx_v_opts));
 
-  /* "pywrapfst.pyx":3373
+  /* "pywrapfst.pyx":3379
  *       _get_compose_filter(tostring(compose_filter))))
  *   fst.Compose(deref(ifst1._fst), deref(ifst2._fst), tfst.get(), deref(opts))
  *   return _init_MutableFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -35732,13 +35997,13 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_compose(struc
  * 
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_3 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3373, __pyx_L1_error)
+  __pyx_t_3 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3379, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__MutableFst *)__pyx_t_3);
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3340
+  /* "pywrapfst.pyx":3346
  * 
  * 
  * cpdef _MutableFst compose(_Fst ifst1,             # <<<<<<<<<<<<<<
@@ -35796,7 +36061,7 @@ static PyObject *__pyx_pw_9pywrapfst_21compose(PyObject *__pyx_self, PyObject *_
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ifst2)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("compose", 0, 2, 4, 1); __PYX_ERR(0, 3340, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("compose", 0, 2, 4, 1); __PYX_ERR(0, 3346, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
@@ -35812,7 +36077,7 @@ static PyObject *__pyx_pw_9pywrapfst_21compose(PyObject *__pyx_self, PyObject *_
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "compose") < 0)) __PYX_ERR(0, 3340, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "compose") < 0)) __PYX_ERR(0, 3346, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -35830,10 +36095,10 @@ static PyObject *__pyx_pw_9pywrapfst_21compose(PyObject *__pyx_self, PyObject *_
     __pyx_v_ifst2 = ((struct __pyx_obj_9pywrapfst__Fst *)values[1]);
     __pyx_v_compose_filter = values[2];
     if (values[3]) {
-      __pyx_v_connect = __Pyx_PyObject_IsTrue(values[3]); if (unlikely((__pyx_v_connect == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3343, __pyx_L3_error)
+      __pyx_v_connect = __Pyx_PyObject_IsTrue(values[3]); if (unlikely((__pyx_v_connect == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3349, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":3343
+      /* "pywrapfst.pyx":3349
  *                           _Fst ifst2,
  *                           compose_filter=b"auto",
  *                           bool connect=True):             # <<<<<<<<<<<<<<
@@ -35845,17 +36110,17 @@ static PyObject *__pyx_pw_9pywrapfst_21compose(PyObject *__pyx_self, PyObject *_
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("compose", 0, 2, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3340, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("compose", 0, 2, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3346, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.compose", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst1), __pyx_ptype_9pywrapfst__Fst, 1, "ifst1", 0))) __PYX_ERR(0, 3340, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst2), __pyx_ptype_9pywrapfst__Fst, 1, "ifst2", 0))) __PYX_ERR(0, 3341, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst1), __pyx_ptype_9pywrapfst__Fst, 1, "ifst1", 0))) __PYX_ERR(0, 3346, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst2), __pyx_ptype_9pywrapfst__Fst, 1, "ifst2", 0))) __PYX_ERR(0, 3347, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_20compose(__pyx_self, __pyx_v_ifst1, __pyx_v_ifst2, __pyx_v_compose_filter, __pyx_v_connect);
 
-  /* "pywrapfst.pyx":3340
+  /* "pywrapfst.pyx":3346
  * 
  * 
  * cpdef _MutableFst compose(_Fst ifst1,             # <<<<<<<<<<<<<<
@@ -35882,7 +36147,7 @@ static PyObject *__pyx_pf_9pywrapfst_20compose(CYTHON_UNUSED PyObject *__pyx_sel
   __pyx_t_2.__pyx_n = 2;
   __pyx_t_2.compose_filter = __pyx_v_compose_filter;
   __pyx_t_2.connect = __pyx_v_connect;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_compose(__pyx_v_ifst1, __pyx_v_ifst2, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3340, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_compose(__pyx_v_ifst1, __pyx_v_ifst2, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3346, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -35899,7 +36164,7 @@ static PyObject *__pyx_pf_9pywrapfst_20compose(CYTHON_UNUSED PyObject *__pyx_sel
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3376
+/* "pywrapfst.pyx":3382
  * 
  * 
  * cpdef _Fst convert(_Fst ifst, fst_type=b""):             # <<<<<<<<<<<<<<
@@ -35928,17 +36193,17 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_convert(struct __pyx
     }
   }
 
-  /* "pywrapfst.pyx":3393
+  /* "pywrapfst.pyx":3399
  *     FstOpError: Conversion failed.
  *   """
  *   cdef string fst_type_string = tostring(fst_type)             # <<<<<<<<<<<<<<
  *   cdef unique_ptr[fst.FstClass] tfst
  *   tfst.reset(fst.Convert(deref(ifst._fst), fst_type_string))
  */
-  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_fst_type, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3393, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_fst_type, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3399, __pyx_L1_error)
   __pyx_v_fst_type_string = __pyx_t_1;
 
-  /* "pywrapfst.pyx":3395
+  /* "pywrapfst.pyx":3401
  *   cdef string fst_type_string = tostring(fst_type)
  *   cdef unique_ptr[fst.FstClass] tfst
  *   tfst.reset(fst.Convert(deref(ifst._fst), fst_type_string))             # <<<<<<<<<<<<<<
@@ -35947,11 +36212,11 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_convert(struct __pyx
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3395, __pyx_L1_error)
+    __PYX_ERR(0, 3401, __pyx_L1_error)
   }
   __pyx_v_tfst.reset(fst::script::Convert((*__pyx_v_ifst->_fst), __pyx_v_fst_type_string));
 
-  /* "pywrapfst.pyx":3397
+  /* "pywrapfst.pyx":3403
  *   tfst.reset(fst.Convert(deref(ifst._fst), fst_type_string))
  *   # Script-land Convert returns a null pointer to signal failure.
  *   if tfst.get() == NULL:             # <<<<<<<<<<<<<<
@@ -35961,16 +36226,16 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_convert(struct __pyx
   __pyx_t_2 = ((__pyx_v_tfst.get() == NULL) != 0);
   if (unlikely(__pyx_t_2)) {
 
-    /* "pywrapfst.pyx":3398
+    /* "pywrapfst.pyx":3404
  *   # Script-land Convert returns a null pointer to signal failure.
  *   if tfst.get() == NULL:
  *     raise FstOpError("Conversion to {!r} failed".format(fst_type))             # <<<<<<<<<<<<<<
  *   return _init_XFst(tfst.release())
  * 
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_FstOpError); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3398, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_FstOpError); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3404, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_Conversion_to_r_failed, __pyx_n_s_format); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 3398, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_Conversion_to_r_failed, __pyx_n_s_format); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 3404, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_7 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_6))) {
@@ -35984,7 +36249,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_convert(struct __pyx
     }
     __pyx_t_5 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_7, __pyx_v_fst_type) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_v_fst_type);
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 3398, __pyx_L1_error)
+    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 3404, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __pyx_t_6 = NULL;
@@ -36000,14 +36265,14 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_convert(struct __pyx
     __pyx_t_3 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_6, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_5);
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3398, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3404, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __PYX_ERR(0, 3398, __pyx_L1_error)
+    __PYX_ERR(0, 3404, __pyx_L1_error)
 
-    /* "pywrapfst.pyx":3397
+    /* "pywrapfst.pyx":3403
  *   tfst.reset(fst.Convert(deref(ifst._fst), fst_type_string))
  *   # Script-land Convert returns a null pointer to signal failure.
  *   if tfst.get() == NULL:             # <<<<<<<<<<<<<<
@@ -36016,7 +36281,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_convert(struct __pyx
  */
   }
 
-  /* "pywrapfst.pyx":3399
+  /* "pywrapfst.pyx":3405
  *   if tfst.get() == NULL:
  *     raise FstOpError("Conversion to {!r} failed".format(fst_type))
  *   return _init_XFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -36024,13 +36289,13 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_convert(struct __pyx
  * 
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_3 = ((PyObject *)__pyx_f_9pywrapfst__init_XFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3399, __pyx_L1_error)
+  __pyx_t_3 = ((PyObject *)__pyx_f_9pywrapfst__init_XFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3405, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__Fst *)__pyx_t_3);
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3376
+  /* "pywrapfst.pyx":3382
  * 
  * 
  * cpdef _Fst convert(_Fst ifst, fst_type=b""):             # <<<<<<<<<<<<<<
@@ -36090,7 +36355,7 @@ static PyObject *__pyx_pw_9pywrapfst_23convert(PyObject *__pyx_self, PyObject *_
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "convert") < 0)) __PYX_ERR(0, 3376, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "convert") < 0)) __PYX_ERR(0, 3382, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -36106,13 +36371,13 @@ static PyObject *__pyx_pw_9pywrapfst_23convert(PyObject *__pyx_self, PyObject *_
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("convert", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3376, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("convert", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3382, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.convert", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3376, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3382, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_22convert(__pyx_self, __pyx_v_ifst, __pyx_v_fst_type);
 
   /* function exit code */
@@ -36133,7 +36398,7 @@ static PyObject *__pyx_pf_9pywrapfst_22convert(CYTHON_UNUSED PyObject *__pyx_sel
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.fst_type = __pyx_v_fst_type;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_convert(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3376, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_convert(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3382, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -36150,7 +36415,7 @@ static PyObject *__pyx_pf_9pywrapfst_22convert(CYTHON_UNUSED PyObject *__pyx_sel
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3402
+/* "pywrapfst.pyx":3408
  * 
  * 
  * cpdef _MutableFst determinize(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -36165,7 +36430,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_determinize(s
   __pyx_t_10basictypes_int64 __pyx_v_nstate = __pyx_k__34;
   __pyx_t_10basictypes_int64 __pyx_v_subsequential_label = ((__pyx_t_10basictypes_int64)0);
 
-  /* "pywrapfst.pyx":3407
+  /* "pywrapfst.pyx":3413
  *                               int64 nstate=fst.kNoStateId,
  *                               int64 subsequential_label=0,
  *                               weight=None,             # <<<<<<<<<<<<<<
@@ -36174,7 +36439,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_determinize(s
  */
   PyObject *__pyx_v_weight = ((PyObject *)Py_None);
 
-  /* "pywrapfst.pyx":3408
+  /* "pywrapfst.pyx":3414
  *                               int64 subsequential_label=0,
  *                               weight=None,
  *                               bool increment_subsequential_label=False):             # <<<<<<<<<<<<<<
@@ -36218,7 +36483,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_determinize(s
     }
   }
 
-  /* "pywrapfst.pyx":3444
+  /* "pywrapfst.pyx":3450
  *   """
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))             # <<<<<<<<<<<<<<
@@ -36227,11 +36492,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_determinize(s
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "arc_type");
-    __PYX_ERR(0, 3444, __pyx_L1_error)
+    __PYX_ERR(0, 3450, __pyx_L1_error)
   }
   __pyx_v_tfst.reset(new fst::script::VectorFstClass(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->arc_type(__pyx_v_ifst, 0)));
 
-  /* "pywrapfst.pyx":3446
+  /* "pywrapfst.pyx":3452
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   # Threshold is set to semiring Zero (no pruning) if weight unspecified.
  *   cdef fst.WeightClass wc = _get_WeightClass_or_Zero(ifst.weight_type(),             # <<<<<<<<<<<<<<
@@ -36240,29 +36505,29 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_determinize(s
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "weight_type");
-    __PYX_ERR(0, 3446, __pyx_L1_error)
+    __PYX_ERR(0, 3452, __pyx_L1_error)
   }
 
-  /* "pywrapfst.pyx":3447
+  /* "pywrapfst.pyx":3453
  *   # Threshold is set to semiring Zero (no pruning) if weight unspecified.
  *   cdef fst.WeightClass wc = _get_WeightClass_or_Zero(ifst.weight_type(),
  *                                                      weight)             # <<<<<<<<<<<<<<
  *   cdef fst.DeterminizeType determinize_type_enum
  *   if not fst.GetDeterminizeType(tostring(det_type),
  */
-  __pyx_t_1 = __pyx_f_9pywrapfst__get_WeightClass_or_Zero(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->weight_type(__pyx_v_ifst, 0), __pyx_v_weight); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3446, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst__get_WeightClass_or_Zero(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->weight_type(__pyx_v_ifst, 0), __pyx_v_weight); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3452, __pyx_L1_error)
   __pyx_v_wc = __pyx_t_1;
 
-  /* "pywrapfst.pyx":3449
+  /* "pywrapfst.pyx":3455
  *                                                      weight)
  *   cdef fst.DeterminizeType determinize_type_enum
  *   if not fst.GetDeterminizeType(tostring(det_type),             # <<<<<<<<<<<<<<
  *                                 addr(determinize_type_enum)):
  *     raise FstArgError("Unknown determinization type: {!r}".format(det_type))
  */
-  __pyx_t_2 = __pyx_f_9pywrapfst_tostring(__pyx_v_det_type, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3449, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_9pywrapfst_tostring(__pyx_v_det_type, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3455, __pyx_L1_error)
 
-  /* "pywrapfst.pyx":3450
+  /* "pywrapfst.pyx":3456
  *   cdef fst.DeterminizeType determinize_type_enum
  *   if not fst.GetDeterminizeType(tostring(det_type),
  *                                 addr(determinize_type_enum)):             # <<<<<<<<<<<<<<
@@ -36271,7 +36536,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_determinize(s
  */
   __pyx_t_3 = ((!(fst::script::GetDeterminizeType(__pyx_t_2, (&__pyx_v_determinize_type_enum)) != 0)) != 0);
 
-  /* "pywrapfst.pyx":3449
+  /* "pywrapfst.pyx":3455
  *                                                      weight)
  *   cdef fst.DeterminizeType determinize_type_enum
  *   if not fst.GetDeterminizeType(tostring(det_type),             # <<<<<<<<<<<<<<
@@ -36280,16 +36545,16 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_determinize(s
  */
   if (unlikely(__pyx_t_3)) {
 
-    /* "pywrapfst.pyx":3451
+    /* "pywrapfst.pyx":3457
  *   if not fst.GetDeterminizeType(tostring(det_type),
  *                                 addr(determinize_type_enum)):
  *     raise FstArgError("Unknown determinization type: {!r}".format(det_type))             # <<<<<<<<<<<<<<
  *   cdef unique_ptr[fst.DeterminizeOptions] opts
  *   opts.reset(new fst.DeterminizeOptions(delta, wc, nstate, subsequential_label,
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_FstArgError); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 3451, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_FstArgError); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 3457, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_Unknown_determinization_type_r, __pyx_n_s_format); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 3451, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_Unknown_determinization_type_r, __pyx_n_s_format); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 3457, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __pyx_t_8 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_7))) {
@@ -36303,7 +36568,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_determinize(s
     }
     __pyx_t_6 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_8, __pyx_v_det_type) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_v_det_type);
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 3451, __pyx_L1_error)
+    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 3457, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_t_7 = NULL;
@@ -36319,14 +36584,14 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_determinize(s
     __pyx_t_4 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_7, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_6);
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3451, __pyx_L1_error)
+    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3457, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_Raise(__pyx_t_4, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __PYX_ERR(0, 3451, __pyx_L1_error)
+    __PYX_ERR(0, 3457, __pyx_L1_error)
 
-    /* "pywrapfst.pyx":3449
+    /* "pywrapfst.pyx":3455
  *                                                      weight)
  *   cdef fst.DeterminizeType determinize_type_enum
  *   if not fst.GetDeterminizeType(tostring(det_type),             # <<<<<<<<<<<<<<
@@ -36335,7 +36600,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_determinize(s
  */
   }
 
-  /* "pywrapfst.pyx":3453
+  /* "pywrapfst.pyx":3459
  *     raise FstArgError("Unknown determinization type: {!r}".format(det_type))
  *   cdef unique_ptr[fst.DeterminizeOptions] opts
  *   opts.reset(new fst.DeterminizeOptions(delta, wc, nstate, subsequential_label,             # <<<<<<<<<<<<<<
@@ -36344,7 +36609,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_determinize(s
  */
   __pyx_v_opts.reset(new fst::script::DeterminizeOptions(__pyx_v_delta, __pyx_v_wc, __pyx_v_nstate, __pyx_v_subsequential_label, __pyx_v_determinize_type_enum, __pyx_v_increment_subsequential_label));
 
-  /* "pywrapfst.pyx":3456
+  /* "pywrapfst.pyx":3462
  *                                         determinize_type_enum,
  *                                         increment_subsequential_label))
  *   fst.Determinize(deref(ifst._fst), tfst.get(), deref(opts))             # <<<<<<<<<<<<<<
@@ -36353,11 +36618,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_determinize(s
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3456, __pyx_L1_error)
+    __PYX_ERR(0, 3462, __pyx_L1_error)
   }
   fst::script::Determinize((*__pyx_v_ifst->_fst), __pyx_v_tfst.get(), (*__pyx_v_opts));
 
-  /* "pywrapfst.pyx":3457
+  /* "pywrapfst.pyx":3463
  *                                         increment_subsequential_label))
  *   fst.Determinize(deref(ifst._fst), tfst.get(), deref(opts))
  *   return _init_MutableFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -36365,13 +36630,13 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_determinize(s
  * 
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_4 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3457, __pyx_L1_error)
+  __pyx_t_4 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3463, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__MutableFst *)__pyx_t_4);
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3402
+  /* "pywrapfst.pyx":3408
  * 
  * 
  * cpdef _MutableFst determinize(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -36413,7 +36678,7 @@ static PyObject *__pyx_pw_9pywrapfst_25determinize(PyObject *__pyx_self, PyObjec
     PyObject* values[7] = {0,0,0,0,0,0,0};
     values[2] = ((PyObject *)__pyx_n_b_functional);
 
-    /* "pywrapfst.pyx":3407
+    /* "pywrapfst.pyx":3413
  *                               int64 nstate=fst.kNoStateId,
  *                               int64 subsequential_label=0,
  *                               weight=None,             # <<<<<<<<<<<<<<
@@ -36485,7 +36750,7 @@ static PyObject *__pyx_pw_9pywrapfst_25determinize(PyObject *__pyx_self, PyObjec
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "determinize") < 0)) __PYX_ERR(0, 3402, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "determinize") < 0)) __PYX_ERR(0, 3408, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -36508,27 +36773,27 @@ static PyObject *__pyx_pw_9pywrapfst_25determinize(PyObject *__pyx_self, PyObjec
     }
     __pyx_v_ifst = ((struct __pyx_obj_9pywrapfst__Fst *)values[0]);
     if (values[1]) {
-      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[1]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3403, __pyx_L3_error)
+      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[1]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3409, __pyx_L3_error)
     } else {
       __pyx_v_delta = __pyx_k__33;
     }
     __pyx_v_det_type = values[2];
     if (values[3]) {
-      __pyx_v_nstate = __Pyx_PyInt_As_int64_t(values[3]); if (unlikely((__pyx_v_nstate == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3405, __pyx_L3_error)
+      __pyx_v_nstate = __Pyx_PyInt_As_int64_t(values[3]); if (unlikely((__pyx_v_nstate == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3411, __pyx_L3_error)
     } else {
       __pyx_v_nstate = __pyx_k__34;
     }
     if (values[4]) {
-      __pyx_v_subsequential_label = __Pyx_PyInt_As_int64_t(values[4]); if (unlikely((__pyx_v_subsequential_label == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3406, __pyx_L3_error)
+      __pyx_v_subsequential_label = __Pyx_PyInt_As_int64_t(values[4]); if (unlikely((__pyx_v_subsequential_label == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3412, __pyx_L3_error)
     } else {
       __pyx_v_subsequential_label = ((__pyx_t_10basictypes_int64)0);
     }
     __pyx_v_weight = values[5];
     if (values[6]) {
-      __pyx_v_increment_subsequential_label = __Pyx_PyObject_IsTrue(values[6]); if (unlikely((__pyx_v_increment_subsequential_label == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3408, __pyx_L3_error)
+      __pyx_v_increment_subsequential_label = __Pyx_PyObject_IsTrue(values[6]); if (unlikely((__pyx_v_increment_subsequential_label == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3414, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":3408
+      /* "pywrapfst.pyx":3414
  *                               int64 subsequential_label=0,
  *                               weight=None,
  *                               bool increment_subsequential_label=False):             # <<<<<<<<<<<<<<
@@ -36540,16 +36805,16 @@ static PyObject *__pyx_pw_9pywrapfst_25determinize(PyObject *__pyx_self, PyObjec
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("determinize", 0, 1, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3402, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("determinize", 0, 1, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3408, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.determinize", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3402, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3408, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_24determinize(__pyx_self, __pyx_v_ifst, __pyx_v_delta, __pyx_v_det_type, __pyx_v_nstate, __pyx_v_subsequential_label, __pyx_v_weight, __pyx_v_increment_subsequential_label);
 
-  /* "pywrapfst.pyx":3402
+  /* "pywrapfst.pyx":3408
  * 
  * 
  * cpdef _MutableFst determinize(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -36580,7 +36845,7 @@ static PyObject *__pyx_pf_9pywrapfst_24determinize(CYTHON_UNUSED PyObject *__pyx
   __pyx_t_2.subsequential_label = __pyx_v_subsequential_label;
   __pyx_t_2.weight = __pyx_v_weight;
   __pyx_t_2.increment_subsequential_label = __pyx_v_increment_subsequential_label;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_determinize(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3402, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_determinize(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3408, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -36597,7 +36862,7 @@ static PyObject *__pyx_pf_9pywrapfst_24determinize(CYTHON_UNUSED PyObject *__pyx
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3460
+/* "pywrapfst.pyx":3466
  * 
  * 
  * cpdef _MutableFst difference(_Fst ifst1,             # <<<<<<<<<<<<<<
@@ -36609,7 +36874,7 @@ static PyObject *__pyx_pw_9pywrapfst_27difference(PyObject *__pyx_self, PyObject
 static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_difference(struct __pyx_obj_9pywrapfst__Fst *__pyx_v_ifst1, struct __pyx_obj_9pywrapfst__Fst *__pyx_v_ifst2, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_9pywrapfst_difference *__pyx_optional_args) {
   PyObject *__pyx_v_compose_filter = ((PyObject *)__pyx_n_b_auto);
 
-  /* "pywrapfst.pyx":3463
+  /* "pywrapfst.pyx":3469
  *                              _Fst ifst2,
  *                              compose_filter=b"auto",
  *                              bool connect=True):             # <<<<<<<<<<<<<<
@@ -36634,7 +36899,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_difference(st
     }
   }
 
-  /* "pywrapfst.pyx":3487
+  /* "pywrapfst.pyx":3493
  *   """
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst1.arc_type()))             # <<<<<<<<<<<<<<
@@ -36643,30 +36908,30 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_difference(st
  */
   if (unlikely(((PyObject *)__pyx_v_ifst1) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "arc_type");
-    __PYX_ERR(0, 3487, __pyx_L1_error)
+    __PYX_ERR(0, 3493, __pyx_L1_error)
   }
   __pyx_v_tfst.reset(new fst::script::VectorFstClass(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst1->__pyx_vtab)->arc_type(__pyx_v_ifst1, 0)));
 
-  /* "pywrapfst.pyx":3490
+  /* "pywrapfst.pyx":3496
  *   cdef unique_ptr[fst.ComposeOptions] opts
  *   opts.reset(new fst.ComposeOptions(connect, _get_compose_filter(
  *       tostring(compose_filter))))             # <<<<<<<<<<<<<<
  *   fst.Difference(deref(ifst1._fst), deref(ifst2._fst), tfst.get(), deref(opts))
  *   return _init_MutableFst(tfst.release())
  */
-  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_compose_filter, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3490, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_compose_filter, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3496, __pyx_L1_error)
 
-  /* "pywrapfst.pyx":3489
+  /* "pywrapfst.pyx":3495
  *   tfst.reset(new fst.VectorFstClass(ifst1.arc_type()))
  *   cdef unique_ptr[fst.ComposeOptions] opts
  *   opts.reset(new fst.ComposeOptions(connect, _get_compose_filter(             # <<<<<<<<<<<<<<
  *       tostring(compose_filter))))
  *   fst.Difference(deref(ifst1._fst), deref(ifst2._fst), tfst.get(), deref(opts))
  */
-  __pyx_t_2 = __pyx_f_9pywrapfst__get_compose_filter(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3489, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_9pywrapfst__get_compose_filter(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3495, __pyx_L1_error)
   __pyx_v_opts.reset(new fst::ComposeOptions(__pyx_v_connect, __pyx_t_2));
 
-  /* "pywrapfst.pyx":3491
+  /* "pywrapfst.pyx":3497
  *   opts.reset(new fst.ComposeOptions(connect, _get_compose_filter(
  *       tostring(compose_filter))))
  *   fst.Difference(deref(ifst1._fst), deref(ifst2._fst), tfst.get(), deref(opts))             # <<<<<<<<<<<<<<
@@ -36675,15 +36940,15 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_difference(st
  */
   if (unlikely(((PyObject *)__pyx_v_ifst1) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3491, __pyx_L1_error)
+    __PYX_ERR(0, 3497, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_ifst2) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3491, __pyx_L1_error)
+    __PYX_ERR(0, 3497, __pyx_L1_error)
   }
   fst::script::Difference((*__pyx_v_ifst1->_fst), (*__pyx_v_ifst2->_fst), __pyx_v_tfst.get(), (*__pyx_v_opts));
 
-  /* "pywrapfst.pyx":3492
+  /* "pywrapfst.pyx":3498
  *       tostring(compose_filter))))
  *   fst.Difference(deref(ifst1._fst), deref(ifst2._fst), tfst.get(), deref(opts))
  *   return _init_MutableFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -36691,13 +36956,13 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_difference(st
  * 
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_3 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3492, __pyx_L1_error)
+  __pyx_t_3 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3498, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__MutableFst *)__pyx_t_3);
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3460
+  /* "pywrapfst.pyx":3466
  * 
  * 
  * cpdef _MutableFst difference(_Fst ifst1,             # <<<<<<<<<<<<<<
@@ -36755,7 +37020,7 @@ static PyObject *__pyx_pw_9pywrapfst_27difference(PyObject *__pyx_self, PyObject
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ifst2)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("difference", 0, 2, 4, 1); __PYX_ERR(0, 3460, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("difference", 0, 2, 4, 1); __PYX_ERR(0, 3466, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
@@ -36771,7 +37036,7 @@ static PyObject *__pyx_pw_9pywrapfst_27difference(PyObject *__pyx_self, PyObject
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "difference") < 0)) __PYX_ERR(0, 3460, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "difference") < 0)) __PYX_ERR(0, 3466, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -36789,10 +37054,10 @@ static PyObject *__pyx_pw_9pywrapfst_27difference(PyObject *__pyx_self, PyObject
     __pyx_v_ifst2 = ((struct __pyx_obj_9pywrapfst__Fst *)values[1]);
     __pyx_v_compose_filter = values[2];
     if (values[3]) {
-      __pyx_v_connect = __Pyx_PyObject_IsTrue(values[3]); if (unlikely((__pyx_v_connect == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3463, __pyx_L3_error)
+      __pyx_v_connect = __Pyx_PyObject_IsTrue(values[3]); if (unlikely((__pyx_v_connect == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3469, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":3463
+      /* "pywrapfst.pyx":3469
  *                              _Fst ifst2,
  *                              compose_filter=b"auto",
  *                              bool connect=True):             # <<<<<<<<<<<<<<
@@ -36804,17 +37069,17 @@ static PyObject *__pyx_pw_9pywrapfst_27difference(PyObject *__pyx_self, PyObject
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("difference", 0, 2, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3460, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("difference", 0, 2, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3466, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.difference", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst1), __pyx_ptype_9pywrapfst__Fst, 1, "ifst1", 0))) __PYX_ERR(0, 3460, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst2), __pyx_ptype_9pywrapfst__Fst, 1, "ifst2", 0))) __PYX_ERR(0, 3461, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst1), __pyx_ptype_9pywrapfst__Fst, 1, "ifst1", 0))) __PYX_ERR(0, 3466, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst2), __pyx_ptype_9pywrapfst__Fst, 1, "ifst2", 0))) __PYX_ERR(0, 3467, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_26difference(__pyx_self, __pyx_v_ifst1, __pyx_v_ifst2, __pyx_v_compose_filter, __pyx_v_connect);
 
-  /* "pywrapfst.pyx":3460
+  /* "pywrapfst.pyx":3466
  * 
  * 
  * cpdef _MutableFst difference(_Fst ifst1,             # <<<<<<<<<<<<<<
@@ -36841,7 +37106,7 @@ static PyObject *__pyx_pf_9pywrapfst_26difference(CYTHON_UNUSED PyObject *__pyx_
   __pyx_t_2.__pyx_n = 2;
   __pyx_t_2.compose_filter = __pyx_v_compose_filter;
   __pyx_t_2.connect = __pyx_v_connect;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_difference(__pyx_v_ifst1, __pyx_v_ifst2, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3460, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_difference(__pyx_v_ifst1, __pyx_v_ifst2, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3466, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -36858,7 +37123,7 @@ static PyObject *__pyx_pf_9pywrapfst_26difference(CYTHON_UNUSED PyObject *__pyx_
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3495
+/* "pywrapfst.pyx":3501
  * 
  * 
  * cpdef _MutableFst disambiguate(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -36872,7 +37137,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_disambiguate(
   __pyx_t_10basictypes_int64 __pyx_v_nstate = __pyx_k__36;
   __pyx_t_10basictypes_int64 __pyx_v_subsequential_label = ((__pyx_t_10basictypes_int64)0);
 
-  /* "pywrapfst.pyx":3499
+  /* "pywrapfst.pyx":3505
  *                                int64 nstate=fst.kNoStateId,
  *                                int64 subsequential_label=0,
  *                                weight=None):             # <<<<<<<<<<<<<<
@@ -36903,7 +37168,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_disambiguate(
     }
   }
 
-  /* "pywrapfst.pyx":3526
+  /* "pywrapfst.pyx":3532
  *   """
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))             # <<<<<<<<<<<<<<
@@ -36912,11 +37177,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_disambiguate(
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "arc_type");
-    __PYX_ERR(0, 3526, __pyx_L1_error)
+    __PYX_ERR(0, 3532, __pyx_L1_error)
   }
   __pyx_v_tfst.reset(new fst::script::VectorFstClass(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->arc_type(__pyx_v_ifst, 0)));
 
-  /* "pywrapfst.pyx":3528
+  /* "pywrapfst.pyx":3534
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   # Threshold is set to semiring Zero (no pruning) if no weight is specified.
  *   cdef fst.WeightClass wc = _get_WeightClass_or_Zero(ifst.weight_type(),             # <<<<<<<<<<<<<<
@@ -36925,20 +37190,20 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_disambiguate(
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "weight_type");
-    __PYX_ERR(0, 3528, __pyx_L1_error)
+    __PYX_ERR(0, 3534, __pyx_L1_error)
   }
 
-  /* "pywrapfst.pyx":3529
+  /* "pywrapfst.pyx":3535
  *   # Threshold is set to semiring Zero (no pruning) if no weight is specified.
  *   cdef fst.WeightClass wc = _get_WeightClass_or_Zero(ifst.weight_type(),
  *                                                      weight)             # <<<<<<<<<<<<<<
  *   cdef unique_ptr[fst.DisambiguateOptions] opts
  *   opts.reset(new fst.DisambiguateOptions(delta, wc, nstate,
  */
-  __pyx_t_1 = __pyx_f_9pywrapfst__get_WeightClass_or_Zero(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->weight_type(__pyx_v_ifst, 0), __pyx_v_weight); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3528, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst__get_WeightClass_or_Zero(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->weight_type(__pyx_v_ifst, 0), __pyx_v_weight); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3534, __pyx_L1_error)
   __pyx_v_wc = __pyx_t_1;
 
-  /* "pywrapfst.pyx":3531
+  /* "pywrapfst.pyx":3537
  *                                                      weight)
  *   cdef unique_ptr[fst.DisambiguateOptions] opts
  *   opts.reset(new fst.DisambiguateOptions(delta, wc, nstate,             # <<<<<<<<<<<<<<
@@ -36947,7 +37212,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_disambiguate(
  */
   __pyx_v_opts.reset(new fst::script::DisambiguateOptions(__pyx_v_delta, __pyx_v_wc, __pyx_v_nstate, __pyx_v_subsequential_label));
 
-  /* "pywrapfst.pyx":3533
+  /* "pywrapfst.pyx":3539
  *   opts.reset(new fst.DisambiguateOptions(delta, wc, nstate,
  *                                          subsequential_label))
  *   fst.Disambiguate(deref(ifst._fst), tfst.get(), deref(opts))             # <<<<<<<<<<<<<<
@@ -36956,11 +37221,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_disambiguate(
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3533, __pyx_L1_error)
+    __PYX_ERR(0, 3539, __pyx_L1_error)
   }
   fst::script::Disambiguate((*__pyx_v_ifst->_fst), __pyx_v_tfst.get(), (*__pyx_v_opts));
 
-  /* "pywrapfst.pyx":3534
+  /* "pywrapfst.pyx":3540
  *                                          subsequential_label))
  *   fst.Disambiguate(deref(ifst._fst), tfst.get(), deref(opts))
  *   return _init_MutableFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -36968,13 +37233,13 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_disambiguate(
  * 
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_2 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3534, __pyx_L1_error)
+  __pyx_t_2 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3540, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__MutableFst *)__pyx_t_2);
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3495
+  /* "pywrapfst.pyx":3501
  * 
  * 
  * cpdef _MutableFst disambiguate(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -37009,7 +37274,7 @@ static PyObject *__pyx_pw_9pywrapfst_29disambiguate(PyObject *__pyx_self, PyObje
     static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_ifst,&__pyx_n_s_delta,&__pyx_n_s_nstate,&__pyx_n_s_subsequential_label,&__pyx_n_s_weight,0};
     PyObject* values[5] = {0,0,0,0,0};
 
-    /* "pywrapfst.pyx":3499
+    /* "pywrapfst.pyx":3505
  *                                int64 nstate=fst.kNoStateId,
  *                                int64 subsequential_label=0,
  *                                weight=None):             # <<<<<<<<<<<<<<
@@ -37065,7 +37330,7 @@ static PyObject *__pyx_pw_9pywrapfst_29disambiguate(PyObject *__pyx_self, PyObje
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "disambiguate") < 0)) __PYX_ERR(0, 3495, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "disambiguate") < 0)) __PYX_ERR(0, 3501, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -37084,17 +37349,17 @@ static PyObject *__pyx_pw_9pywrapfst_29disambiguate(PyObject *__pyx_self, PyObje
     }
     __pyx_v_ifst = ((struct __pyx_obj_9pywrapfst__Fst *)values[0]);
     if (values[1]) {
-      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[1]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3496, __pyx_L3_error)
+      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[1]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3502, __pyx_L3_error)
     } else {
       __pyx_v_delta = __pyx_k__35;
     }
     if (values[2]) {
-      __pyx_v_nstate = __Pyx_PyInt_As_int64_t(values[2]); if (unlikely((__pyx_v_nstate == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3497, __pyx_L3_error)
+      __pyx_v_nstate = __Pyx_PyInt_As_int64_t(values[2]); if (unlikely((__pyx_v_nstate == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3503, __pyx_L3_error)
     } else {
       __pyx_v_nstate = __pyx_k__36;
     }
     if (values[3]) {
-      __pyx_v_subsequential_label = __Pyx_PyInt_As_int64_t(values[3]); if (unlikely((__pyx_v_subsequential_label == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3498, __pyx_L3_error)
+      __pyx_v_subsequential_label = __Pyx_PyInt_As_int64_t(values[3]); if (unlikely((__pyx_v_subsequential_label == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3504, __pyx_L3_error)
     } else {
       __pyx_v_subsequential_label = ((__pyx_t_10basictypes_int64)0);
     }
@@ -37102,16 +37367,16 @@ static PyObject *__pyx_pw_9pywrapfst_29disambiguate(PyObject *__pyx_self, PyObje
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("disambiguate", 0, 1, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3495, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("disambiguate", 0, 1, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3501, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.disambiguate", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3495, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3501, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_28disambiguate(__pyx_self, __pyx_v_ifst, __pyx_v_delta, __pyx_v_nstate, __pyx_v_subsequential_label, __pyx_v_weight);
 
-  /* "pywrapfst.pyx":3495
+  /* "pywrapfst.pyx":3501
  * 
  * 
  * cpdef _MutableFst disambiguate(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -37140,7 +37405,7 @@ static PyObject *__pyx_pf_9pywrapfst_28disambiguate(CYTHON_UNUSED PyObject *__py
   __pyx_t_2.nstate = __pyx_v_nstate;
   __pyx_t_2.subsequential_label = __pyx_v_subsequential_label;
   __pyx_t_2.weight = __pyx_v_weight;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_disambiguate(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3495, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_disambiguate(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3501, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -37157,7 +37422,7 @@ static PyObject *__pyx_pf_9pywrapfst_28disambiguate(CYTHON_UNUSED PyObject *__py
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3537
+/* "pywrapfst.pyx":3543
  * 
  * 
  * cpdef _MutableFst epsnormalize(_Fst ifst, bool eps_norm_output=False):             # <<<<<<<<<<<<<<
@@ -37180,7 +37445,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_epsnormalize(
     }
   }
 
-  /* "pywrapfst.pyx":3560
+  /* "pywrapfst.pyx":3566
  *   """
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))             # <<<<<<<<<<<<<<
@@ -37189,11 +37454,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_epsnormalize(
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "arc_type");
-    __PYX_ERR(0, 3560, __pyx_L1_error)
+    __PYX_ERR(0, 3566, __pyx_L1_error)
   }
   __pyx_v_tfst.reset(new fst::script::VectorFstClass(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->arc_type(__pyx_v_ifst, 0)));
 
-  /* "pywrapfst.pyx":3561
+  /* "pywrapfst.pyx":3567
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   fst.EpsNormalize(deref(ifst._fst), tfst.get(), fst.EPS_NORM_OUTPUT if             # <<<<<<<<<<<<<<
@@ -37202,10 +37467,10 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_epsnormalize(
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3561, __pyx_L1_error)
+    __PYX_ERR(0, 3567, __pyx_L1_error)
   }
 
-  /* "pywrapfst.pyx":3562
+  /* "pywrapfst.pyx":3568
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   fst.EpsNormalize(deref(ifst._fst), tfst.get(), fst.EPS_NORM_OUTPUT if
  *                                                  eps_norm_output else             # <<<<<<<<<<<<<<
@@ -37214,7 +37479,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_epsnormalize(
  */
   if ((__pyx_v_eps_norm_output != 0)) {
 
-    /* "pywrapfst.pyx":3561
+    /* "pywrapfst.pyx":3567
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   fst.EpsNormalize(deref(ifst._fst), tfst.get(), fst.EPS_NORM_OUTPUT if             # <<<<<<<<<<<<<<
@@ -37224,7 +37489,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_epsnormalize(
     __pyx_t_1 = fst::EPS_NORM_OUTPUT;
   } else {
 
-    /* "pywrapfst.pyx":3563
+    /* "pywrapfst.pyx":3569
  *   fst.EpsNormalize(deref(ifst._fst), tfst.get(), fst.EPS_NORM_OUTPUT if
  *                                                  eps_norm_output else
  *                                                  fst.EPS_NORM_INPUT)             # <<<<<<<<<<<<<<
@@ -37234,7 +37499,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_epsnormalize(
     __pyx_t_1 = fst::EPS_NORM_INPUT;
   }
 
-  /* "pywrapfst.pyx":3561
+  /* "pywrapfst.pyx":3567
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   fst.EpsNormalize(deref(ifst._fst), tfst.get(), fst.EPS_NORM_OUTPUT if             # <<<<<<<<<<<<<<
@@ -37243,7 +37508,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_epsnormalize(
  */
   fst::script::EpsNormalize((*__pyx_v_ifst->_fst), __pyx_v_tfst.get(), __pyx_t_1);
 
-  /* "pywrapfst.pyx":3564
+  /* "pywrapfst.pyx":3570
  *                                                  eps_norm_output else
  *                                                  fst.EPS_NORM_INPUT)
  *   return _init_MutableFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -37251,13 +37516,13 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_epsnormalize(
  * 
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_2 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3564, __pyx_L1_error)
+  __pyx_t_2 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3570, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__MutableFst *)__pyx_t_2);
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3537
+  /* "pywrapfst.pyx":3543
  * 
  * 
  * cpdef _MutableFst epsnormalize(_Fst ifst, bool eps_norm_output=False):             # <<<<<<<<<<<<<<
@@ -37312,7 +37577,7 @@ static PyObject *__pyx_pw_9pywrapfst_31epsnormalize(PyObject *__pyx_self, PyObje
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "epsnormalize") < 0)) __PYX_ERR(0, 3537, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "epsnormalize") < 0)) __PYX_ERR(0, 3543, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -37325,20 +37590,20 @@ static PyObject *__pyx_pw_9pywrapfst_31epsnormalize(PyObject *__pyx_self, PyObje
     }
     __pyx_v_ifst = ((struct __pyx_obj_9pywrapfst__Fst *)values[0]);
     if (values[1]) {
-      __pyx_v_eps_norm_output = __Pyx_PyObject_IsTrue(values[1]); if (unlikely((__pyx_v_eps_norm_output == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3537, __pyx_L3_error)
+      __pyx_v_eps_norm_output = __Pyx_PyObject_IsTrue(values[1]); if (unlikely((__pyx_v_eps_norm_output == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3543, __pyx_L3_error)
     } else {
       __pyx_v_eps_norm_output = ((bool)0);
     }
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("epsnormalize", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3537, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("epsnormalize", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3543, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.epsnormalize", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3537, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3543, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_30epsnormalize(__pyx_self, __pyx_v_ifst, __pyx_v_eps_norm_output);
 
   /* function exit code */
@@ -37359,7 +37624,7 @@ static PyObject *__pyx_pf_9pywrapfst_30epsnormalize(CYTHON_UNUSED PyObject *__py
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.eps_norm_output = __pyx_v_eps_norm_output;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_epsnormalize(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3537, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_epsnormalize(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3543, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -37376,7 +37641,7 @@ static PyObject *__pyx_pf_9pywrapfst_30epsnormalize(CYTHON_UNUSED PyObject *__py
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3567
+/* "pywrapfst.pyx":3573
  * 
  * 
  * cpdef bool equal(_Fst ifst1, _Fst ifst2, float delta=fst.kDelta):             # <<<<<<<<<<<<<<
@@ -37396,7 +37661,7 @@ static bool __pyx_f_9pywrapfst_equal(struct __pyx_obj_9pywrapfst__Fst *__pyx_v_i
     }
   }
 
-  /* "pywrapfst.pyx":3587
+  /* "pywrapfst.pyx":3593
  *   See also: `equivalent`, `isomorphic`, `randequivalent`.
  *   """
  *   return fst.Equal(deref(ifst1._fst), deref(ifst2._fst), delta)             # <<<<<<<<<<<<<<
@@ -37405,16 +37670,16 @@ static bool __pyx_f_9pywrapfst_equal(struct __pyx_obj_9pywrapfst__Fst *__pyx_v_i
  */
   if (unlikely(((PyObject *)__pyx_v_ifst1) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3587, __pyx_L1_error)
+    __PYX_ERR(0, 3593, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_ifst2) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3587, __pyx_L1_error)
+    __PYX_ERR(0, 3593, __pyx_L1_error)
   }
   __pyx_r = fst::script::Equal((*__pyx_v_ifst1->_fst), (*__pyx_v_ifst2->_fst), __pyx_v_delta);
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3567
+  /* "pywrapfst.pyx":3573
  * 
  * 
  * cpdef bool equal(_Fst ifst1, _Fst ifst2, float delta=fst.kDelta):             # <<<<<<<<<<<<<<
@@ -37466,7 +37731,7 @@ static PyObject *__pyx_pw_9pywrapfst_33equal(PyObject *__pyx_self, PyObject *__p
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ifst2)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("equal", 0, 2, 3, 1); __PYX_ERR(0, 3567, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("equal", 0, 2, 3, 1); __PYX_ERR(0, 3573, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
@@ -37476,7 +37741,7 @@ static PyObject *__pyx_pw_9pywrapfst_33equal(PyObject *__pyx_self, PyObject *__p
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "equal") < 0)) __PYX_ERR(0, 3567, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "equal") < 0)) __PYX_ERR(0, 3573, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -37491,21 +37756,21 @@ static PyObject *__pyx_pw_9pywrapfst_33equal(PyObject *__pyx_self, PyObject *__p
     __pyx_v_ifst1 = ((struct __pyx_obj_9pywrapfst__Fst *)values[0]);
     __pyx_v_ifst2 = ((struct __pyx_obj_9pywrapfst__Fst *)values[1]);
     if (values[2]) {
-      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[2]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3567, __pyx_L3_error)
+      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[2]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3573, __pyx_L3_error)
     } else {
       __pyx_v_delta = __pyx_k__37;
     }
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("equal", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3567, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("equal", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3573, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.equal", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst1), __pyx_ptype_9pywrapfst__Fst, 1, "ifst1", 0))) __PYX_ERR(0, 3567, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst2), __pyx_ptype_9pywrapfst__Fst, 1, "ifst2", 0))) __PYX_ERR(0, 3567, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst1), __pyx_ptype_9pywrapfst__Fst, 1, "ifst1", 0))) __PYX_ERR(0, 3573, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst2), __pyx_ptype_9pywrapfst__Fst, 1, "ifst2", 0))) __PYX_ERR(0, 3573, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_32equal(__pyx_self, __pyx_v_ifst1, __pyx_v_ifst2, __pyx_v_delta);
 
   /* function exit code */
@@ -37528,7 +37793,7 @@ static PyObject *__pyx_pf_9pywrapfst_32equal(CYTHON_UNUSED PyObject *__pyx_self,
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.delta = __pyx_v_delta;
   __pyx_t_1 = __pyx_f_9pywrapfst_equal(__pyx_v_ifst1, __pyx_v_ifst2, 0, &__pyx_t_2); 
-  __pyx_t_3 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3567, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3573, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
@@ -37545,7 +37810,7 @@ static PyObject *__pyx_pf_9pywrapfst_32equal(CYTHON_UNUSED PyObject *__pyx_self,
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3590
+/* "pywrapfst.pyx":3596
  * 
  * 
  * cpdef bool equivalent(_Fst ifst1, _Fst ifst2, float delta=fst.kDelta) except *:             # <<<<<<<<<<<<<<
@@ -37565,7 +37830,7 @@ static bool __pyx_f_9pywrapfst_equivalent(struct __pyx_obj_9pywrapfst__Fst *__py
     }
   }
 
-  /* "pywrapfst.pyx":3610
+  /* "pywrapfst.pyx":3616
  *   See also: `equal`, `isomorphic`, `randequivalent`.
  *   """
  *   return fst.Equivalent(deref(ifst1._fst), deref(ifst2._fst), delta)             # <<<<<<<<<<<<<<
@@ -37574,16 +37839,16 @@ static bool __pyx_f_9pywrapfst_equivalent(struct __pyx_obj_9pywrapfst__Fst *__py
  */
   if (unlikely(((PyObject *)__pyx_v_ifst1) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3610, __pyx_L1_error)
+    __PYX_ERR(0, 3616, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_ifst2) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3610, __pyx_L1_error)
+    __PYX_ERR(0, 3616, __pyx_L1_error)
   }
   __pyx_r = fst::script::Equivalent((*__pyx_v_ifst1->_fst), (*__pyx_v_ifst2->_fst), __pyx_v_delta);
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3590
+  /* "pywrapfst.pyx":3596
  * 
  * 
  * cpdef bool equivalent(_Fst ifst1, _Fst ifst2, float delta=fst.kDelta) except *:             # <<<<<<<<<<<<<<
@@ -37635,7 +37900,7 @@ static PyObject *__pyx_pw_9pywrapfst_35equivalent(PyObject *__pyx_self, PyObject
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ifst2)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("equivalent", 0, 2, 3, 1); __PYX_ERR(0, 3590, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("equivalent", 0, 2, 3, 1); __PYX_ERR(0, 3596, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
@@ -37645,7 +37910,7 @@ static PyObject *__pyx_pw_9pywrapfst_35equivalent(PyObject *__pyx_self, PyObject
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "equivalent") < 0)) __PYX_ERR(0, 3590, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "equivalent") < 0)) __PYX_ERR(0, 3596, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -37660,21 +37925,21 @@ static PyObject *__pyx_pw_9pywrapfst_35equivalent(PyObject *__pyx_self, PyObject
     __pyx_v_ifst1 = ((struct __pyx_obj_9pywrapfst__Fst *)values[0]);
     __pyx_v_ifst2 = ((struct __pyx_obj_9pywrapfst__Fst *)values[1]);
     if (values[2]) {
-      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[2]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3590, __pyx_L3_error)
+      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[2]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3596, __pyx_L3_error)
     } else {
       __pyx_v_delta = __pyx_k__38;
     }
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("equivalent", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3590, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("equivalent", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3596, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.equivalent", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst1), __pyx_ptype_9pywrapfst__Fst, 1, "ifst1", 0))) __PYX_ERR(0, 3590, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst2), __pyx_ptype_9pywrapfst__Fst, 1, "ifst2", 0))) __PYX_ERR(0, 3590, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst1), __pyx_ptype_9pywrapfst__Fst, 1, "ifst1", 0))) __PYX_ERR(0, 3596, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst2), __pyx_ptype_9pywrapfst__Fst, 1, "ifst2", 0))) __PYX_ERR(0, 3596, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_34equivalent(__pyx_self, __pyx_v_ifst1, __pyx_v_ifst2, __pyx_v_delta);
 
   /* function exit code */
@@ -37696,8 +37961,8 @@ static PyObject *__pyx_pf_9pywrapfst_34equivalent(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.delta = __pyx_v_delta;
-  __pyx_t_1 = __pyx_f_9pywrapfst_equivalent(__pyx_v_ifst1, __pyx_v_ifst2, 0, &__pyx_t_2); if (unlikely(__pyx_t_1 == ((bool)-1) && PyErr_Occurred())) __PYX_ERR(0, 3590, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3590, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst_equivalent(__pyx_v_ifst1, __pyx_v_ifst2, 0, &__pyx_t_2); if (unlikely(__pyx_t_1 == ((bool)-1) && PyErr_Occurred())) __PYX_ERR(0, 3596, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3596, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
@@ -37714,7 +37979,7 @@ static PyObject *__pyx_pf_9pywrapfst_34equivalent(CYTHON_UNUSED PyObject *__pyx_
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3613
+/* "pywrapfst.pyx":3619
  * 
  * 
  * cpdef _MutableFst intersect(_Fst ifst1,             # <<<<<<<<<<<<<<
@@ -37726,7 +37991,7 @@ static PyObject *__pyx_pw_9pywrapfst_37intersect(PyObject *__pyx_self, PyObject 
 static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_intersect(struct __pyx_obj_9pywrapfst__Fst *__pyx_v_ifst1, struct __pyx_obj_9pywrapfst__Fst *__pyx_v_ifst2, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_9pywrapfst_intersect *__pyx_optional_args) {
   PyObject *__pyx_v_compose_filter = ((PyObject *)__pyx_n_b_auto);
 
-  /* "pywrapfst.pyx":3616
+  /* "pywrapfst.pyx":3622
  *                             _Fst ifst2,
  *                             compose_filter=b"auto",
  *                             bool connect=True):             # <<<<<<<<<<<<<<
@@ -37751,7 +38016,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_intersect(str
     }
   }
 
-  /* "pywrapfst.pyx":3638
+  /* "pywrapfst.pyx":3644
  *   """
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst1.arc_type()))             # <<<<<<<<<<<<<<
@@ -37760,21 +38025,21 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_intersect(str
  */
   if (unlikely(((PyObject *)__pyx_v_ifst1) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "arc_type");
-    __PYX_ERR(0, 3638, __pyx_L1_error)
+    __PYX_ERR(0, 3644, __pyx_L1_error)
   }
   __pyx_v_tfst.reset(new fst::script::VectorFstClass(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst1->__pyx_vtab)->arc_type(__pyx_v_ifst1, 0)));
 
-  /* "pywrapfst.pyx":3641
+  /* "pywrapfst.pyx":3647
  *   cdef unique_ptr[fst.ComposeOptions] opts
  *   opts.reset(new fst.ComposeOptions(connect,
  *         _get_compose_filter(tostring(compose_filter))))             # <<<<<<<<<<<<<<
  *   fst.Intersect(deref(ifst1._fst), deref(ifst2._fst), tfst.get(), deref(opts))
  *   return _init_MutableFst(tfst.release())
  */
-  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_compose_filter, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3641, __pyx_L1_error)
-  __pyx_t_2 = __pyx_f_9pywrapfst__get_compose_filter(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3641, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_compose_filter, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3647, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_9pywrapfst__get_compose_filter(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3647, __pyx_L1_error)
 
-  /* "pywrapfst.pyx":3640
+  /* "pywrapfst.pyx":3646
  *   tfst.reset(new fst.VectorFstClass(ifst1.arc_type()))
  *   cdef unique_ptr[fst.ComposeOptions] opts
  *   opts.reset(new fst.ComposeOptions(connect,             # <<<<<<<<<<<<<<
@@ -37783,7 +38048,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_intersect(str
  */
   __pyx_v_opts.reset(new fst::ComposeOptions(__pyx_v_connect, __pyx_t_2));
 
-  /* "pywrapfst.pyx":3642
+  /* "pywrapfst.pyx":3648
  *   opts.reset(new fst.ComposeOptions(connect,
  *         _get_compose_filter(tostring(compose_filter))))
  *   fst.Intersect(deref(ifst1._fst), deref(ifst2._fst), tfst.get(), deref(opts))             # <<<<<<<<<<<<<<
@@ -37792,15 +38057,15 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_intersect(str
  */
   if (unlikely(((PyObject *)__pyx_v_ifst1) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3642, __pyx_L1_error)
+    __PYX_ERR(0, 3648, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_ifst2) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3642, __pyx_L1_error)
+    __PYX_ERR(0, 3648, __pyx_L1_error)
   }
   fst::script::Intersect((*__pyx_v_ifst1->_fst), (*__pyx_v_ifst2->_fst), __pyx_v_tfst.get(), (*__pyx_v_opts));
 
-  /* "pywrapfst.pyx":3643
+  /* "pywrapfst.pyx":3649
  *         _get_compose_filter(tostring(compose_filter))))
  *   fst.Intersect(deref(ifst1._fst), deref(ifst2._fst), tfst.get(), deref(opts))
  *   return _init_MutableFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -37808,13 +38073,13 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_intersect(str
  * 
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_3 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3643, __pyx_L1_error)
+  __pyx_t_3 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3649, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__MutableFst *)__pyx_t_3);
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3613
+  /* "pywrapfst.pyx":3619
  * 
  * 
  * cpdef _MutableFst intersect(_Fst ifst1,             # <<<<<<<<<<<<<<
@@ -37872,7 +38137,7 @@ static PyObject *__pyx_pw_9pywrapfst_37intersect(PyObject *__pyx_self, PyObject 
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ifst2)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("intersect", 0, 2, 4, 1); __PYX_ERR(0, 3613, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("intersect", 0, 2, 4, 1); __PYX_ERR(0, 3619, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
@@ -37888,7 +38153,7 @@ static PyObject *__pyx_pw_9pywrapfst_37intersect(PyObject *__pyx_self, PyObject 
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "intersect") < 0)) __PYX_ERR(0, 3613, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "intersect") < 0)) __PYX_ERR(0, 3619, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -37906,10 +38171,10 @@ static PyObject *__pyx_pw_9pywrapfst_37intersect(PyObject *__pyx_self, PyObject 
     __pyx_v_ifst2 = ((struct __pyx_obj_9pywrapfst__Fst *)values[1]);
     __pyx_v_compose_filter = values[2];
     if (values[3]) {
-      __pyx_v_connect = __Pyx_PyObject_IsTrue(values[3]); if (unlikely((__pyx_v_connect == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3616, __pyx_L3_error)
+      __pyx_v_connect = __Pyx_PyObject_IsTrue(values[3]); if (unlikely((__pyx_v_connect == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3622, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":3616
+      /* "pywrapfst.pyx":3622
  *                             _Fst ifst2,
  *                             compose_filter=b"auto",
  *                             bool connect=True):             # <<<<<<<<<<<<<<
@@ -37921,17 +38186,17 @@ static PyObject *__pyx_pw_9pywrapfst_37intersect(PyObject *__pyx_self, PyObject 
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("intersect", 0, 2, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3613, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("intersect", 0, 2, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3619, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.intersect", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst1), __pyx_ptype_9pywrapfst__Fst, 1, "ifst1", 0))) __PYX_ERR(0, 3613, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst2), __pyx_ptype_9pywrapfst__Fst, 1, "ifst2", 0))) __PYX_ERR(0, 3614, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst1), __pyx_ptype_9pywrapfst__Fst, 1, "ifst1", 0))) __PYX_ERR(0, 3619, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst2), __pyx_ptype_9pywrapfst__Fst, 1, "ifst2", 0))) __PYX_ERR(0, 3620, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_36intersect(__pyx_self, __pyx_v_ifst1, __pyx_v_ifst2, __pyx_v_compose_filter, __pyx_v_connect);
 
-  /* "pywrapfst.pyx":3613
+  /* "pywrapfst.pyx":3619
  * 
  * 
  * cpdef _MutableFst intersect(_Fst ifst1,             # <<<<<<<<<<<<<<
@@ -37958,7 +38223,7 @@ static PyObject *__pyx_pf_9pywrapfst_36intersect(CYTHON_UNUSED PyObject *__pyx_s
   __pyx_t_2.__pyx_n = 2;
   __pyx_t_2.compose_filter = __pyx_v_compose_filter;
   __pyx_t_2.connect = __pyx_v_connect;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_intersect(__pyx_v_ifst1, __pyx_v_ifst2, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3613, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_intersect(__pyx_v_ifst1, __pyx_v_ifst2, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3619, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -37975,7 +38240,7 @@ static PyObject *__pyx_pf_9pywrapfst_36intersect(CYTHON_UNUSED PyObject *__pyx_s
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3646
+/* "pywrapfst.pyx":3652
  * 
  * 
  * cpdef bool isomorphic(_Fst ifst1, _Fst ifst2, float delta=fst.kDelta):             # <<<<<<<<<<<<<<
@@ -37995,7 +38260,7 @@ static bool __pyx_f_9pywrapfst_isomorphic(struct __pyx_obj_9pywrapfst__Fst *__py
     }
   }
 
-  /* "pywrapfst.pyx":3669
+  /* "pywrapfst.pyx":3675
  *   See also: `equal`, `equivalent`, `randequivalent`.
  *   """
  *   return fst.Isomorphic(deref(ifst1._fst), deref(ifst2._fst), delta)             # <<<<<<<<<<<<<<
@@ -38004,16 +38269,16 @@ static bool __pyx_f_9pywrapfst_isomorphic(struct __pyx_obj_9pywrapfst__Fst *__py
  */
   if (unlikely(((PyObject *)__pyx_v_ifst1) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3669, __pyx_L1_error)
+    __PYX_ERR(0, 3675, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_ifst2) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3669, __pyx_L1_error)
+    __PYX_ERR(0, 3675, __pyx_L1_error)
   }
   __pyx_r = fst::script::Isomorphic((*__pyx_v_ifst1->_fst), (*__pyx_v_ifst2->_fst), __pyx_v_delta);
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3646
+  /* "pywrapfst.pyx":3652
  * 
  * 
  * cpdef bool isomorphic(_Fst ifst1, _Fst ifst2, float delta=fst.kDelta):             # <<<<<<<<<<<<<<
@@ -38065,7 +38330,7 @@ static PyObject *__pyx_pw_9pywrapfst_39isomorphic(PyObject *__pyx_self, PyObject
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ifst2)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("isomorphic", 0, 2, 3, 1); __PYX_ERR(0, 3646, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("isomorphic", 0, 2, 3, 1); __PYX_ERR(0, 3652, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
@@ -38075,7 +38340,7 @@ static PyObject *__pyx_pw_9pywrapfst_39isomorphic(PyObject *__pyx_self, PyObject
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "isomorphic") < 0)) __PYX_ERR(0, 3646, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "isomorphic") < 0)) __PYX_ERR(0, 3652, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -38090,21 +38355,21 @@ static PyObject *__pyx_pw_9pywrapfst_39isomorphic(PyObject *__pyx_self, PyObject
     __pyx_v_ifst1 = ((struct __pyx_obj_9pywrapfst__Fst *)values[0]);
     __pyx_v_ifst2 = ((struct __pyx_obj_9pywrapfst__Fst *)values[1]);
     if (values[2]) {
-      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[2]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3646, __pyx_L3_error)
+      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[2]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3652, __pyx_L3_error)
     } else {
       __pyx_v_delta = __pyx_k__39;
     }
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("isomorphic", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3646, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("isomorphic", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3652, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.isomorphic", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst1), __pyx_ptype_9pywrapfst__Fst, 1, "ifst1", 0))) __PYX_ERR(0, 3646, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst2), __pyx_ptype_9pywrapfst__Fst, 1, "ifst2", 0))) __PYX_ERR(0, 3646, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst1), __pyx_ptype_9pywrapfst__Fst, 1, "ifst1", 0))) __PYX_ERR(0, 3652, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst2), __pyx_ptype_9pywrapfst__Fst, 1, "ifst2", 0))) __PYX_ERR(0, 3652, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_38isomorphic(__pyx_self, __pyx_v_ifst1, __pyx_v_ifst2, __pyx_v_delta);
 
   /* function exit code */
@@ -38127,7 +38392,7 @@ static PyObject *__pyx_pf_9pywrapfst_38isomorphic(CYTHON_UNUSED PyObject *__pyx_
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.delta = __pyx_v_delta;
   __pyx_t_1 = __pyx_f_9pywrapfst_isomorphic(__pyx_v_ifst1, __pyx_v_ifst2, 0, &__pyx_t_2); 
-  __pyx_t_3 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3646, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3652, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
@@ -38144,7 +38409,7 @@ static PyObject *__pyx_pf_9pywrapfst_38isomorphic(CYTHON_UNUSED PyObject *__pyx_
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3672
+/* "pywrapfst.pyx":3678
  * 
  * 
  * cpdef _MutableFst prune(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -38157,7 +38422,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_prune(struct 
   float __pyx_v_delta = __pyx_k__40;
   __pyx_t_10basictypes_int64 __pyx_v_nstate = __pyx_k__41;
 
-  /* "pywrapfst.pyx":3675
+  /* "pywrapfst.pyx":3681
  *                         float delta=fst.kDelta,
  *                         int64 nstate=fst.kNoStateId,
  *                         weight=None):             # <<<<<<<<<<<<<<
@@ -38184,7 +38449,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_prune(struct 
     }
   }
 
-  /* "pywrapfst.pyx":3699
+  /* "pywrapfst.pyx":3705
  *   """
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))             # <<<<<<<<<<<<<<
@@ -38193,11 +38458,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_prune(struct 
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "arc_type");
-    __PYX_ERR(0, 3699, __pyx_L1_error)
+    __PYX_ERR(0, 3705, __pyx_L1_error)
   }
   __pyx_v_tfst.reset(new fst::script::VectorFstClass(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->arc_type(__pyx_v_ifst, 0)));
 
-  /* "pywrapfst.pyx":3700
+  /* "pywrapfst.pyx":3706
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   cdef fst.WeightClass wc = _get_WeightClass_or_Zero(ifst.weight_type(), weight)             # <<<<<<<<<<<<<<
@@ -38206,12 +38471,12 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_prune(struct 
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "weight_type");
-    __PYX_ERR(0, 3700, __pyx_L1_error)
+    __PYX_ERR(0, 3706, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_9pywrapfst__get_WeightClass_or_Zero(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->weight_type(__pyx_v_ifst, 0), __pyx_v_weight); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3700, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst__get_WeightClass_or_Zero(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->weight_type(__pyx_v_ifst, 0), __pyx_v_weight); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3706, __pyx_L1_error)
   __pyx_v_wc = __pyx_t_1;
 
-  /* "pywrapfst.pyx":3701
+  /* "pywrapfst.pyx":3707
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   cdef fst.WeightClass wc = _get_WeightClass_or_Zero(ifst.weight_type(), weight)
  *   fst.Prune(deref(ifst._fst), tfst.get(), wc, nstate, delta)             # <<<<<<<<<<<<<<
@@ -38220,11 +38485,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_prune(struct 
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3701, __pyx_L1_error)
+    __PYX_ERR(0, 3707, __pyx_L1_error)
   }
   fst::script::Prune((*__pyx_v_ifst->_fst), __pyx_v_tfst.get(), __pyx_v_wc, __pyx_v_nstate, __pyx_v_delta);
 
-  /* "pywrapfst.pyx":3702
+  /* "pywrapfst.pyx":3708
  *   cdef fst.WeightClass wc = _get_WeightClass_or_Zero(ifst.weight_type(), weight)
  *   fst.Prune(deref(ifst._fst), tfst.get(), wc, nstate, delta)
  *   return _init_MutableFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -38232,13 +38497,13 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_prune(struct 
  * 
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_2 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3702, __pyx_L1_error)
+  __pyx_t_2 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3708, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__MutableFst *)__pyx_t_2);
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3672
+  /* "pywrapfst.pyx":3678
  * 
  * 
  * cpdef _MutableFst prune(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -38272,7 +38537,7 @@ static PyObject *__pyx_pw_9pywrapfst_41prune(PyObject *__pyx_self, PyObject *__p
     static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_ifst,&__pyx_n_s_delta,&__pyx_n_s_nstate,&__pyx_n_s_weight,0};
     PyObject* values[4] = {0,0,0,0};
 
-    /* "pywrapfst.pyx":3675
+    /* "pywrapfst.pyx":3681
  *                         float delta=fst.kDelta,
  *                         int64 nstate=fst.kNoStateId,
  *                         weight=None):             # <<<<<<<<<<<<<<
@@ -38320,7 +38585,7 @@ static PyObject *__pyx_pw_9pywrapfst_41prune(PyObject *__pyx_self, PyObject *__p
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "prune") < 0)) __PYX_ERR(0, 3672, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "prune") < 0)) __PYX_ERR(0, 3678, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -38337,12 +38602,12 @@ static PyObject *__pyx_pw_9pywrapfst_41prune(PyObject *__pyx_self, PyObject *__p
     }
     __pyx_v_ifst = ((struct __pyx_obj_9pywrapfst__Fst *)values[0]);
     if (values[1]) {
-      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[1]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3673, __pyx_L3_error)
+      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[1]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3679, __pyx_L3_error)
     } else {
       __pyx_v_delta = __pyx_k__40;
     }
     if (values[2]) {
-      __pyx_v_nstate = __Pyx_PyInt_As_int64_t(values[2]); if (unlikely((__pyx_v_nstate == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3674, __pyx_L3_error)
+      __pyx_v_nstate = __Pyx_PyInt_As_int64_t(values[2]); if (unlikely((__pyx_v_nstate == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3680, __pyx_L3_error)
     } else {
       __pyx_v_nstate = __pyx_k__41;
     }
@@ -38350,16 +38615,16 @@ static PyObject *__pyx_pw_9pywrapfst_41prune(PyObject *__pyx_self, PyObject *__p
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("prune", 0, 1, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3672, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("prune", 0, 1, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3678, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.prune", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3672, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3678, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_40prune(__pyx_self, __pyx_v_ifst, __pyx_v_delta, __pyx_v_nstate, __pyx_v_weight);
 
-  /* "pywrapfst.pyx":3672
+  /* "pywrapfst.pyx":3678
  * 
  * 
  * cpdef _MutableFst prune(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -38387,7 +38652,7 @@ static PyObject *__pyx_pf_9pywrapfst_40prune(CYTHON_UNUSED PyObject *__pyx_self,
   __pyx_t_2.delta = __pyx_v_delta;
   __pyx_t_2.nstate = __pyx_v_nstate;
   __pyx_t_2.weight = __pyx_v_weight;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_prune(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3672, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_prune(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3678, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -38404,7 +38669,7 @@ static PyObject *__pyx_pf_9pywrapfst_40prune(CYTHON_UNUSED PyObject *__pyx_self,
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3705
+/* "pywrapfst.pyx":3711
  * 
  * 
  * cpdef _MutableFst push(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -38416,7 +38681,7 @@ static PyObject *__pyx_pw_9pywrapfst_43push(PyObject *__pyx_self, PyObject *__py
 static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_push(struct __pyx_obj_9pywrapfst__Fst *__pyx_v_ifst, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_9pywrapfst_push *__pyx_optional_args) {
   float __pyx_v_delta = __pyx_k__42;
 
-  /* "pywrapfst.pyx":3707
+  /* "pywrapfst.pyx":3713
  * cpdef _MutableFst push(_Fst ifst,
  *                        float delta=fst.kDelta,
  *                        bool push_weights=False,             # <<<<<<<<<<<<<<
@@ -38425,7 +38690,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_push(struct _
  */
   bool __pyx_v_push_weights = ((bool)0);
 
-  /* "pywrapfst.pyx":3708
+  /* "pywrapfst.pyx":3714
  *                        float delta=fst.kDelta,
  *                        bool push_weights=False,
  *                        bool push_labels=False,             # <<<<<<<<<<<<<<
@@ -38434,7 +38699,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_push(struct _
  */
   bool __pyx_v_push_labels = ((bool)0);
 
-  /* "pywrapfst.pyx":3709
+  /* "pywrapfst.pyx":3715
  *                        bool push_weights=False,
  *                        bool push_labels=False,
  *                        bool remove_common_affix=False,             # <<<<<<<<<<<<<<
@@ -38443,7 +38708,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_push(struct _
  */
   bool __pyx_v_remove_common_affix = ((bool)0);
 
-  /* "pywrapfst.pyx":3710
+  /* "pywrapfst.pyx":3716
  *                        bool push_labels=False,
  *                        bool remove_common_affix=False,
  *                        bool remove_total_weight=False,             # <<<<<<<<<<<<<<
@@ -38452,7 +38717,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_push(struct _
  */
   bool __pyx_v_remove_total_weight = ((bool)0);
 
-  /* "pywrapfst.pyx":3711
+  /* "pywrapfst.pyx":3717
  *                        bool remove_common_affix=False,
  *                        bool remove_total_weight=False,
  *                        bool to_final=False):             # <<<<<<<<<<<<<<
@@ -38487,7 +38752,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_push(struct _
     }
   }
 
-  /* "pywrapfst.pyx":3751
+  /* "pywrapfst.pyx":3757
  *   # This is copied, almost verbatim, from nlp/fst/bin/fstpush.cc.
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))             # <<<<<<<<<<<<<<
@@ -38496,11 +38761,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_push(struct _
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "arc_type");
-    __PYX_ERR(0, 3751, __pyx_L1_error)
+    __PYX_ERR(0, 3757, __pyx_L1_error)
   }
   __pyx_v_tfst.reset(new fst::script::VectorFstClass(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->arc_type(__pyx_v_ifst, 0)));
 
-  /* "pywrapfst.pyx":3752
+  /* "pywrapfst.pyx":3758
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   cdef uint32 flags = fst.GetPushFlags(push_weights, push_labels,             # <<<<<<<<<<<<<<
@@ -38509,7 +38774,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_push(struct _
  */
   __pyx_v_flags = fst::script::GetPushFlags(__pyx_v_push_weights, __pyx_v_push_labels, __pyx_v_remove_common_affix, __pyx_v_remove_total_weight);
 
-  /* "pywrapfst.pyx":3754
+  /* "pywrapfst.pyx":3760
  *   cdef uint32 flags = fst.GetPushFlags(push_weights, push_labels,
  *                                        remove_common_affix, remove_total_weight)
  *   fst.Push(deref(ifst._fst), tfst.get(), flags, fst.GetReweightType(to_final),             # <<<<<<<<<<<<<<
@@ -38518,10 +38783,10 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_push(struct _
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3754, __pyx_L1_error)
+    __PYX_ERR(0, 3760, __pyx_L1_error)
   }
 
-  /* "pywrapfst.pyx":3755
+  /* "pywrapfst.pyx":3761
  *                                        remove_common_affix, remove_total_weight)
  *   fst.Push(deref(ifst._fst), tfst.get(), flags, fst.GetReweightType(to_final),
  *            delta)             # <<<<<<<<<<<<<<
@@ -38530,7 +38795,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_push(struct _
  */
   fst::script::Push((*__pyx_v_ifst->_fst), __pyx_v_tfst.get(), __pyx_v_flags, fst::script::GetReweightType(__pyx_v_to_final), __pyx_v_delta);
 
-  /* "pywrapfst.pyx":3756
+  /* "pywrapfst.pyx":3762
  *   fst.Push(deref(ifst._fst), tfst.get(), flags, fst.GetReweightType(to_final),
  *            delta)
  *   return _init_MutableFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -38538,13 +38803,13 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_push(struct _
  * 
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3756, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3762, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__MutableFst *)__pyx_t_1);
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3705
+  /* "pywrapfst.pyx":3711
  * 
  * 
  * cpdef _MutableFst push(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -38644,7 +38909,7 @@ static PyObject *__pyx_pw_9pywrapfst_43push(PyObject *__pyx_self, PyObject *__py
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "push") < 0)) __PYX_ERR(0, 3705, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "push") < 0)) __PYX_ERR(0, 3711, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -38667,15 +38932,15 @@ static PyObject *__pyx_pw_9pywrapfst_43push(PyObject *__pyx_self, PyObject *__py
     }
     __pyx_v_ifst = ((struct __pyx_obj_9pywrapfst__Fst *)values[0]);
     if (values[1]) {
-      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[1]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3706, __pyx_L3_error)
+      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[1]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3712, __pyx_L3_error)
     } else {
       __pyx_v_delta = __pyx_k__42;
     }
     if (values[2]) {
-      __pyx_v_push_weights = __Pyx_PyObject_IsTrue(values[2]); if (unlikely((__pyx_v_push_weights == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3707, __pyx_L3_error)
+      __pyx_v_push_weights = __Pyx_PyObject_IsTrue(values[2]); if (unlikely((__pyx_v_push_weights == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3713, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":3707
+      /* "pywrapfst.pyx":3713
  * cpdef _MutableFst push(_Fst ifst,
  *                        float delta=fst.kDelta,
  *                        bool push_weights=False,             # <<<<<<<<<<<<<<
@@ -38685,10 +38950,10 @@ static PyObject *__pyx_pw_9pywrapfst_43push(PyObject *__pyx_self, PyObject *__py
       __pyx_v_push_weights = ((bool)0);
     }
     if (values[3]) {
-      __pyx_v_push_labels = __Pyx_PyObject_IsTrue(values[3]); if (unlikely((__pyx_v_push_labels == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3708, __pyx_L3_error)
+      __pyx_v_push_labels = __Pyx_PyObject_IsTrue(values[3]); if (unlikely((__pyx_v_push_labels == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3714, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":3708
+      /* "pywrapfst.pyx":3714
  *                        float delta=fst.kDelta,
  *                        bool push_weights=False,
  *                        bool push_labels=False,             # <<<<<<<<<<<<<<
@@ -38698,10 +38963,10 @@ static PyObject *__pyx_pw_9pywrapfst_43push(PyObject *__pyx_self, PyObject *__py
       __pyx_v_push_labels = ((bool)0);
     }
     if (values[4]) {
-      __pyx_v_remove_common_affix = __Pyx_PyObject_IsTrue(values[4]); if (unlikely((__pyx_v_remove_common_affix == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3709, __pyx_L3_error)
+      __pyx_v_remove_common_affix = __Pyx_PyObject_IsTrue(values[4]); if (unlikely((__pyx_v_remove_common_affix == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3715, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":3709
+      /* "pywrapfst.pyx":3715
  *                        bool push_weights=False,
  *                        bool push_labels=False,
  *                        bool remove_common_affix=False,             # <<<<<<<<<<<<<<
@@ -38711,10 +38976,10 @@ static PyObject *__pyx_pw_9pywrapfst_43push(PyObject *__pyx_self, PyObject *__py
       __pyx_v_remove_common_affix = ((bool)0);
     }
     if (values[5]) {
-      __pyx_v_remove_total_weight = __Pyx_PyObject_IsTrue(values[5]); if (unlikely((__pyx_v_remove_total_weight == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3710, __pyx_L3_error)
+      __pyx_v_remove_total_weight = __Pyx_PyObject_IsTrue(values[5]); if (unlikely((__pyx_v_remove_total_weight == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3716, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":3710
+      /* "pywrapfst.pyx":3716
  *                        bool push_labels=False,
  *                        bool remove_common_affix=False,
  *                        bool remove_total_weight=False,             # <<<<<<<<<<<<<<
@@ -38724,10 +38989,10 @@ static PyObject *__pyx_pw_9pywrapfst_43push(PyObject *__pyx_self, PyObject *__py
       __pyx_v_remove_total_weight = ((bool)0);
     }
     if (values[6]) {
-      __pyx_v_to_final = __Pyx_PyObject_IsTrue(values[6]); if (unlikely((__pyx_v_to_final == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3711, __pyx_L3_error)
+      __pyx_v_to_final = __Pyx_PyObject_IsTrue(values[6]); if (unlikely((__pyx_v_to_final == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3717, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":3711
+      /* "pywrapfst.pyx":3717
  *                        bool remove_common_affix=False,
  *                        bool remove_total_weight=False,
  *                        bool to_final=False):             # <<<<<<<<<<<<<<
@@ -38739,16 +39004,16 @@ static PyObject *__pyx_pw_9pywrapfst_43push(PyObject *__pyx_self, PyObject *__py
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("push", 0, 1, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3705, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("push", 0, 1, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3711, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.push", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3705, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3711, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_42push(__pyx_self, __pyx_v_ifst, __pyx_v_delta, __pyx_v_push_weights, __pyx_v_push_labels, __pyx_v_remove_common_affix, __pyx_v_remove_total_weight, __pyx_v_to_final);
 
-  /* "pywrapfst.pyx":3705
+  /* "pywrapfst.pyx":3711
  * 
  * 
  * cpdef _MutableFst push(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -38779,7 +39044,7 @@ static PyObject *__pyx_pf_9pywrapfst_42push(CYTHON_UNUSED PyObject *__pyx_self, 
   __pyx_t_2.remove_common_affix = __pyx_v_remove_common_affix;
   __pyx_t_2.remove_total_weight = __pyx_v_remove_total_weight;
   __pyx_t_2.to_final = __pyx_v_to_final;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_push(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3705, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_push(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3711, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -38796,7 +39061,7 @@ static PyObject *__pyx_pf_9pywrapfst_42push(CYTHON_UNUSED PyObject *__pyx_self, 
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3759
+/* "pywrapfst.pyx":3765
  * 
  * 
  * cpdef bool randequivalent(_Fst ifst1,             # <<<<<<<<<<<<<<
@@ -38837,18 +39102,18 @@ static bool __pyx_f_9pywrapfst_randequivalent(struct __pyx_obj_9pywrapfst__Fst *
     }
   }
 
-  /* "pywrapfst.pyx":3794
+  /* "pywrapfst.pyx":3800
  *   See also: `equal`, `equivalent`, `isomorphic`, `randgen`.
  *   """
  *   cdef fst.RandArcSelection ras = _get_rand_arc_selection(tostring(select))             # <<<<<<<<<<<<<<
  *   cdef unique_ptr[fst.RandGenOptions[fst.RandArcSelection]] opts
  *   # The three trailing options will be ignored by RandEquivalent.
  */
-  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_select, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3794, __pyx_L1_error)
-  __pyx_t_2 = __pyx_f_9pywrapfst__get_rand_arc_selection(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3794, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_select, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3800, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_9pywrapfst__get_rand_arc_selection(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3800, __pyx_L1_error)
   __pyx_v_ras = __pyx_t_2;
 
-  /* "pywrapfst.pyx":3797
+  /* "pywrapfst.pyx":3803
  *   cdef unique_ptr[fst.RandGenOptions[fst.RandArcSelection]] opts
  *   # The three trailing options will be ignored by RandEquivalent.
  *   opts.reset(new fst.RandGenOptions[fst.RandArcSelection](ras, max_length,             # <<<<<<<<<<<<<<
@@ -38857,7 +39122,7 @@ static bool __pyx_f_9pywrapfst_randequivalent(struct __pyx_obj_9pywrapfst__Fst *
  */
   __pyx_v_opts.reset(new fst::RandGenOptions<enum fst::script::RandArcSelection> (__pyx_v_ras, __pyx_v_max_length, 1, 0, 0));
 
-  /* "pywrapfst.pyx":3799
+  /* "pywrapfst.pyx":3805
  *   opts.reset(new fst.RandGenOptions[fst.RandArcSelection](ras, max_length,
  *                                                           1, False, False))
  *   if seed == 0:             # <<<<<<<<<<<<<<
@@ -38867,7 +39132,7 @@ static bool __pyx_f_9pywrapfst_randequivalent(struct __pyx_obj_9pywrapfst__Fst *
   __pyx_t_3 = ((__pyx_v_seed == 0) != 0);
   if (__pyx_t_3) {
 
-    /* "pywrapfst.pyx":3800
+    /* "pywrapfst.pyx":3806
  *                                                           1, False, False))
  *   if seed == 0:
  *     seed = time(NULL) + getpid()             # <<<<<<<<<<<<<<
@@ -38876,7 +39141,7 @@ static bool __pyx_f_9pywrapfst_randequivalent(struct __pyx_obj_9pywrapfst__Fst *
  */
     __pyx_v_seed = (time(NULL) + getpid());
 
-    /* "pywrapfst.pyx":3799
+    /* "pywrapfst.pyx":3805
  *   opts.reset(new fst.RandGenOptions[fst.RandArcSelection](ras, max_length,
  *                                                           1, False, False))
  *   if seed == 0:             # <<<<<<<<<<<<<<
@@ -38885,7 +39150,7 @@ static bool __pyx_f_9pywrapfst_randequivalent(struct __pyx_obj_9pywrapfst__Fst *
  */
   }
 
-  /* "pywrapfst.pyx":3801
+  /* "pywrapfst.pyx":3807
  *   if seed == 0:
  *     seed = time(NULL) + getpid()
  *   return fst.RandEquivalent(deref(ifst1._fst), deref(ifst2._fst), npath, delta,             # <<<<<<<<<<<<<<
@@ -38894,14 +39159,14 @@ static bool __pyx_f_9pywrapfst_randequivalent(struct __pyx_obj_9pywrapfst__Fst *
  */
   if (unlikely(((PyObject *)__pyx_v_ifst1) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3801, __pyx_L1_error)
+    __PYX_ERR(0, 3807, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_ifst2) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3801, __pyx_L1_error)
+    __PYX_ERR(0, 3807, __pyx_L1_error)
   }
 
-  /* "pywrapfst.pyx":3802
+  /* "pywrapfst.pyx":3808
  *     seed = time(NULL) + getpid()
  *   return fst.RandEquivalent(deref(ifst1._fst), deref(ifst2._fst), npath, delta,
  *                            seed, deref(opts))             # <<<<<<<<<<<<<<
@@ -38911,7 +39176,7 @@ static bool __pyx_f_9pywrapfst_randequivalent(struct __pyx_obj_9pywrapfst__Fst *
   __pyx_r = fst::script::RandEquivalent((*__pyx_v_ifst1->_fst), (*__pyx_v_ifst2->_fst), __pyx_v_npath, __pyx_v_delta, __pyx_v_seed, (*__pyx_v_opts));
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3759
+  /* "pywrapfst.pyx":3765
  * 
  * 
  * cpdef bool randequivalent(_Fst ifst1,             # <<<<<<<<<<<<<<
@@ -38976,7 +39241,7 @@ static PyObject *__pyx_pw_9pywrapfst_45randequivalent(PyObject *__pyx_self, PyOb
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ifst2)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("randequivalent", 0, 2, 7, 1); __PYX_ERR(0, 3759, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("randequivalent", 0, 2, 7, 1); __PYX_ERR(0, 3765, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
@@ -39010,7 +39275,7 @@ static PyObject *__pyx_pw_9pywrapfst_45randequivalent(PyObject *__pyx_self, PyOb
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "randequivalent") < 0)) __PYX_ERR(0, 3759, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "randequivalent") < 0)) __PYX_ERR(0, 3765, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -39033,37 +39298,37 @@ static PyObject *__pyx_pw_9pywrapfst_45randequivalent(PyObject *__pyx_self, PyOb
     __pyx_v_ifst1 = ((struct __pyx_obj_9pywrapfst__Fst *)values[0]);
     __pyx_v_ifst2 = ((struct __pyx_obj_9pywrapfst__Fst *)values[1]);
     if (values[2]) {
-      __pyx_v_npath = __Pyx_PyInt_As_int32_t(values[2]); if (unlikely((__pyx_v_npath == ((int32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3761, __pyx_L3_error)
+      __pyx_v_npath = __Pyx_PyInt_As_int32_t(values[2]); if (unlikely((__pyx_v_npath == ((int32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3767, __pyx_L3_error)
     } else {
       __pyx_v_npath = ((__pyx_t_10basictypes_int32)1);
     }
     if (values[3]) {
-      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[3]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3762, __pyx_L3_error)
+      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[3]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3768, __pyx_L3_error)
     } else {
       __pyx_v_delta = __pyx_k__43;
     }
     if (values[4]) {
-      __pyx_v_seed = __Pyx_PyInt_As_time_t(values[4]); if (unlikely((__pyx_v_seed == ((time_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3763, __pyx_L3_error)
+      __pyx_v_seed = __Pyx_PyInt_As_time_t(values[4]); if (unlikely((__pyx_v_seed == ((time_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3769, __pyx_L3_error)
     } else {
       __pyx_v_seed = ((time_t)0);
     }
     __pyx_v_select = values[5];
     if (values[6]) {
-      __pyx_v_max_length = __Pyx_PyInt_As_int32_t(values[6]); if (unlikely((__pyx_v_max_length == ((int32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3765, __pyx_L3_error)
+      __pyx_v_max_length = __Pyx_PyInt_As_int32_t(values[6]); if (unlikely((__pyx_v_max_length == ((int32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3771, __pyx_L3_error)
     } else {
       __pyx_v_max_length = __pyx_k__44;
     }
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("randequivalent", 0, 2, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3759, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("randequivalent", 0, 2, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3765, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.randequivalent", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst1), __pyx_ptype_9pywrapfst__Fst, 1, "ifst1", 0))) __PYX_ERR(0, 3759, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst2), __pyx_ptype_9pywrapfst__Fst, 1, "ifst2", 0))) __PYX_ERR(0, 3760, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst1), __pyx_ptype_9pywrapfst__Fst, 1, "ifst1", 0))) __PYX_ERR(0, 3765, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst2), __pyx_ptype_9pywrapfst__Fst, 1, "ifst2", 0))) __PYX_ERR(0, 3766, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_44randequivalent(__pyx_self, __pyx_v_ifst1, __pyx_v_ifst2, __pyx_v_npath, __pyx_v_delta, __pyx_v_seed, __pyx_v_select, __pyx_v_max_length);
 
   /* function exit code */
@@ -39089,8 +39354,8 @@ static PyObject *__pyx_pf_9pywrapfst_44randequivalent(CYTHON_UNUSED PyObject *__
   __pyx_t_2.seed = __pyx_v_seed;
   __pyx_t_2.select = __pyx_v_select;
   __pyx_t_2.max_length = __pyx_v_max_length;
-  __pyx_t_1 = __pyx_f_9pywrapfst_randequivalent(__pyx_v_ifst1, __pyx_v_ifst2, 0, &__pyx_t_2); if (unlikely(__pyx_t_1 == ((bool)-1) && PyErr_Occurred())) __PYX_ERR(0, 3759, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3759, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst_randequivalent(__pyx_v_ifst1, __pyx_v_ifst2, 0, &__pyx_t_2); if (unlikely(__pyx_t_1 == ((bool)-1) && PyErr_Occurred())) __PYX_ERR(0, 3765, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3765, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
@@ -39107,7 +39372,7 @@ static PyObject *__pyx_pf_9pywrapfst_44randequivalent(CYTHON_UNUSED PyObject *__
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3805
+/* "pywrapfst.pyx":3811
  * 
  * 
  * cpdef _MutableFst randgen(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -39122,7 +39387,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_randgen(struc
   PyObject *__pyx_v_select = ((PyObject *)__pyx_n_b_uniform);
   __pyx_t_10basictypes_int32 __pyx_v_max_length = __pyx_k__45;
 
-  /* "pywrapfst.pyx":3810
+  /* "pywrapfst.pyx":3816
  *                           select=b"uniform",
  *                           int32 max_length=INT32_MAX,
  *                           bool weighted=False,             # <<<<<<<<<<<<<<
@@ -39131,7 +39396,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_randgen(struc
  */
   bool __pyx_v_weighted = ((bool)0);
 
-  /* "pywrapfst.pyx":3811
+  /* "pywrapfst.pyx":3817
  *                           int32 max_length=INT32_MAX,
  *                           bool weighted=False,
  *                           bool remove_total_weight=False):             # <<<<<<<<<<<<<<
@@ -39170,18 +39435,18 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_randgen(struc
     }
   }
 
-  /* "pywrapfst.pyx":3843
+  /* "pywrapfst.pyx":3849
  *   See also: `randequivalent`.
  *   """
  *   cdef fst.RandArcSelection ras = _get_rand_arc_selection(tostring(select))             # <<<<<<<<<<<<<<
  *   cdef unique_ptr[fst.RandGenOptions[fst.RandArcSelection]] opts
  *   opts.reset(new fst.RandGenOptions[fst.RandArcSelection](ras, max_length,
  */
-  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_select, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3843, __pyx_L1_error)
-  __pyx_t_2 = __pyx_f_9pywrapfst__get_rand_arc_selection(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3843, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_select, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3849, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_9pywrapfst__get_rand_arc_selection(__pyx_t_1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3849, __pyx_L1_error)
   __pyx_v_ras = __pyx_t_2;
 
-  /* "pywrapfst.pyx":3845
+  /* "pywrapfst.pyx":3851
  *   cdef fst.RandArcSelection ras = _get_rand_arc_selection(tostring(select))
  *   cdef unique_ptr[fst.RandGenOptions[fst.RandArcSelection]] opts
  *   opts.reset(new fst.RandGenOptions[fst.RandArcSelection](ras, max_length,             # <<<<<<<<<<<<<<
@@ -39190,7 +39455,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_randgen(struc
  */
   __pyx_v_opts.reset(new fst::RandGenOptions<enum fst::script::RandArcSelection> (__pyx_v_ras, __pyx_v_max_length, __pyx_v_npath, __pyx_v_weighted, __pyx_v_remove_total_weight));
 
-  /* "pywrapfst.pyx":3849
+  /* "pywrapfst.pyx":3855
  *                                                           remove_total_weight))
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))             # <<<<<<<<<<<<<<
@@ -39199,11 +39464,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_randgen(struc
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "arc_type");
-    __PYX_ERR(0, 3849, __pyx_L1_error)
+    __PYX_ERR(0, 3855, __pyx_L1_error)
   }
   __pyx_v_tfst.reset(new fst::script::VectorFstClass(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->arc_type(__pyx_v_ifst, 0)));
 
-  /* "pywrapfst.pyx":3850
+  /* "pywrapfst.pyx":3856
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   if seed == 0:             # <<<<<<<<<<<<<<
@@ -39213,7 +39478,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_randgen(struc
   __pyx_t_3 = ((__pyx_v_seed == 0) != 0);
   if (__pyx_t_3) {
 
-    /* "pywrapfst.pyx":3851
+    /* "pywrapfst.pyx":3857
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   if seed == 0:
  *     seed = time(NULL) + getpid()             # <<<<<<<<<<<<<<
@@ -39222,7 +39487,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_randgen(struc
  */
     __pyx_v_seed = (time(NULL) + getpid());
 
-    /* "pywrapfst.pyx":3850
+    /* "pywrapfst.pyx":3856
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   if seed == 0:             # <<<<<<<<<<<<<<
@@ -39231,7 +39496,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_randgen(struc
  */
   }
 
-  /* "pywrapfst.pyx":3852
+  /* "pywrapfst.pyx":3858
  *   if seed == 0:
  *     seed = time(NULL) + getpid()
  *   fst.RandGen(deref(ifst._fst), tfst.get(), seed, deref(opts))             # <<<<<<<<<<<<<<
@@ -39240,11 +39505,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_randgen(struc
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3852, __pyx_L1_error)
+    __PYX_ERR(0, 3858, __pyx_L1_error)
   }
   fst::script::RandGen((*__pyx_v_ifst->_fst), __pyx_v_tfst.get(), __pyx_v_seed, (*__pyx_v_opts));
 
-  /* "pywrapfst.pyx":3853
+  /* "pywrapfst.pyx":3859
  *     seed = time(NULL) + getpid()
  *   fst.RandGen(deref(ifst._fst), tfst.get(), seed, deref(opts))
  *   return _init_MutableFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -39252,13 +39517,13 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_randgen(struc
  * 
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_4 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3853, __pyx_L1_error)
+  __pyx_t_4 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3859, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__MutableFst *)__pyx_t_4);
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3805
+  /* "pywrapfst.pyx":3811
  * 
  * 
  * cpdef _MutableFst randgen(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -39359,7 +39624,7 @@ static PyObject *__pyx_pw_9pywrapfst_47randgen(PyObject *__pyx_self, PyObject *_
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "randgen") < 0)) __PYX_ERR(0, 3805, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "randgen") < 0)) __PYX_ERR(0, 3811, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -39382,26 +39647,26 @@ static PyObject *__pyx_pw_9pywrapfst_47randgen(PyObject *__pyx_self, PyObject *_
     }
     __pyx_v_ifst = ((struct __pyx_obj_9pywrapfst__Fst *)values[0]);
     if (values[1]) {
-      __pyx_v_npath = __Pyx_PyInt_As_int32_t(values[1]); if (unlikely((__pyx_v_npath == ((int32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3806, __pyx_L3_error)
+      __pyx_v_npath = __Pyx_PyInt_As_int32_t(values[1]); if (unlikely((__pyx_v_npath == ((int32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3812, __pyx_L3_error)
     } else {
       __pyx_v_npath = ((__pyx_t_10basictypes_int32)1);
     }
     if (values[2]) {
-      __pyx_v_seed = __Pyx_PyInt_As_time_t(values[2]); if (unlikely((__pyx_v_seed == ((time_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3807, __pyx_L3_error)
+      __pyx_v_seed = __Pyx_PyInt_As_time_t(values[2]); if (unlikely((__pyx_v_seed == ((time_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3813, __pyx_L3_error)
     } else {
       __pyx_v_seed = ((time_t)0);
     }
     __pyx_v_select = values[3];
     if (values[4]) {
-      __pyx_v_max_length = __Pyx_PyInt_As_int32_t(values[4]); if (unlikely((__pyx_v_max_length == ((int32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3809, __pyx_L3_error)
+      __pyx_v_max_length = __Pyx_PyInt_As_int32_t(values[4]); if (unlikely((__pyx_v_max_length == ((int32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3815, __pyx_L3_error)
     } else {
       __pyx_v_max_length = __pyx_k__45;
     }
     if (values[5]) {
-      __pyx_v_weighted = __Pyx_PyObject_IsTrue(values[5]); if (unlikely((__pyx_v_weighted == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3810, __pyx_L3_error)
+      __pyx_v_weighted = __Pyx_PyObject_IsTrue(values[5]); if (unlikely((__pyx_v_weighted == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3816, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":3810
+      /* "pywrapfst.pyx":3816
  *                           select=b"uniform",
  *                           int32 max_length=INT32_MAX,
  *                           bool weighted=False,             # <<<<<<<<<<<<<<
@@ -39411,10 +39676,10 @@ static PyObject *__pyx_pw_9pywrapfst_47randgen(PyObject *__pyx_self, PyObject *_
       __pyx_v_weighted = ((bool)0);
     }
     if (values[6]) {
-      __pyx_v_remove_total_weight = __Pyx_PyObject_IsTrue(values[6]); if (unlikely((__pyx_v_remove_total_weight == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3811, __pyx_L3_error)
+      __pyx_v_remove_total_weight = __Pyx_PyObject_IsTrue(values[6]); if (unlikely((__pyx_v_remove_total_weight == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3817, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":3811
+      /* "pywrapfst.pyx":3817
  *                           int32 max_length=INT32_MAX,
  *                           bool weighted=False,
  *                           bool remove_total_weight=False):             # <<<<<<<<<<<<<<
@@ -39426,16 +39691,16 @@ static PyObject *__pyx_pw_9pywrapfst_47randgen(PyObject *__pyx_self, PyObject *_
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("randgen", 0, 1, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3805, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("randgen", 0, 1, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3811, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.randgen", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3805, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3811, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_46randgen(__pyx_self, __pyx_v_ifst, __pyx_v_npath, __pyx_v_seed, __pyx_v_select, __pyx_v_max_length, __pyx_v_weighted, __pyx_v_remove_total_weight);
 
-  /* "pywrapfst.pyx":3805
+  /* "pywrapfst.pyx":3811
  * 
  * 
  * cpdef _MutableFst randgen(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -39466,7 +39731,7 @@ static PyObject *__pyx_pf_9pywrapfst_46randgen(CYTHON_UNUSED PyObject *__pyx_sel
   __pyx_t_2.max_length = __pyx_v_max_length;
   __pyx_t_2.remove_total_weight = __pyx_v_weighted;
   __pyx_t_2.weighted = __pyx_v_remove_total_weight;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_randgen(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3805, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_randgen(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3811, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -39483,7 +39748,7 @@ static PyObject *__pyx_pf_9pywrapfst_46randgen(CYTHON_UNUSED PyObject *__pyx_sel
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3856
+/* "pywrapfst.pyx":3862
  * 
  * 
  * cpdef _MutableFst replace(pairs,             # <<<<<<<<<<<<<<
@@ -39496,7 +39761,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
   PyObject *__pyx_v_call_arc_labeling = ((PyObject *)__pyx_n_b_input);
   PyObject *__pyx_v_return_arc_labeling = ((PyObject *)__pyx_n_b_neither);
 
-  /* "pywrapfst.pyx":3859
+  /* "pywrapfst.pyx":3865
  *                           call_arc_labeling=b"input",
  *                           return_arc_labeling=b"neither",
  *                           bool epsilon_on_replace=False,             # <<<<<<<<<<<<<<
@@ -39544,26 +39809,26 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
     }
   }
 
-  /* "pywrapfst.pyx":3901
+  /* "pywrapfst.pyx":3907
  *   cdef int64 label
  *   cdef _Fst ifst
  *   it = iter(pairs)             # <<<<<<<<<<<<<<
  *   (root_label, ifst) = next(it)
  *   _pairs.push_back(fst.LabelFstClassPair(root_label, ifst._fst.get()))
  */
-  __pyx_t_1 = PyObject_GetIter(__pyx_v_pairs); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3901, __pyx_L1_error)
+  __pyx_t_1 = PyObject_GetIter(__pyx_v_pairs); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3907, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_it = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "pywrapfst.pyx":3902
+  /* "pywrapfst.pyx":3908
  *   cdef _Fst ifst
  *   it = iter(pairs)
  *   (root_label, ifst) = next(it)             # <<<<<<<<<<<<<<
  *   _pairs.push_back(fst.LabelFstClassPair(root_label, ifst._fst.get()))
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  */
-  __pyx_t_1 = __Pyx_PyIter_Next(__pyx_v_it); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3902, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyIter_Next(__pyx_v_it); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3908, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if ((likely(PyTuple_CheckExact(__pyx_t_1))) || (PyList_CheckExact(__pyx_t_1))) {
     PyObject* sequence = __pyx_t_1;
@@ -39571,7 +39836,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
     if (unlikely(size != 2)) {
       if (size > 2) __Pyx_RaiseTooManyValuesError(2);
       else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-      __PYX_ERR(0, 3902, __pyx_L1_error)
+      __PYX_ERR(0, 3908, __pyx_L1_error)
     }
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
     if (likely(PyTuple_CheckExact(sequence))) {
@@ -39584,15 +39849,15 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
     __Pyx_INCREF(__pyx_t_2);
     __Pyx_INCREF(__pyx_t_3);
     #else
-    __pyx_t_2 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3902, __pyx_L1_error)
+    __pyx_t_2 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3908, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3902, __pyx_L1_error)
+    __pyx_t_3 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3908, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     #endif
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   } else {
     Py_ssize_t index = -1;
-    __pyx_t_4 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3902, __pyx_L1_error)
+    __pyx_t_4 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3908, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_t_5 = Py_TYPE(__pyx_t_4)->tp_iternext;
@@ -39600,7 +39865,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
     __Pyx_GOTREF(__pyx_t_2);
     index = 1; __pyx_t_3 = __pyx_t_5(__pyx_t_4); if (unlikely(!__pyx_t_3)) goto __pyx_L3_unpacking_failed;
     __Pyx_GOTREF(__pyx_t_3);
-    if (__Pyx_IternextUnpackEndCheck(__pyx_t_5(__pyx_t_4), 2) < 0) __PYX_ERR(0, 3902, __pyx_L1_error)
+    if (__Pyx_IternextUnpackEndCheck(__pyx_t_5(__pyx_t_4), 2) < 0) __PYX_ERR(0, 3908, __pyx_L1_error)
     __pyx_t_5 = NULL;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     goto __pyx_L4_unpacking_done;
@@ -39608,17 +39873,17 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_t_5 = NULL;
     if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-    __PYX_ERR(0, 3902, __pyx_L1_error)
+    __PYX_ERR(0, 3908, __pyx_L1_error)
     __pyx_L4_unpacking_done:;
   }
-  __pyx_t_6 = __Pyx_PyInt_As_int64_t(__pyx_t_2); if (unlikely((__pyx_t_6 == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3902, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyInt_As_int64_t(__pyx_t_2); if (unlikely((__pyx_t_6 == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3908, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_9pywrapfst__Fst))))) __PYX_ERR(0, 3902, __pyx_L1_error)
+  if (!(likely(((__pyx_t_3) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_3, __pyx_ptype_9pywrapfst__Fst))))) __PYX_ERR(0, 3908, __pyx_L1_error)
   __pyx_v_root_label = __pyx_t_6;
   __pyx_v_ifst = ((struct __pyx_obj_9pywrapfst__Fst *)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "pywrapfst.pyx":3903
+  /* "pywrapfst.pyx":3909
  *   it = iter(pairs)
  *   (root_label, ifst) = next(it)
  *   _pairs.push_back(fst.LabelFstClassPair(root_label, ifst._fst.get()))             # <<<<<<<<<<<<<<
@@ -39627,22 +39892,22 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3903, __pyx_L1_error)
+    __PYX_ERR(0, 3909, __pyx_L1_error)
   }
   try {
     __pyx_t_7 = __pyx_t_3fst_LabelFstClassPair(__pyx_v_root_label, __pyx_v_ifst->_fst.get());
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 3903, __pyx_L1_error)
+    __PYX_ERR(0, 3909, __pyx_L1_error)
   }
   try {
     __pyx_v__pairs.push_back(__pyx_t_7);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 3903, __pyx_L1_error)
+    __PYX_ERR(0, 3909, __pyx_L1_error)
   }
 
-  /* "pywrapfst.pyx":3905
+  /* "pywrapfst.pyx":3911
  *   _pairs.push_back(fst.LabelFstClassPair(root_label, ifst._fst.get()))
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))             # <<<<<<<<<<<<<<
@@ -39651,11 +39916,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "arc_type");
-    __PYX_ERR(0, 3905, __pyx_L1_error)
+    __PYX_ERR(0, 3911, __pyx_L1_error)
   }
   __pyx_v_tfst.reset(new fst::script::VectorFstClass(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->arc_type(__pyx_v_ifst, 0)));
 
-  /* "pywrapfst.pyx":3906
+  /* "pywrapfst.pyx":3912
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   for (label, ifst) in it:             # <<<<<<<<<<<<<<
@@ -39666,26 +39931,26 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
     __pyx_t_1 = __pyx_v_it; __Pyx_INCREF(__pyx_t_1); __pyx_t_8 = 0;
     __pyx_t_9 = NULL;
   } else {
-    __pyx_t_8 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_it); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3906, __pyx_L1_error)
+    __pyx_t_8 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_it); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3912, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_9 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 3906, __pyx_L1_error)
+    __pyx_t_9 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 3912, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_9)) {
       if (likely(PyList_CheckExact(__pyx_t_1))) {
         if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_3 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_8); __Pyx_INCREF(__pyx_t_3); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 3906, __pyx_L1_error)
+        __pyx_t_3 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_8); __Pyx_INCREF(__pyx_t_3); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 3912, __pyx_L1_error)
         #else
-        __pyx_t_3 = PySequence_ITEM(__pyx_t_1, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3906, __pyx_L1_error)
+        __pyx_t_3 = PySequence_ITEM(__pyx_t_1, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3912, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         #endif
       } else {
         if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_8); __Pyx_INCREF(__pyx_t_3); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 3906, __pyx_L1_error)
+        __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_8); __Pyx_INCREF(__pyx_t_3); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 3912, __pyx_L1_error)
         #else
-        __pyx_t_3 = PySequence_ITEM(__pyx_t_1, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3906, __pyx_L1_error)
+        __pyx_t_3 = PySequence_ITEM(__pyx_t_1, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 3912, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         #endif
       }
@@ -39695,7 +39960,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 3906, __pyx_L1_error)
+          else __PYX_ERR(0, 3912, __pyx_L1_error)
         }
         break;
       }
@@ -39707,7 +39972,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
       if (unlikely(size != 2)) {
         if (size > 2) __Pyx_RaiseTooManyValuesError(2);
         else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        __PYX_ERR(0, 3906, __pyx_L1_error)
+        __PYX_ERR(0, 3912, __pyx_L1_error)
       }
       #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
       if (likely(PyTuple_CheckExact(sequence))) {
@@ -39720,15 +39985,15 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
       __Pyx_INCREF(__pyx_t_2);
       __Pyx_INCREF(__pyx_t_4);
       #else
-      __pyx_t_2 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3906, __pyx_L1_error)
+      __pyx_t_2 = PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3912, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_4 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3906, __pyx_L1_error)
+      __pyx_t_4 = PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 3912, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
       #endif
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     } else {
       Py_ssize_t index = -1;
-      __pyx_t_10 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 3906, __pyx_L1_error)
+      __pyx_t_10 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 3912, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_10);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __pyx_t_5 = Py_TYPE(__pyx_t_10)->tp_iternext;
@@ -39736,7 +40001,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
       __Pyx_GOTREF(__pyx_t_2);
       index = 1; __pyx_t_4 = __pyx_t_5(__pyx_t_10); if (unlikely(!__pyx_t_4)) goto __pyx_L7_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_4);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_5(__pyx_t_10), 2) < 0) __PYX_ERR(0, 3906, __pyx_L1_error)
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_5(__pyx_t_10), 2) < 0) __PYX_ERR(0, 3912, __pyx_L1_error)
       __pyx_t_5 = NULL;
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
       goto __pyx_L8_unpacking_done;
@@ -39744,17 +40009,17 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
       __pyx_t_5 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      __PYX_ERR(0, 3906, __pyx_L1_error)
+      __PYX_ERR(0, 3912, __pyx_L1_error)
       __pyx_L8_unpacking_done:;
     }
-    __pyx_t_6 = __Pyx_PyInt_As_int64_t(__pyx_t_2); if (unlikely((__pyx_t_6 == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3906, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int64_t(__pyx_t_2); if (unlikely((__pyx_t_6 == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3912, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_ptype_9pywrapfst__Fst))))) __PYX_ERR(0, 3906, __pyx_L1_error)
+    if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_ptype_9pywrapfst__Fst))))) __PYX_ERR(0, 3912, __pyx_L1_error)
     __pyx_v_label = __pyx_t_6;
     __Pyx_DECREF_SET(__pyx_v_ifst, ((struct __pyx_obj_9pywrapfst__Fst *)__pyx_t_4));
     __pyx_t_4 = 0;
 
-    /* "pywrapfst.pyx":3907
+    /* "pywrapfst.pyx":3913
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   for (label, ifst) in it:
  *     _pairs.push_back(fst.LabelFstClassPair(label, ifst._fst.get()))             # <<<<<<<<<<<<<<
@@ -39763,22 +40028,22 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
  */
     if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-      __PYX_ERR(0, 3907, __pyx_L1_error)
+      __PYX_ERR(0, 3913, __pyx_L1_error)
     }
     try {
       __pyx_t_7 = __pyx_t_3fst_LabelFstClassPair(__pyx_v_label, __pyx_v_ifst->_fst.get());
     } catch(...) {
       __Pyx_CppExn2PyErr();
-      __PYX_ERR(0, 3907, __pyx_L1_error)
+      __PYX_ERR(0, 3913, __pyx_L1_error)
     }
     try {
       __pyx_v__pairs.push_back(__pyx_t_7);
     } catch(...) {
       __Pyx_CppExn2PyErr();
-      __PYX_ERR(0, 3907, __pyx_L1_error)
+      __PYX_ERR(0, 3913, __pyx_L1_error)
     }
 
-    /* "pywrapfst.pyx":3906
+    /* "pywrapfst.pyx":3912
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   for (label, ifst) in it:             # <<<<<<<<<<<<<<
@@ -39788,45 +40053,45 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "pywrapfst.pyx":3909
+  /* "pywrapfst.pyx":3915
  *     _pairs.push_back(fst.LabelFstClassPair(label, ifst._fst.get()))
  *   cdef fst.ReplaceLabelType cal = _get_replace_label_type(
  *       tostring(call_arc_labeling), epsilon_on_replace)             # <<<<<<<<<<<<<<
  *   cdef fst.ReplaceLabelType ral = _get_replace_label_type(
  *       tostring(return_arc_labeling), epsilon_on_replace)
  */
-  __pyx_t_11 = __pyx_f_9pywrapfst_tostring(__pyx_v_call_arc_labeling, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3909, __pyx_L1_error)
+  __pyx_t_11 = __pyx_f_9pywrapfst_tostring(__pyx_v_call_arc_labeling, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3915, __pyx_L1_error)
 
-  /* "pywrapfst.pyx":3908
+  /* "pywrapfst.pyx":3914
  *   for (label, ifst) in it:
  *     _pairs.push_back(fst.LabelFstClassPair(label, ifst._fst.get()))
  *   cdef fst.ReplaceLabelType cal = _get_replace_label_type(             # <<<<<<<<<<<<<<
  *       tostring(call_arc_labeling), epsilon_on_replace)
  *   cdef fst.ReplaceLabelType ral = _get_replace_label_type(
  */
-  __pyx_t_12 = __pyx_f_9pywrapfst__get_replace_label_type(__pyx_t_11, __pyx_v_epsilon_on_replace); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3908, __pyx_L1_error)
+  __pyx_t_12 = __pyx_f_9pywrapfst__get_replace_label_type(__pyx_t_11, __pyx_v_epsilon_on_replace); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3914, __pyx_L1_error)
   __pyx_v_cal = __pyx_t_12;
 
-  /* "pywrapfst.pyx":3911
+  /* "pywrapfst.pyx":3917
  *       tostring(call_arc_labeling), epsilon_on_replace)
  *   cdef fst.ReplaceLabelType ral = _get_replace_label_type(
  *       tostring(return_arc_labeling), epsilon_on_replace)             # <<<<<<<<<<<<<<
  *   cdef unique_ptr[fst.ReplaceOptions] opts
  *   opts.reset(new fst.ReplaceOptions(root_label, cal, ral, return_label))
  */
-  __pyx_t_11 = __pyx_f_9pywrapfst_tostring(__pyx_v_return_arc_labeling, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3911, __pyx_L1_error)
+  __pyx_t_11 = __pyx_f_9pywrapfst_tostring(__pyx_v_return_arc_labeling, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3917, __pyx_L1_error)
 
-  /* "pywrapfst.pyx":3910
+  /* "pywrapfst.pyx":3916
  *   cdef fst.ReplaceLabelType cal = _get_replace_label_type(
  *       tostring(call_arc_labeling), epsilon_on_replace)
  *   cdef fst.ReplaceLabelType ral = _get_replace_label_type(             # <<<<<<<<<<<<<<
  *       tostring(return_arc_labeling), epsilon_on_replace)
  *   cdef unique_ptr[fst.ReplaceOptions] opts
  */
-  __pyx_t_12 = __pyx_f_9pywrapfst__get_replace_label_type(__pyx_t_11, __pyx_v_epsilon_on_replace); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3910, __pyx_L1_error)
+  __pyx_t_12 = __pyx_f_9pywrapfst__get_replace_label_type(__pyx_t_11, __pyx_v_epsilon_on_replace); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3916, __pyx_L1_error)
   __pyx_v_ral = __pyx_t_12;
 
-  /* "pywrapfst.pyx":3913
+  /* "pywrapfst.pyx":3919
  *       tostring(return_arc_labeling), epsilon_on_replace)
  *   cdef unique_ptr[fst.ReplaceOptions] opts
  *   opts.reset(new fst.ReplaceOptions(root_label, cal, ral, return_label))             # <<<<<<<<<<<<<<
@@ -39835,7 +40100,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
  */
   __pyx_v_opts.reset(new fst::script::ReplaceOptions(__pyx_v_root_label, __pyx_v_cal, __pyx_v_ral, __pyx_v_return_label));
 
-  /* "pywrapfst.pyx":3914
+  /* "pywrapfst.pyx":3920
  *   cdef unique_ptr[fst.ReplaceOptions] opts
  *   opts.reset(new fst.ReplaceOptions(root_label, cal, ral, return_label))
  *   fst.Replace(_pairs, tfst.get(), deref(opts))             # <<<<<<<<<<<<<<
@@ -39844,7 +40109,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
  */
   fst::script::Replace(__pyx_v__pairs, __pyx_v_tfst.get(), (*__pyx_v_opts));
 
-  /* "pywrapfst.pyx":3915
+  /* "pywrapfst.pyx":3921
  *   opts.reset(new fst.ReplaceOptions(root_label, cal, ral, return_label))
  *   fst.Replace(_pairs, tfst.get(), deref(opts))
  *   return _init_MutableFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -39852,13 +40117,13 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_replace(PyObj
  * 
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3915, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3921, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__MutableFst *)__pyx_t_1);
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3856
+  /* "pywrapfst.pyx":3862
  * 
  * 
  * cpdef _MutableFst replace(pairs,             # <<<<<<<<<<<<<<
@@ -39948,7 +40213,7 @@ static PyObject *__pyx_pw_9pywrapfst_49replace(PyObject *__pyx_self, PyObject *_
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "replace") < 0)) __PYX_ERR(0, 3856, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "replace") < 0)) __PYX_ERR(0, 3862, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -39969,10 +40234,10 @@ static PyObject *__pyx_pw_9pywrapfst_49replace(PyObject *__pyx_self, PyObject *_
     __pyx_v_call_arc_labeling = values[1];
     __pyx_v_return_arc_labeling = values[2];
     if (values[3]) {
-      __pyx_v_epsilon_on_replace = __Pyx_PyObject_IsTrue(values[3]); if (unlikely((__pyx_v_epsilon_on_replace == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3859, __pyx_L3_error)
+      __pyx_v_epsilon_on_replace = __Pyx_PyObject_IsTrue(values[3]); if (unlikely((__pyx_v_epsilon_on_replace == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3865, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":3859
+      /* "pywrapfst.pyx":3865
  *                           call_arc_labeling=b"input",
  *                           return_arc_labeling=b"neither",
  *                           bool epsilon_on_replace=False,             # <<<<<<<<<<<<<<
@@ -39982,14 +40247,14 @@ static PyObject *__pyx_pw_9pywrapfst_49replace(PyObject *__pyx_self, PyObject *_
       __pyx_v_epsilon_on_replace = ((bool)0);
     }
     if (values[4]) {
-      __pyx_v_return_label = __Pyx_PyInt_As_int64_t(values[4]); if (unlikely((__pyx_v_return_label == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3860, __pyx_L3_error)
+      __pyx_v_return_label = __Pyx_PyInt_As_int64_t(values[4]); if (unlikely((__pyx_v_return_label == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3866, __pyx_L3_error)
     } else {
       __pyx_v_return_label = ((__pyx_t_10basictypes_int64)0);
     }
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("replace", 0, 1, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3856, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("replace", 0, 1, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3862, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.replace", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -39997,7 +40262,7 @@ static PyObject *__pyx_pw_9pywrapfst_49replace(PyObject *__pyx_self, PyObject *_
   __pyx_L4_argument_unpacking_done:;
   __pyx_r = __pyx_pf_9pywrapfst_48replace(__pyx_self, __pyx_v_pairs, __pyx_v_call_arc_labeling, __pyx_v_return_arc_labeling, __pyx_v_epsilon_on_replace, __pyx_v_return_label);
 
-  /* "pywrapfst.pyx":3856
+  /* "pywrapfst.pyx":3862
  * 
  * 
  * cpdef _MutableFst replace(pairs,             # <<<<<<<<<<<<<<
@@ -40022,7 +40287,7 @@ static PyObject *__pyx_pf_9pywrapfst_48replace(CYTHON_UNUSED PyObject *__pyx_sel
   __pyx_t_2.return_arc_labeling = __pyx_v_return_arc_labeling;
   __pyx_t_2.epsilon_on_replace = __pyx_v_epsilon_on_replace;
   __pyx_t_2.return_label = __pyx_v_return_label;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_replace(__pyx_v_pairs, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3856, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_replace(__pyx_v_pairs, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3862, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -40039,7 +40304,7 @@ static PyObject *__pyx_pf_9pywrapfst_48replace(CYTHON_UNUSED PyObject *__pyx_sel
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3918
+/* "pywrapfst.pyx":3924
  * 
  * 
  * cpdef _MutableFst reverse(_Fst ifst, bool require_superinitial=True):             # <<<<<<<<<<<<<<
@@ -40061,7 +40326,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_reverse(struc
     }
   }
 
-  /* "pywrapfst.pyx":3938
+  /* "pywrapfst.pyx":3944
  *   """
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))             # <<<<<<<<<<<<<<
@@ -40070,11 +40335,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_reverse(struc
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "arc_type");
-    __PYX_ERR(0, 3938, __pyx_L1_error)
+    __PYX_ERR(0, 3944, __pyx_L1_error)
   }
   __pyx_v_tfst.reset(new fst::script::VectorFstClass(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->arc_type(__pyx_v_ifst, 0)));
 
-  /* "pywrapfst.pyx":3939
+  /* "pywrapfst.pyx":3945
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   fst.Reverse(deref(ifst._fst), tfst.get(), require_superinitial)             # <<<<<<<<<<<<<<
@@ -40083,11 +40348,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_reverse(struc
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 3939, __pyx_L1_error)
+    __PYX_ERR(0, 3945, __pyx_L1_error)
   }
   fst::script::Reverse((*__pyx_v_ifst->_fst), __pyx_v_tfst.get(), __pyx_v_require_superinitial);
 
-  /* "pywrapfst.pyx":3940
+  /* "pywrapfst.pyx":3946
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   fst.Reverse(deref(ifst._fst), tfst.get(), require_superinitial)
  *   return _init_MutableFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -40095,13 +40360,13 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_reverse(struc
  * 
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3940, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3946, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__MutableFst *)__pyx_t_1);
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3918
+  /* "pywrapfst.pyx":3924
  * 
  * 
  * cpdef _MutableFst reverse(_Fst ifst, bool require_superinitial=True):             # <<<<<<<<<<<<<<
@@ -40156,7 +40421,7 @@ static PyObject *__pyx_pw_9pywrapfst_51reverse(PyObject *__pyx_self, PyObject *_
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "reverse") < 0)) __PYX_ERR(0, 3918, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "reverse") < 0)) __PYX_ERR(0, 3924, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -40169,20 +40434,20 @@ static PyObject *__pyx_pw_9pywrapfst_51reverse(PyObject *__pyx_self, PyObject *_
     }
     __pyx_v_ifst = ((struct __pyx_obj_9pywrapfst__Fst *)values[0]);
     if (values[1]) {
-      __pyx_v_require_superinitial = __Pyx_PyObject_IsTrue(values[1]); if (unlikely((__pyx_v_require_superinitial == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3918, __pyx_L3_error)
+      __pyx_v_require_superinitial = __Pyx_PyObject_IsTrue(values[1]); if (unlikely((__pyx_v_require_superinitial == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3924, __pyx_L3_error)
     } else {
       __pyx_v_require_superinitial = ((bool)1);
     }
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("reverse", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3918, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("reverse", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3924, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.reverse", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3918, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3924, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_50reverse(__pyx_self, __pyx_v_ifst, __pyx_v_require_superinitial);
 
   /* function exit code */
@@ -40203,7 +40468,7 @@ static PyObject *__pyx_pf_9pywrapfst_50reverse(CYTHON_UNUSED PyObject *__pyx_sel
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.require_superinitial = __pyx_v_require_superinitial;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_reverse(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3918, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_reverse(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3924, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -40220,7 +40485,7 @@ static PyObject *__pyx_pf_9pywrapfst_50reverse(CYTHON_UNUSED PyObject *__pyx_sel
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3946
+/* "pywrapfst.pyx":3952
  * 
  * 
  * cdef vector[fst.WeightClass] *_shortestdistance(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -40233,7 +40498,7 @@ static std::vector<fst::script::WeightClass>  *__pyx_f_9pywrapfst__shortestdista
   __pyx_t_10basictypes_int64 __pyx_v_nstate = __pyx_k__47;
   PyObject *__pyx_v_queue_type = ((PyObject *)__pyx_n_b_auto);
 
-  /* "pywrapfst.pyx":3950
+  /* "pywrapfst.pyx":3956
  *                                                 int64 nstate=fst.kNoStateId,
  *                                                 queue_type=b"auto",
  *                                                 bool reverse=False) except *:             # <<<<<<<<<<<<<<
@@ -40265,7 +40530,7 @@ static std::vector<fst::script::WeightClass>  *__pyx_f_9pywrapfst__shortestdista
     }
   }
 
-  /* "pywrapfst.pyx":3952
+  /* "pywrapfst.pyx":3958
  *                                                 bool reverse=False) except *:
  *   cdef unique_ptr[vector[fst.WeightClass]] distance
  *   distance.reset(new vector[fst.WeightClass]())             # <<<<<<<<<<<<<<
@@ -40276,11 +40541,11 @@ static std::vector<fst::script::WeightClass>  *__pyx_f_9pywrapfst__shortestdista
     __pyx_t_1 = new std::vector<fst::script::WeightClass> ();
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 3952, __pyx_L1_error)
+    __PYX_ERR(0, 3958, __pyx_L1_error)
   }
   __pyx_v_distance.reset(__pyx_t_1);
 
-  /* "pywrapfst.pyx":3956
+  /* "pywrapfst.pyx":3962
  *   # not be used in all cases.
  *   cdef unique_ptr[fst.ShortestDistanceOptions] opts
  *   if reverse:             # <<<<<<<<<<<<<<
@@ -40290,7 +40555,7 @@ static std::vector<fst::script::WeightClass>  *__pyx_f_9pywrapfst__shortestdista
   __pyx_t_2 = (__pyx_v_reverse != 0);
   if (__pyx_t_2) {
 
-    /* "pywrapfst.pyx":3959
+    /* "pywrapfst.pyx":3965
  *     # Only the simpler signature supports shortest distance to final states;
  *     # `nstate` and `queue_type` arguments are ignored.
  *     fst.ShortestDistance(deref(ifst._fst), distance.get(), True, delta)             # <<<<<<<<<<<<<<
@@ -40299,11 +40564,11 @@ static std::vector<fst::script::WeightClass>  *__pyx_f_9pywrapfst__shortestdista
  */
     if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-      __PYX_ERR(0, 3959, __pyx_L1_error)
+      __PYX_ERR(0, 3965, __pyx_L1_error)
     }
     fst::script::ShortestDistance((*__pyx_v_ifst->_fst), __pyx_v_distance.get(), 1, __pyx_v_delta);
 
-    /* "pywrapfst.pyx":3956
+    /* "pywrapfst.pyx":3962
  *   # not be used in all cases.
  *   cdef unique_ptr[fst.ShortestDistanceOptions] opts
  *   if reverse:             # <<<<<<<<<<<<<<
@@ -40313,7 +40578,7 @@ static std::vector<fst::script::WeightClass>  *__pyx_f_9pywrapfst__shortestdista
     goto __pyx_L3;
   }
 
-  /* "pywrapfst.pyx":3961
+  /* "pywrapfst.pyx":3967
  *     fst.ShortestDistance(deref(ifst._fst), distance.get(), True, delta)
  *   else:
  *     opts.reset(new fst.ShortestDistanceOptions(             # <<<<<<<<<<<<<<
@@ -40322,17 +40587,17 @@ static std::vector<fst::script::WeightClass>  *__pyx_f_9pywrapfst__shortestdista
  */
   /*else*/ {
 
-    /* "pywrapfst.pyx":3962
+    /* "pywrapfst.pyx":3968
  *   else:
  *     opts.reset(new fst.ShortestDistanceOptions(
  *         _get_queue_type(tostring(queue_type)), fst.ANY_ARC_FILTER, nstate,             # <<<<<<<<<<<<<<
  *         delta))
  *     fst.ShortestDistance(deref(ifst._fst), distance.get(), deref(opts))
  */
-    __pyx_t_3 = __pyx_f_9pywrapfst_tostring(__pyx_v_queue_type, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3962, __pyx_L1_error)
-    __pyx_t_4 = __pyx_f_9pywrapfst__get_queue_type(__pyx_t_3); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3962, __pyx_L1_error)
+    __pyx_t_3 = __pyx_f_9pywrapfst_tostring(__pyx_v_queue_type, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3968, __pyx_L1_error)
+    __pyx_t_4 = __pyx_f_9pywrapfst__get_queue_type(__pyx_t_3); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 3968, __pyx_L1_error)
 
-    /* "pywrapfst.pyx":3961
+    /* "pywrapfst.pyx":3967
  *     fst.ShortestDistance(deref(ifst._fst), distance.get(), True, delta)
  *   else:
  *     opts.reset(new fst.ShortestDistanceOptions(             # <<<<<<<<<<<<<<
@@ -40341,7 +40606,7 @@ static std::vector<fst::script::WeightClass>  *__pyx_f_9pywrapfst__shortestdista
  */
     __pyx_v_opts.reset(new fst::script::ShortestDistanceOptions(__pyx_t_4, fst::script::ANY_ARC_FILTER, __pyx_v_nstate, __pyx_v_delta));
 
-    /* "pywrapfst.pyx":3964
+    /* "pywrapfst.pyx":3970
  *         _get_queue_type(tostring(queue_type)), fst.ANY_ARC_FILTER, nstate,
  *         delta))
  *     fst.ShortestDistance(deref(ifst._fst), distance.get(), deref(opts))             # <<<<<<<<<<<<<<
@@ -40350,13 +40615,13 @@ static std::vector<fst::script::WeightClass>  *__pyx_f_9pywrapfst__shortestdista
  */
     if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-      __PYX_ERR(0, 3964, __pyx_L1_error)
+      __PYX_ERR(0, 3970, __pyx_L1_error)
     }
     fst::script::ShortestDistance((*__pyx_v_ifst->_fst), __pyx_v_distance.get(), (*__pyx_v_opts));
   }
   __pyx_L3:;
 
-  /* "pywrapfst.pyx":3965
+  /* "pywrapfst.pyx":3971
  *         delta))
  *     fst.ShortestDistance(deref(ifst._fst), distance.get(), deref(opts))
  *   return distance.release()             # <<<<<<<<<<<<<<
@@ -40366,7 +40631,7 @@ static std::vector<fst::script::WeightClass>  *__pyx_f_9pywrapfst__shortestdista
   __pyx_r = __pyx_v_distance.release();
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3946
+  /* "pywrapfst.pyx":3952
  * 
  * 
  * cdef vector[fst.WeightClass] *_shortestdistance(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -40383,7 +40648,7 @@ static std::vector<fst::script::WeightClass>  *__pyx_f_9pywrapfst__shortestdista
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":3968
+/* "pywrapfst.pyx":3974
  * 
  * 
  * def shortestdistance(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -40456,7 +40721,7 @@ static PyObject *__pyx_pw_9pywrapfst_53shortestdistance(PyObject *__pyx_self, Py
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "shortestdistance") < 0)) __PYX_ERR(0, 3968, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "shortestdistance") < 0)) __PYX_ERR(0, 3974, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -40475,21 +40740,21 @@ static PyObject *__pyx_pw_9pywrapfst_53shortestdistance(PyObject *__pyx_self, Py
     }
     __pyx_v_ifst = ((struct __pyx_obj_9pywrapfst__Fst *)values[0]);
     if (values[1]) {
-      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[1]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3969, __pyx_L3_error)
+      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[1]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 3975, __pyx_L3_error)
     } else {
       __pyx_v_delta = __pyx_k__48;
     }
     if (values[2]) {
-      __pyx_v_nstate = __Pyx_PyInt_As_int64_t(values[2]); if (unlikely((__pyx_v_nstate == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3970, __pyx_L3_error)
+      __pyx_v_nstate = __Pyx_PyInt_As_int64_t(values[2]); if (unlikely((__pyx_v_nstate == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3976, __pyx_L3_error)
     } else {
       __pyx_v_nstate = __pyx_k__49;
     }
     __pyx_v_queue_type = values[3];
     if (values[4]) {
-      __pyx_v_reverse = __Pyx_PyObject_IsTrue(values[4]); if (unlikely((__pyx_v_reverse == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3972, __pyx_L3_error)
+      __pyx_v_reverse = __Pyx_PyObject_IsTrue(values[4]); if (unlikely((__pyx_v_reverse == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 3978, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":3972
+      /* "pywrapfst.pyx":3978
  *                      int64 nstate=fst.kNoStateId,
  *                      queue_type=b"auto",
  *                      bool reverse=False):             # <<<<<<<<<<<<<<
@@ -40501,16 +40766,16 @@ static PyObject *__pyx_pw_9pywrapfst_53shortestdistance(PyObject *__pyx_self, Py
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("shortestdistance", 0, 1, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3968, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("shortestdistance", 0, 1, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 3974, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.shortestdistance", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3968, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 3974, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_52shortestdistance(__pyx_self, __pyx_v_ifst, __pyx_v_delta, __pyx_v_nstate, __pyx_v_queue_type, __pyx_v_reverse);
 
-  /* "pywrapfst.pyx":3968
+  /* "pywrapfst.pyx":3974
  * 
  * 
  * def shortestdistance(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -40543,7 +40808,7 @@ static PyObject *__pyx_pf_9pywrapfst_52shortestdistance(CYTHON_UNUSED PyObject *
   PyObject *__pyx_t_8 = NULL;
   __Pyx_RefNannySetupContext("shortestdistance", 0);
 
-  /* "pywrapfst.pyx":4000
+  /* "pywrapfst.pyx":4006
  *   """
  *   cdef unique_ptr[vector[fst.WeightClass]] distance
  *   distance.reset(_shortestdistance(ifst, delta, nstate, queue_type, reverse))             # <<<<<<<<<<<<<<
@@ -40555,10 +40820,10 @@ static PyObject *__pyx_pf_9pywrapfst_52shortestdistance(CYTHON_UNUSED PyObject *
   __pyx_t_2.nstate = __pyx_v_nstate;
   __pyx_t_2.queue_type = __pyx_v_queue_type;
   __pyx_t_2.reverse = __pyx_v_reverse;
-  __pyx_t_1 = __pyx_f_9pywrapfst__shortestdistance(__pyx_v_ifst, &__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4000, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst__shortestdistance(__pyx_v_ifst, &__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4006, __pyx_L1_error)
   __pyx_v_distance.reset(__pyx_t_1);
 
-  /* "pywrapfst.pyx":4001
+  /* "pywrapfst.pyx":4007
  *   cdef unique_ptr[vector[fst.WeightClass]] distance
  *   distance.reset(_shortestdistance(ifst, delta, nstate, queue_type, reverse))
  *   cdef string weight_type = ifst.weight_type()             # <<<<<<<<<<<<<<
@@ -40567,11 +40832,11 @@ static PyObject *__pyx_pf_9pywrapfst_52shortestdistance(CYTHON_UNUSED PyObject *
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "weight_type");
-    __PYX_ERR(0, 4001, __pyx_L1_error)
+    __PYX_ERR(0, 4007, __pyx_L1_error)
   }
   __pyx_v_weight_type = ((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->weight_type(__pyx_v_ifst, 0);
 
-  /* "pywrapfst.pyx":4002
+  /* "pywrapfst.pyx":4008
  *   distance.reset(_shortestdistance(ifst, delta, nstate, queue_type, reverse))
  *   cdef string weight_type = ifst.weight_type()
  *   return [Weight(weight_type, weight.ToString()) for weight in deref(distance)]             # <<<<<<<<<<<<<<
@@ -40580,7 +40845,7 @@ static PyObject *__pyx_pf_9pywrapfst_52shortestdistance(CYTHON_UNUSED PyObject *
  */
   __Pyx_XDECREF(__pyx_r);
   { /* enter inner scope */
-    __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4002, __pyx_L1_error)
+    __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4008, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_1 = &(*__pyx_v_distance);
     __pyx_t_4 = __pyx_t_1->begin();
@@ -40589,11 +40854,11 @@ static PyObject *__pyx_pf_9pywrapfst_52shortestdistance(CYTHON_UNUSED PyObject *
       __pyx_t_5 = *__pyx_t_4;
       ++__pyx_t_4;
       __pyx_7genexpr__pyx_v_weight = __pyx_t_5;
-      __pyx_t_6 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_v_weight_type); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 4002, __pyx_L1_error)
+      __pyx_t_6 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_v_weight_type); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 4008, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_7 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_7genexpr__pyx_v_weight.ToString()); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 4002, __pyx_L1_error)
+      __pyx_t_7 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_7genexpr__pyx_v_weight.ToString()); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 4008, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 4002, __pyx_L1_error)
+      __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 4008, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_GIVEREF(__pyx_t_6);
       PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_6);
@@ -40601,10 +40866,10 @@ static PyObject *__pyx_pf_9pywrapfst_52shortestdistance(CYTHON_UNUSED PyObject *
       PyTuple_SET_ITEM(__pyx_t_8, 1, __pyx_t_7);
       __pyx_t_6 = 0;
       __pyx_t_7 = 0;
-      __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_9pywrapfst_Weight), __pyx_t_8, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 4002, __pyx_L1_error)
+      __pyx_t_7 = __Pyx_PyObject_Call(((PyObject *)__pyx_ptype_9pywrapfst_Weight), __pyx_t_8, NULL); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 4008, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_3, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 4002, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_3, (PyObject*)__pyx_t_7))) __PYX_ERR(0, 4008, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     }
   } /* exit inner scope */
@@ -40612,7 +40877,7 @@ static PyObject *__pyx_pf_9pywrapfst_52shortestdistance(CYTHON_UNUSED PyObject *
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":3968
+  /* "pywrapfst.pyx":3974
  * 
  * 
  * def shortestdistance(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -40634,7 +40899,7 @@ static PyObject *__pyx_pf_9pywrapfst_52shortestdistance(CYTHON_UNUSED PyObject *
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4005
+/* "pywrapfst.pyx":4011
  * 
  * 
  * cpdef _MutableFst shortestpath(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -40649,7 +40914,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_shortestpath(
   __pyx_t_10basictypes_int64 __pyx_v_nstate = __pyx_k__51;
   PyObject *__pyx_v_queue_type = ((PyObject *)__pyx_n_b_auto);
 
-  /* "pywrapfst.pyx":4010
+  /* "pywrapfst.pyx":4016
  *                                int64 nstate=fst.kNoStateId,
  *                                queue_type=b"auto",
  *                                bool unique=False,             # <<<<<<<<<<<<<<
@@ -40658,7 +40923,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_shortestpath(
  */
   bool __pyx_v_unique = ((bool)0);
 
-  /* "pywrapfst.pyx":4011
+  /* "pywrapfst.pyx":4017
  *                                queue_type=b"auto",
  *                                bool unique=False,
  *                                weight=None):             # <<<<<<<<<<<<<<
@@ -40697,7 +40962,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_shortestpath(
     }
   }
 
-  /* "pywrapfst.pyx":4043
+  /* "pywrapfst.pyx":4049
  *   """
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))             # <<<<<<<<<<<<<<
@@ -40706,11 +40971,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_shortestpath(
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "arc_type");
-    __PYX_ERR(0, 4043, __pyx_L1_error)
+    __PYX_ERR(0, 4049, __pyx_L1_error)
   }
   __pyx_v_tfst.reset(new fst::script::VectorFstClass(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->arc_type(__pyx_v_ifst, 0)));
 
-  /* "pywrapfst.pyx":4045
+  /* "pywrapfst.pyx":4051
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   # Threshold is set to semiring Zero (no pruning) if no weight is specified.
  *   cdef fst.WeightClass wc = _get_WeightClass_or_Zero(ifst.weight_type(), weight)             # <<<<<<<<<<<<<<
@@ -40719,22 +40984,22 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_shortestpath(
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "weight_type");
-    __PYX_ERR(0, 4045, __pyx_L1_error)
+    __PYX_ERR(0, 4051, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_9pywrapfst__get_WeightClass_or_Zero(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->weight_type(__pyx_v_ifst, 0), __pyx_v_weight); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4045, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst__get_WeightClass_or_Zero(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->weight_type(__pyx_v_ifst, 0), __pyx_v_weight); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4051, __pyx_L1_error)
   __pyx_v_wc = __pyx_t_1;
 
-  /* "pywrapfst.pyx":4047
+  /* "pywrapfst.pyx":4053
  *   cdef fst.WeightClass wc = _get_WeightClass_or_Zero(ifst.weight_type(), weight)
  *   cdef unique_ptr[fst.ShortestPathOptions] opts
  *   opts.reset(new fst.ShortestPathOptions(_get_queue_type(tostring(queue_type)),             # <<<<<<<<<<<<<<
  *                                          nshortest, unique, delta, wc, nstate))
  *   fst.ShortestPath(deref(ifst._fst), tfst.get(), deref(opts))
  */
-  __pyx_t_2 = __pyx_f_9pywrapfst_tostring(__pyx_v_queue_type, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4047, __pyx_L1_error)
-  __pyx_t_3 = __pyx_f_9pywrapfst__get_queue_type(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4047, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_9pywrapfst_tostring(__pyx_v_queue_type, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4053, __pyx_L1_error)
+  __pyx_t_3 = __pyx_f_9pywrapfst__get_queue_type(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4053, __pyx_L1_error)
 
-  /* "pywrapfst.pyx":4048
+  /* "pywrapfst.pyx":4054
  *   cdef unique_ptr[fst.ShortestPathOptions] opts
  *   opts.reset(new fst.ShortestPathOptions(_get_queue_type(tostring(queue_type)),
  *                                          nshortest, unique, delta, wc, nstate))             # <<<<<<<<<<<<<<
@@ -40743,7 +41008,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_shortestpath(
  */
   __pyx_v_opts.reset(new fst::script::ShortestPathOptions(__pyx_t_3, __pyx_v_nshortest, __pyx_v_unique, __pyx_v_delta, __pyx_v_wc, __pyx_v_nstate));
 
-  /* "pywrapfst.pyx":4049
+  /* "pywrapfst.pyx":4055
  *   opts.reset(new fst.ShortestPathOptions(_get_queue_type(tostring(queue_type)),
  *                                          nshortest, unique, delta, wc, nstate))
  *   fst.ShortestPath(deref(ifst._fst), tfst.get(), deref(opts))             # <<<<<<<<<<<<<<
@@ -40752,11 +41017,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_shortestpath(
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 4049, __pyx_L1_error)
+    __PYX_ERR(0, 4055, __pyx_L1_error)
   }
   fst::script::ShortestPath((*__pyx_v_ifst->_fst), __pyx_v_tfst.get(), (*__pyx_v_opts));
 
-  /* "pywrapfst.pyx":4050
+  /* "pywrapfst.pyx":4056
  *                                          nshortest, unique, delta, wc, nstate))
  *   fst.ShortestPath(deref(ifst._fst), tfst.get(), deref(opts))
  *   return _init_MutableFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -40764,13 +41029,13 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_shortestpath(
  * 
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_4 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 4050, __pyx_L1_error)
+  __pyx_t_4 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 4056, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__MutableFst *)__pyx_t_4);
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4005
+  /* "pywrapfst.pyx":4011
  * 
  * 
  * cpdef _MutableFst shortestpath(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -40808,7 +41073,7 @@ static PyObject *__pyx_pw_9pywrapfst_55shortestpath(PyObject *__pyx_self, PyObje
     PyObject* values[7] = {0,0,0,0,0,0,0};
     values[4] = ((PyObject *)__pyx_n_b_auto);
 
-    /* "pywrapfst.pyx":4011
+    /* "pywrapfst.pyx":4017
  *                                queue_type=b"auto",
  *                                bool unique=False,
  *                                weight=None):             # <<<<<<<<<<<<<<
@@ -40880,7 +41145,7 @@ static PyObject *__pyx_pw_9pywrapfst_55shortestpath(PyObject *__pyx_self, PyObje
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "shortestpath") < 0)) __PYX_ERR(0, 4005, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "shortestpath") < 0)) __PYX_ERR(0, 4011, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -40903,26 +41168,26 @@ static PyObject *__pyx_pw_9pywrapfst_55shortestpath(PyObject *__pyx_self, PyObje
     }
     __pyx_v_ifst = ((struct __pyx_obj_9pywrapfst__Fst *)values[0]);
     if (values[1]) {
-      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[1]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 4006, __pyx_L3_error)
+      __pyx_v_delta = __pyx_PyFloat_AsFloat(values[1]); if (unlikely((__pyx_v_delta == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 4012, __pyx_L3_error)
     } else {
       __pyx_v_delta = __pyx_k__50;
     }
     if (values[2]) {
-      __pyx_v_nshortest = __Pyx_PyInt_As_int32_t(values[2]); if (unlikely((__pyx_v_nshortest == ((int32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4007, __pyx_L3_error)
+      __pyx_v_nshortest = __Pyx_PyInt_As_int32_t(values[2]); if (unlikely((__pyx_v_nshortest == ((int32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4013, __pyx_L3_error)
     } else {
       __pyx_v_nshortest = ((__pyx_t_10basictypes_int32)1);
     }
     if (values[3]) {
-      __pyx_v_nstate = __Pyx_PyInt_As_int64_t(values[3]); if (unlikely((__pyx_v_nstate == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4008, __pyx_L3_error)
+      __pyx_v_nstate = __Pyx_PyInt_As_int64_t(values[3]); if (unlikely((__pyx_v_nstate == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4014, __pyx_L3_error)
     } else {
       __pyx_v_nstate = __pyx_k__51;
     }
     __pyx_v_queue_type = values[4];
     if (values[5]) {
-      __pyx_v_unique = __Pyx_PyObject_IsTrue(values[5]); if (unlikely((__pyx_v_unique == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4010, __pyx_L3_error)
+      __pyx_v_unique = __Pyx_PyObject_IsTrue(values[5]); if (unlikely((__pyx_v_unique == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4016, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":4010
+      /* "pywrapfst.pyx":4016
  *                                int64 nstate=fst.kNoStateId,
  *                                queue_type=b"auto",
  *                                bool unique=False,             # <<<<<<<<<<<<<<
@@ -40935,16 +41200,16 @@ static PyObject *__pyx_pw_9pywrapfst_55shortestpath(PyObject *__pyx_self, PyObje
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("shortestpath", 0, 1, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 4005, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("shortestpath", 0, 1, 7, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 4011, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.shortestpath", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 4005, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 4011, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_54shortestpath(__pyx_self, __pyx_v_ifst, __pyx_v_delta, __pyx_v_nshortest, __pyx_v_nstate, __pyx_v_queue_type, __pyx_v_unique, __pyx_v_weight);
 
-  /* "pywrapfst.pyx":4005
+  /* "pywrapfst.pyx":4011
  * 
  * 
  * cpdef _MutableFst shortestpath(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -40975,7 +41240,7 @@ static PyObject *__pyx_pf_9pywrapfst_54shortestpath(CYTHON_UNUSED PyObject *__py
   __pyx_t_2.queue_type = __pyx_v_queue_type;
   __pyx_t_2.unique = __pyx_v_unique;
   __pyx_t_2.weight = __pyx_v_weight;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_shortestpath(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4005, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_shortestpath(__pyx_v_ifst, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4011, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -40992,7 +41257,7 @@ static PyObject *__pyx_pf_9pywrapfst_54shortestpath(CYTHON_UNUSED PyObject *__py
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4053
+/* "pywrapfst.pyx":4059
  * 
  * 
  * cpdef _Fst statemap(_Fst ifst, map_type):             # <<<<<<<<<<<<<<
@@ -41008,7 +41273,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_statemap(struct __py
   struct __pyx_opt_args_9pywrapfst__map __pyx_t_2;
   __Pyx_RefNannySetupContext("statemap", 0);
 
-  /* "pywrapfst.pyx":4076
+  /* "pywrapfst.pyx":4082
  *   See also: `arcmap`.
  *   """
  *   return _map(ifst, fst.kDelta, map_type, 1., None)             # <<<<<<<<<<<<<<
@@ -41021,13 +41286,13 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_statemap(struct __py
   __pyx_t_2.map_type = __pyx_v_map_type;
   __pyx_t_2.power = 1.;
   __pyx_t_2.weight = Py_None;
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__map(__pyx_v_ifst, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4076, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__map(__pyx_v_ifst, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4082, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__Fst *)__pyx_t_1);
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4053
+  /* "pywrapfst.pyx":4059
  * 
  * 
  * cpdef _Fst statemap(_Fst ifst, map_type):             # <<<<<<<<<<<<<<
@@ -41078,11 +41343,11 @@ static PyObject *__pyx_pw_9pywrapfst_57statemap(PyObject *__pyx_self, PyObject *
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_map_type)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("statemap", 1, 2, 2, 1); __PYX_ERR(0, 4053, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("statemap", 1, 2, 2, 1); __PYX_ERR(0, 4059, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "statemap") < 0)) __PYX_ERR(0, 4053, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "statemap") < 0)) __PYX_ERR(0, 4059, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -41095,13 +41360,13 @@ static PyObject *__pyx_pw_9pywrapfst_57statemap(PyObject *__pyx_self, PyObject *
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("statemap", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 4053, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("statemap", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 4059, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.statemap", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 4053, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 4059, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_56statemap(__pyx_self, __pyx_v_ifst, __pyx_v_map_type);
 
   /* function exit code */
@@ -41119,7 +41384,7 @@ static PyObject *__pyx_pf_9pywrapfst_56statemap(CYTHON_UNUSED PyObject *__pyx_se
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("statemap", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_statemap(__pyx_v_ifst, __pyx_v_map_type, 0)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4053, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_statemap(__pyx_v_ifst, __pyx_v_map_type, 0)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4059, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -41136,7 +41401,7 @@ static PyObject *__pyx_pf_9pywrapfst_56statemap(CYTHON_UNUSED PyObject *__pyx_se
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4079
+/* "pywrapfst.pyx":4085
  * 
  * 
  * cpdef _MutableFst synchronize(_Fst ifst):             # <<<<<<<<<<<<<<
@@ -41152,7 +41417,7 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_synchronize(s
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("synchronize", 0);
 
-  /* "pywrapfst.pyx":4099
+  /* "pywrapfst.pyx":4105
  *   """
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))             # <<<<<<<<<<<<<<
@@ -41161,11 +41426,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_synchronize(s
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "arc_type");
-    __PYX_ERR(0, 4099, __pyx_L1_error)
+    __PYX_ERR(0, 4105, __pyx_L1_error)
   }
   __pyx_v_tfst.reset(new fst::script::VectorFstClass(((struct __pyx_vtabstruct_9pywrapfst__Fst *)__pyx_v_ifst->__pyx_vtab)->arc_type(__pyx_v_ifst, 0)));
 
-  /* "pywrapfst.pyx":4100
+  /* "pywrapfst.pyx":4106
  *   cdef unique_ptr[fst.VectorFstClass] tfst
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   fst.Synchronize(deref(ifst._fst), tfst.get())             # <<<<<<<<<<<<<<
@@ -41174,11 +41439,11 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_synchronize(s
  */
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 4100, __pyx_L1_error)
+    __PYX_ERR(0, 4106, __pyx_L1_error)
   }
   fst::script::Synchronize((*__pyx_v_ifst->_fst), __pyx_v_tfst.get());
 
-  /* "pywrapfst.pyx":4101
+  /* "pywrapfst.pyx":4107
  *   tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
  *   fst.Synchronize(deref(ifst._fst), tfst.get())
  *   return _init_MutableFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -41186,13 +41451,13 @@ static struct __pyx_obj_9pywrapfst__MutableFst *__pyx_f_9pywrapfst_synchronize(s
  * 
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4101, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__init_MutableFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4107, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__MutableFst *)__pyx_t_1);
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4079
+  /* "pywrapfst.pyx":4085
  * 
  * 
  * cpdef _MutableFst synchronize(_Fst ifst):             # <<<<<<<<<<<<<<
@@ -41218,7 +41483,7 @@ static PyObject *__pyx_pw_9pywrapfst_59synchronize(PyObject *__pyx_self, PyObjec
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("synchronize (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 4079, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 4085, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_58synchronize(__pyx_self, ((struct __pyx_obj_9pywrapfst__Fst *)__pyx_v_ifst));
 
   /* function exit code */
@@ -41236,7 +41501,7 @@ static PyObject *__pyx_pf_9pywrapfst_58synchronize(CYTHON_UNUSED PyObject *__pyx
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("synchronize", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_synchronize(__pyx_v_ifst, 0)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4079, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_synchronize(__pyx_v_ifst, 0)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4085, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -41253,7 +41518,7 @@ static PyObject *__pyx_pf_9pywrapfst_58synchronize(CYTHON_UNUSED PyObject *__pyx
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4158
+/* "pywrapfst.pyx":4164
  *   """
  * 
  *   def __cinit__(self,             # <<<<<<<<<<<<<<
@@ -41281,7 +41546,7 @@ static int __pyx_pw_9pywrapfst_8Compiler_1__cinit__(PyObject *__pyx_v_self, PyOb
     static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_fst_type,&__pyx_n_s_arc_type,&__pyx_n_s_isymbols,&__pyx_n_s_osymbols,&__pyx_n_s_ssymbols,&__pyx_n_s_acceptor,&__pyx_n_s_keep_isymbols,&__pyx_n_s_keep_osymbols,&__pyx_n_s_keep_state_numbering,&__pyx_n_s_allow_negative_labels,0};
     PyObject* values[10] = {0,0,0,0,0,0,0,0,0,0};
 
-    /* "pywrapfst.pyx":4161
+    /* "pywrapfst.pyx":4167
  *                 string fst_type=b"vector",
  *                 string arc_type=b"standard",
  *                 SymbolTable isymbols=None,             # <<<<<<<<<<<<<<
@@ -41290,7 +41555,7 @@ static int __pyx_pw_9pywrapfst_8Compiler_1__cinit__(PyObject *__pyx_v_self, PyOb
  */
     values[2] = (PyObject *)((struct __pyx_obj_9pywrapfst_SymbolTable *)Py_None);
 
-    /* "pywrapfst.pyx":4162
+    /* "pywrapfst.pyx":4168
  *                 string arc_type=b"standard",
  *                 SymbolTable isymbols=None,
  *                 SymbolTable osymbols=None,             # <<<<<<<<<<<<<<
@@ -41299,7 +41564,7 @@ static int __pyx_pw_9pywrapfst_8Compiler_1__cinit__(PyObject *__pyx_v_self, PyOb
  */
     values[3] = (PyObject *)((struct __pyx_obj_9pywrapfst_SymbolTable *)Py_None);
 
-    /* "pywrapfst.pyx":4163
+    /* "pywrapfst.pyx":4169
  *                 SymbolTable isymbols=None,
  *                 SymbolTable osymbols=None,
  *                 SymbolTable ssymbols=None,             # <<<<<<<<<<<<<<
@@ -41397,7 +41662,7 @@ static int __pyx_pw_9pywrapfst_8Compiler_1__cinit__(PyObject *__pyx_v_self, PyOb
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 4158, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 4164, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -41426,12 +41691,12 @@ static int __pyx_pw_9pywrapfst_8Compiler_1__cinit__(PyObject *__pyx_v_self, PyOb
       }
     }
     if (values[0]) {
-      __pyx_v_fst_type = __pyx_convert_string_from_py_std__in_string(values[0]); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4159, __pyx_L3_error)
+      __pyx_v_fst_type = __pyx_convert_string_from_py_std__in_string(values[0]); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4165, __pyx_L3_error)
     } else {
       __pyx_v_fst_type = __pyx_k__52;
     }
     if (values[1]) {
-      __pyx_v_arc_type = __pyx_convert_string_from_py_std__in_string(values[1]); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4160, __pyx_L3_error)
+      __pyx_v_arc_type = __pyx_convert_string_from_py_std__in_string(values[1]); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4166, __pyx_L3_error)
     } else {
       __pyx_v_arc_type = __pyx_k__53;
     }
@@ -41439,10 +41704,10 @@ static int __pyx_pw_9pywrapfst_8Compiler_1__cinit__(PyObject *__pyx_v_self, PyOb
     __pyx_v_osymbols = ((struct __pyx_obj_9pywrapfst_SymbolTable *)values[3]);
     __pyx_v_ssymbols = ((struct __pyx_obj_9pywrapfst_SymbolTable *)values[4]);
     if (values[5]) {
-      __pyx_v_acceptor = __Pyx_PyObject_IsTrue(values[5]); if (unlikely((__pyx_v_acceptor == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4164, __pyx_L3_error)
+      __pyx_v_acceptor = __Pyx_PyObject_IsTrue(values[5]); if (unlikely((__pyx_v_acceptor == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4170, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":4164
+      /* "pywrapfst.pyx":4170
  *                 SymbolTable osymbols=None,
  *                 SymbolTable ssymbols=None,
  *                 bool acceptor=False,             # <<<<<<<<<<<<<<
@@ -41452,10 +41717,10 @@ static int __pyx_pw_9pywrapfst_8Compiler_1__cinit__(PyObject *__pyx_v_self, PyOb
       __pyx_v_acceptor = ((bool)0);
     }
     if (values[6]) {
-      __pyx_v_keep_isymbols = __Pyx_PyObject_IsTrue(values[6]); if (unlikely((__pyx_v_keep_isymbols == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4165, __pyx_L3_error)
+      __pyx_v_keep_isymbols = __Pyx_PyObject_IsTrue(values[6]); if (unlikely((__pyx_v_keep_isymbols == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4171, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":4165
+      /* "pywrapfst.pyx":4171
  *                 SymbolTable ssymbols=None,
  *                 bool acceptor=False,
  *                 bool keep_isymbols=False,             # <<<<<<<<<<<<<<
@@ -41465,10 +41730,10 @@ static int __pyx_pw_9pywrapfst_8Compiler_1__cinit__(PyObject *__pyx_v_self, PyOb
       __pyx_v_keep_isymbols = ((bool)0);
     }
     if (values[7]) {
-      __pyx_v_keep_osymbols = __Pyx_PyObject_IsTrue(values[7]); if (unlikely((__pyx_v_keep_osymbols == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4166, __pyx_L3_error)
+      __pyx_v_keep_osymbols = __Pyx_PyObject_IsTrue(values[7]); if (unlikely((__pyx_v_keep_osymbols == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4172, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":4166
+      /* "pywrapfst.pyx":4172
  *                 bool acceptor=False,
  *                 bool keep_isymbols=False,
  *                 bool keep_osymbols=False,             # <<<<<<<<<<<<<<
@@ -41478,10 +41743,10 @@ static int __pyx_pw_9pywrapfst_8Compiler_1__cinit__(PyObject *__pyx_v_self, PyOb
       __pyx_v_keep_osymbols = ((bool)0);
     }
     if (values[8]) {
-      __pyx_v_keep_state_numbering = __Pyx_PyObject_IsTrue(values[8]); if (unlikely((__pyx_v_keep_state_numbering == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4167, __pyx_L3_error)
+      __pyx_v_keep_state_numbering = __Pyx_PyObject_IsTrue(values[8]); if (unlikely((__pyx_v_keep_state_numbering == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4173, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":4167
+      /* "pywrapfst.pyx":4173
  *                 bool keep_isymbols=False,
  *                 bool keep_osymbols=False,
  *                 bool keep_state_numbering=False,             # <<<<<<<<<<<<<<
@@ -41491,10 +41756,10 @@ static int __pyx_pw_9pywrapfst_8Compiler_1__cinit__(PyObject *__pyx_v_self, PyOb
       __pyx_v_keep_state_numbering = ((bool)0);
     }
     if (values[9]) {
-      __pyx_v_allow_negative_labels = __Pyx_PyObject_IsTrue(values[9]); if (unlikely((__pyx_v_allow_negative_labels == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4168, __pyx_L3_error)
+      __pyx_v_allow_negative_labels = __Pyx_PyObject_IsTrue(values[9]); if (unlikely((__pyx_v_allow_negative_labels == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4174, __pyx_L3_error)
     } else {
 
-      /* "pywrapfst.pyx":4168
+      /* "pywrapfst.pyx":4174
  *                 bool keep_osymbols=False,
  *                 bool keep_state_numbering=False,
  *                 bool allow_negative_labels=False):             # <<<<<<<<<<<<<<
@@ -41506,18 +41771,18 @@ static int __pyx_pw_9pywrapfst_8Compiler_1__cinit__(PyObject *__pyx_v_self, PyOb
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 0, 10, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 4158, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 0, 10, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 4164, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.Compiler.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_isymbols), __pyx_ptype_9pywrapfst_SymbolTable, 1, "isymbols", 0))) __PYX_ERR(0, 4161, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_osymbols), __pyx_ptype_9pywrapfst_SymbolTable, 1, "osymbols", 0))) __PYX_ERR(0, 4162, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ssymbols), __pyx_ptype_9pywrapfst_SymbolTable, 1, "ssymbols", 0))) __PYX_ERR(0, 4163, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_isymbols), __pyx_ptype_9pywrapfst_SymbolTable, 1, "isymbols", 0))) __PYX_ERR(0, 4167, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_osymbols), __pyx_ptype_9pywrapfst_SymbolTable, 1, "osymbols", 0))) __PYX_ERR(0, 4168, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ssymbols), __pyx_ptype_9pywrapfst_SymbolTable, 1, "ssymbols", 0))) __PYX_ERR(0, 4169, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_8Compiler___cinit__(((struct __pyx_obj_9pywrapfst_Compiler *)__pyx_v_self), __pyx_v_fst_type, __pyx_v_arc_type, __pyx_v_isymbols, __pyx_v_osymbols, __pyx_v_ssymbols, __pyx_v_acceptor, __pyx_v_keep_isymbols, __pyx_v_keep_osymbols, __pyx_v_keep_state_numbering, __pyx_v_allow_negative_labels);
 
-  /* "pywrapfst.pyx":4158
+  /* "pywrapfst.pyx":4164
  *   """
  * 
  *   def __cinit__(self,             # <<<<<<<<<<<<<<
@@ -41544,7 +41809,7 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
   fst::SymbolTable *__pyx_t_5;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "pywrapfst.pyx":4169
+  /* "pywrapfst.pyx":4175
  *                 bool keep_state_numbering=False,
  *                 bool allow_negative_labels=False):
  *     self._sstrm.reset(new stringstream())             # <<<<<<<<<<<<<<
@@ -41553,45 +41818,45 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_sstrm");
-    __PYX_ERR(0, 4169, __pyx_L1_error)
+    __PYX_ERR(0, 4175, __pyx_L1_error)
   }
   __pyx_v_self->_sstrm.reset(new std::stringstream());
 
-  /* "pywrapfst.pyx":4170
+  /* "pywrapfst.pyx":4176
  *                 bool allow_negative_labels=False):
  *     self._sstrm.reset(new stringstream())
  *     self._fst_type = tostring(fst_type)             # <<<<<<<<<<<<<<
  *     self._arc_type = tostring(arc_type)
  *     self._isymbols = NULL
  */
-  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_v_fst_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4170, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_v_fst_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4176, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __pyx_f_9pywrapfst_tostring(__pyx_t_1, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4170, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_9pywrapfst_tostring(__pyx_t_1, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4176, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst_type");
-    __PYX_ERR(0, 4170, __pyx_L1_error)
+    __PYX_ERR(0, 4176, __pyx_L1_error)
   }
   __pyx_v_self->_fst_type = __pyx_t_2;
 
-  /* "pywrapfst.pyx":4171
+  /* "pywrapfst.pyx":4177
  *     self._sstrm.reset(new stringstream())
  *     self._fst_type = tostring(fst_type)
  *     self._arc_type = tostring(arc_type)             # <<<<<<<<<<<<<<
  *     self._isymbols = NULL
  *     if isymbols is not None:
  */
-  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_v_arc_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4171, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_v_arc_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __pyx_f_9pywrapfst_tostring(__pyx_t_1, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4171, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_9pywrapfst_tostring(__pyx_t_1, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4177, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_arc_type");
-    __PYX_ERR(0, 4171, __pyx_L1_error)
+    __PYX_ERR(0, 4177, __pyx_L1_error)
   }
   __pyx_v_self->_arc_type = __pyx_t_2;
 
-  /* "pywrapfst.pyx":4172
+  /* "pywrapfst.pyx":4178
  *     self._fst_type = tostring(fst_type)
  *     self._arc_type = tostring(arc_type)
  *     self._isymbols = NULL             # <<<<<<<<<<<<<<
@@ -41600,11 +41865,11 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_isymbols");
-    __PYX_ERR(0, 4172, __pyx_L1_error)
+    __PYX_ERR(0, 4178, __pyx_L1_error)
   }
   __pyx_v_self->_isymbols = NULL;
 
-  /* "pywrapfst.pyx":4173
+  /* "pywrapfst.pyx":4179
  *     self._arc_type = tostring(arc_type)
  *     self._isymbols = NULL
  *     if isymbols is not None:             # <<<<<<<<<<<<<<
@@ -41615,7 +41880,7 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
   __pyx_t_4 = (__pyx_t_3 != 0);
   if (__pyx_t_4) {
 
-    /* "pywrapfst.pyx":4174
+    /* "pywrapfst.pyx":4180
  *     self._isymbols = NULL
  *     if isymbols is not None:
  *       self._isymbols = isymbols._table             # <<<<<<<<<<<<<<
@@ -41624,16 +41889,16 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
     if (unlikely(((PyObject *)__pyx_v_isymbols) == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_table");
-      __PYX_ERR(0, 4174, __pyx_L1_error)
+      __PYX_ERR(0, 4180, __pyx_L1_error)
     }
     __pyx_t_5 = __pyx_v_isymbols->__pyx_base.__pyx_base._table;
     if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_isymbols");
-      __PYX_ERR(0, 4174, __pyx_L1_error)
+      __PYX_ERR(0, 4180, __pyx_L1_error)
     }
     __pyx_v_self->_isymbols = __pyx_t_5;
 
-    /* "pywrapfst.pyx":4173
+    /* "pywrapfst.pyx":4179
  *     self._arc_type = tostring(arc_type)
  *     self._isymbols = NULL
  *     if isymbols is not None:             # <<<<<<<<<<<<<<
@@ -41642,7 +41907,7 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
   }
 
-  /* "pywrapfst.pyx":4175
+  /* "pywrapfst.pyx":4181
  *     if isymbols is not None:
  *       self._isymbols = isymbols._table
  *     self._osymbols = NULL             # <<<<<<<<<<<<<<
@@ -41651,11 +41916,11 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_osymbols");
-    __PYX_ERR(0, 4175, __pyx_L1_error)
+    __PYX_ERR(0, 4181, __pyx_L1_error)
   }
   __pyx_v_self->_osymbols = NULL;
 
-  /* "pywrapfst.pyx":4176
+  /* "pywrapfst.pyx":4182
  *       self._isymbols = isymbols._table
  *     self._osymbols = NULL
  *     if osymbols is not None:             # <<<<<<<<<<<<<<
@@ -41666,7 +41931,7 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
   __pyx_t_3 = (__pyx_t_4 != 0);
   if (__pyx_t_3) {
 
-    /* "pywrapfst.pyx":4177
+    /* "pywrapfst.pyx":4183
  *     self._osymbols = NULL
  *     if osymbols is not None:
  *       self._osymbols = osymbols._table             # <<<<<<<<<<<<<<
@@ -41675,16 +41940,16 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
     if (unlikely(((PyObject *)__pyx_v_osymbols) == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_table");
-      __PYX_ERR(0, 4177, __pyx_L1_error)
+      __PYX_ERR(0, 4183, __pyx_L1_error)
     }
     __pyx_t_5 = __pyx_v_osymbols->__pyx_base.__pyx_base._table;
     if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_osymbols");
-      __PYX_ERR(0, 4177, __pyx_L1_error)
+      __PYX_ERR(0, 4183, __pyx_L1_error)
     }
     __pyx_v_self->_osymbols = __pyx_t_5;
 
-    /* "pywrapfst.pyx":4176
+    /* "pywrapfst.pyx":4182
  *       self._isymbols = isymbols._table
  *     self._osymbols = NULL
  *     if osymbols is not None:             # <<<<<<<<<<<<<<
@@ -41693,7 +41958,7 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
   }
 
-  /* "pywrapfst.pyx":4178
+  /* "pywrapfst.pyx":4184
  *     if osymbols is not None:
  *       self._osymbols = osymbols._table
  *     self._ssymbols = NULL             # <<<<<<<<<<<<<<
@@ -41702,11 +41967,11 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_ssymbols");
-    __PYX_ERR(0, 4178, __pyx_L1_error)
+    __PYX_ERR(0, 4184, __pyx_L1_error)
   }
   __pyx_v_self->_ssymbols = NULL;
 
-  /* "pywrapfst.pyx":4179
+  /* "pywrapfst.pyx":4185
  *       self._osymbols = osymbols._table
  *     self._ssymbols = NULL
  *     if ssymbols is not None:             # <<<<<<<<<<<<<<
@@ -41717,7 +41982,7 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
   __pyx_t_4 = (__pyx_t_3 != 0);
   if (__pyx_t_4) {
 
-    /* "pywrapfst.pyx":4180
+    /* "pywrapfst.pyx":4186
  *     self._ssymbols = NULL
  *     if ssymbols is not None:
  *       self._ssymbols = ssymbols._table             # <<<<<<<<<<<<<<
@@ -41726,16 +41991,16 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
     if (unlikely(((PyObject *)__pyx_v_ssymbols) == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_table");
-      __PYX_ERR(0, 4180, __pyx_L1_error)
+      __PYX_ERR(0, 4186, __pyx_L1_error)
     }
     __pyx_t_5 = __pyx_v_ssymbols->__pyx_base.__pyx_base._table;
     if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_ssymbols");
-      __PYX_ERR(0, 4180, __pyx_L1_error)
+      __PYX_ERR(0, 4186, __pyx_L1_error)
     }
     __pyx_v_self->_ssymbols = __pyx_t_5;
 
-    /* "pywrapfst.pyx":4179
+    /* "pywrapfst.pyx":4185
  *       self._osymbols = osymbols._table
  *     self._ssymbols = NULL
  *     if ssymbols is not None:             # <<<<<<<<<<<<<<
@@ -41744,7 +42009,7 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
   }
 
-  /* "pywrapfst.pyx":4181
+  /* "pywrapfst.pyx":4187
  *     if ssymbols is not None:
  *       self._ssymbols = ssymbols._table
  *     self._acceptor = acceptor             # <<<<<<<<<<<<<<
@@ -41753,11 +42018,11 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_acceptor");
-    __PYX_ERR(0, 4181, __pyx_L1_error)
+    __PYX_ERR(0, 4187, __pyx_L1_error)
   }
   __pyx_v_self->_acceptor = __pyx_v_acceptor;
 
-  /* "pywrapfst.pyx":4182
+  /* "pywrapfst.pyx":4188
  *       self._ssymbols = ssymbols._table
  *     self._acceptor = acceptor
  *     self._keep_isymbols = keep_isymbols             # <<<<<<<<<<<<<<
@@ -41766,11 +42031,11 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_keep_isymbols");
-    __PYX_ERR(0, 4182, __pyx_L1_error)
+    __PYX_ERR(0, 4188, __pyx_L1_error)
   }
   __pyx_v_self->_keep_isymbols = __pyx_v_keep_isymbols;
 
-  /* "pywrapfst.pyx":4183
+  /* "pywrapfst.pyx":4189
  *     self._acceptor = acceptor
  *     self._keep_isymbols = keep_isymbols
  *     self._keep_osymbols = keep_osymbols             # <<<<<<<<<<<<<<
@@ -41779,11 +42044,11 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_keep_osymbols");
-    __PYX_ERR(0, 4183, __pyx_L1_error)
+    __PYX_ERR(0, 4189, __pyx_L1_error)
   }
   __pyx_v_self->_keep_osymbols = __pyx_v_keep_osymbols;
 
-  /* "pywrapfst.pyx":4184
+  /* "pywrapfst.pyx":4190
  *     self._keep_isymbols = keep_isymbols
  *     self._keep_osymbols = keep_osymbols
  *     self._keep_state_numbering = keep_state_numbering             # <<<<<<<<<<<<<<
@@ -41792,11 +42057,11 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_keep_state_numbering");
-    __PYX_ERR(0, 4184, __pyx_L1_error)
+    __PYX_ERR(0, 4190, __pyx_L1_error)
   }
   __pyx_v_self->_keep_state_numbering = __pyx_v_keep_state_numbering;
 
-  /* "pywrapfst.pyx":4185
+  /* "pywrapfst.pyx":4191
  *     self._keep_osymbols = keep_osymbols
  *     self._keep_state_numbering = keep_state_numbering
  *     self._allow_negative_labels = allow_negative_labels             # <<<<<<<<<<<<<<
@@ -41805,11 +42070,11 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_allow_negative_labels");
-    __PYX_ERR(0, 4185, __pyx_L1_error)
+    __PYX_ERR(0, 4191, __pyx_L1_error)
   }
   __pyx_v_self->_allow_negative_labels = __pyx_v_allow_negative_labels;
 
-  /* "pywrapfst.pyx":4158
+  /* "pywrapfst.pyx":4164
  *   """
  * 
  *   def __cinit__(self,             # <<<<<<<<<<<<<<
@@ -41829,7 +42094,7 @@ static int __pyx_pf_9pywrapfst_8Compiler___cinit__(struct __pyx_obj_9pywrapfst_C
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4187
+/* "pywrapfst.pyx":4193
  *     self._allow_negative_labels = allow_negative_labels
  * 
  *   cpdef _Fst compile(self):             # <<<<<<<<<<<<<<
@@ -41858,7 +42123,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_8Compiler_compile(st
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_compile); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4187, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_compile); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4193, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_8Compiler_3compile)) {
         __Pyx_XDECREF(((PyObject *)__pyx_r));
@@ -41875,10 +42140,10 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_8Compiler_compile(st
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4187, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4193, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_9pywrapfst__Fst))))) __PYX_ERR(0, 4187, __pyx_L1_error)
+        if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_9pywrapfst__Fst))))) __PYX_ERR(0, 4193, __pyx_L1_error)
         __pyx_r = ((struct __pyx_obj_9pywrapfst__Fst *)__pyx_t_2);
         __pyx_t_2 = 0;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -41897,7 +42162,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_8Compiler_compile(st
     #endif
   }
 
-  /* "pywrapfst.pyx":4202
+  /* "pywrapfst.pyx":4208
  *     """
  *     cdef unique_ptr[fst.FstClass] tfst
  *     tfst.reset(fst.CompileFstInternal(deref(self._sstrm),             # <<<<<<<<<<<<<<
@@ -41906,10 +42171,10 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_8Compiler_compile(st
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_sstrm");
-    __PYX_ERR(0, 4202, __pyx_L1_error)
+    __PYX_ERR(0, 4208, __pyx_L1_error)
   }
 
-  /* "pywrapfst.pyx":4203
+  /* "pywrapfst.pyx":4209
  *     cdef unique_ptr[fst.FstClass] tfst
  *     tfst.reset(fst.CompileFstInternal(deref(self._sstrm),
  *         b"<pywrapfst>", self._fst_type, self._arc_type, self._isymbols,             # <<<<<<<<<<<<<<
@@ -41918,18 +42183,18 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_8Compiler_compile(st
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst_type");
-    __PYX_ERR(0, 4203, __pyx_L1_error)
+    __PYX_ERR(0, 4209, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_arc_type");
-    __PYX_ERR(0, 4203, __pyx_L1_error)
+    __PYX_ERR(0, 4209, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_isymbols");
-    __PYX_ERR(0, 4203, __pyx_L1_error)
+    __PYX_ERR(0, 4209, __pyx_L1_error)
   }
 
-  /* "pywrapfst.pyx":4204
+  /* "pywrapfst.pyx":4210
  *     tfst.reset(fst.CompileFstInternal(deref(self._sstrm),
  *         b"<pywrapfst>", self._fst_type, self._arc_type, self._isymbols,
  *         self._osymbols, self._ssymbols, self._acceptor, self._keep_isymbols,             # <<<<<<<<<<<<<<
@@ -41938,22 +42203,22 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_8Compiler_compile(st
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_osymbols");
-    __PYX_ERR(0, 4204, __pyx_L1_error)
+    __PYX_ERR(0, 4210, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_ssymbols");
-    __PYX_ERR(0, 4204, __pyx_L1_error)
+    __PYX_ERR(0, 4210, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_acceptor");
-    __PYX_ERR(0, 4204, __pyx_L1_error)
+    __PYX_ERR(0, 4210, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_keep_isymbols");
-    __PYX_ERR(0, 4204, __pyx_L1_error)
+    __PYX_ERR(0, 4210, __pyx_L1_error)
   }
 
-  /* "pywrapfst.pyx":4205
+  /* "pywrapfst.pyx":4211
  *         b"<pywrapfst>", self._fst_type, self._arc_type, self._isymbols,
  *         self._osymbols, self._ssymbols, self._acceptor, self._keep_isymbols,
  *         self._keep_osymbols, self._keep_state_numbering,             # <<<<<<<<<<<<<<
@@ -41962,14 +42227,14 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_8Compiler_compile(st
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_keep_osymbols");
-    __PYX_ERR(0, 4205, __pyx_L1_error)
+    __PYX_ERR(0, 4211, __pyx_L1_error)
   }
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_keep_state_numbering");
-    __PYX_ERR(0, 4205, __pyx_L1_error)
+    __PYX_ERR(0, 4211, __pyx_L1_error)
   }
 
-  /* "pywrapfst.pyx":4206
+  /* "pywrapfst.pyx":4212
  *         self._osymbols, self._ssymbols, self._acceptor, self._keep_isymbols,
  *         self._keep_osymbols, self._keep_state_numbering,
  *         self._allow_negative_labels))             # <<<<<<<<<<<<<<
@@ -41978,10 +42243,10 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_8Compiler_compile(st
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_allow_negative_labels");
-    __PYX_ERR(0, 4206, __pyx_L1_error)
+    __PYX_ERR(0, 4212, __pyx_L1_error)
   }
 
-  /* "pywrapfst.pyx":4202
+  /* "pywrapfst.pyx":4208
  *     """
  *     cdef unique_ptr[fst.FstClass] tfst
  *     tfst.reset(fst.CompileFstInternal(deref(self._sstrm),             # <<<<<<<<<<<<<<
@@ -41990,7 +42255,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_8Compiler_compile(st
  */
   __pyx_v_tfst.reset(fst::script::CompileFstInternal((*__pyx_v_self->_sstrm), __pyx_k_pywrapfst, __pyx_v_self->_fst_type, __pyx_v_self->_arc_type, __pyx_v_self->_isymbols, __pyx_v_self->_osymbols, __pyx_v_self->_ssymbols, __pyx_v_self->_acceptor, __pyx_v_self->_keep_isymbols, __pyx_v_self->_keep_osymbols, __pyx_v_self->_keep_state_numbering, __pyx_v_self->_allow_negative_labels));
 
-  /* "pywrapfst.pyx":4207
+  /* "pywrapfst.pyx":4213
  *         self._keep_osymbols, self._keep_state_numbering,
  *         self._allow_negative_labels))
  *     self._sstrm.reset(new stringstream())             # <<<<<<<<<<<<<<
@@ -41999,11 +42264,11 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_8Compiler_compile(st
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_sstrm");
-    __PYX_ERR(0, 4207, __pyx_L1_error)
+    __PYX_ERR(0, 4213, __pyx_L1_error)
   }
   __pyx_v_self->_sstrm.reset(new std::stringstream());
 
-  /* "pywrapfst.pyx":4208
+  /* "pywrapfst.pyx":4214
  *         self._allow_negative_labels))
  *     self._sstrm.reset(new stringstream())
  *     if tfst.get() == NULL:             # <<<<<<<<<<<<<<
@@ -42013,14 +42278,14 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_8Compiler_compile(st
   __pyx_t_5 = ((__pyx_v_tfst.get() == NULL) != 0);
   if (unlikely(__pyx_t_5)) {
 
-    /* "pywrapfst.pyx":4209
+    /* "pywrapfst.pyx":4215
  *     self._sstrm.reset(new stringstream())
  *     if tfst.get() == NULL:
  *       raise FstOpError("Compilation failed")             # <<<<<<<<<<<<<<
  *     return _init_XFst(tfst.release())
  * 
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_FstOpError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4209, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_FstOpError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4215, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_3 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -42034,14 +42299,14 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_8Compiler_compile(st
     }
     __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_kp_u_Compilation_failed) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_kp_u_Compilation_failed);
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4209, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4215, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 4209, __pyx_L1_error)
+    __PYX_ERR(0, 4215, __pyx_L1_error)
 
-    /* "pywrapfst.pyx":4208
+    /* "pywrapfst.pyx":4214
  *         self._allow_negative_labels))
  *     self._sstrm.reset(new stringstream())
  *     if tfst.get() == NULL:             # <<<<<<<<<<<<<<
@@ -42050,7 +42315,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_8Compiler_compile(st
  */
   }
 
-  /* "pywrapfst.pyx":4210
+  /* "pywrapfst.pyx":4216
  *     if tfst.get() == NULL:
  *       raise FstOpError("Compilation failed")
  *     return _init_XFst(tfst.release())             # <<<<<<<<<<<<<<
@@ -42058,13 +42323,13 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_8Compiler_compile(st
  *   cpdef void write(self, expression):
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__init_XFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4210, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__init_XFst(__pyx_v_tfst.release())); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4216, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__Fst *)__pyx_t_1);
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4187
+  /* "pywrapfst.pyx":4193
  *     self._allow_negative_labels = allow_negative_labels
  * 
  *   cpdef _Fst compile(self):             # <<<<<<<<<<<<<<
@@ -42106,7 +42371,7 @@ static PyObject *__pyx_pf_9pywrapfst_8Compiler_2compile(struct __pyx_obj_9pywrap
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("compile", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_8Compiler_compile(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4187, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_8Compiler_compile(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4193, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -42123,7 +42388,7 @@ static PyObject *__pyx_pf_9pywrapfst_8Compiler_2compile(struct __pyx_obj_9pywrap
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4212
+/* "pywrapfst.pyx":4218
  *     return _init_XFst(tfst.release())
  * 
  *   cpdef void write(self, expression):             # <<<<<<<<<<<<<<
@@ -42153,7 +42418,7 @@ static void __pyx_f_9pywrapfst_8Compiler_write(struct __pyx_obj_9pywrapfst_Compi
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_write); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4212, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_write); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4218, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_8Compiler_5write)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -42169,7 +42434,7 @@ static void __pyx_f_9pywrapfst_8Compiler_write(struct __pyx_obj_9pywrapfst_Compi
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_v_expression) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_expression);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4212, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4218, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -42189,17 +42454,17 @@ static void __pyx_f_9pywrapfst_8Compiler_write(struct __pyx_obj_9pywrapfst_Compi
     #endif
   }
 
-  /* "pywrapfst.pyx":4228
+  /* "pywrapfst.pyx":4234
  *       expression: A string expression to add to compiler string buffer.
  *     """
  *     cdef string line = tostring(expression)             # <<<<<<<<<<<<<<
  *     if not line.empty() and line.back() != b'\n':
  *       line.append(b'\n')
  */
-  __pyx_t_5 = __pyx_f_9pywrapfst_tostring(__pyx_v_expression, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4228, __pyx_L1_error)
+  __pyx_t_5 = __pyx_f_9pywrapfst_tostring(__pyx_v_expression, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4234, __pyx_L1_error)
   __pyx_v_line = __pyx_t_5;
 
-  /* "pywrapfst.pyx":4229
+  /* "pywrapfst.pyx":4235
  *     """
  *     cdef string line = tostring(expression)
  *     if not line.empty() and line.back() != b'\n':             # <<<<<<<<<<<<<<
@@ -42217,7 +42482,7 @@ static void __pyx_f_9pywrapfst_8Compiler_write(struct __pyx_obj_9pywrapfst_Compi
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_6) {
 
-    /* "pywrapfst.pyx":4230
+    /* "pywrapfst.pyx":4236
  *     cdef string line = tostring(expression)
  *     if not line.empty() and line.back() != b'\n':
  *       line.append(b'\n')             # <<<<<<<<<<<<<<
@@ -42226,7 +42491,7 @@ static void __pyx_f_9pywrapfst_8Compiler_write(struct __pyx_obj_9pywrapfst_Compi
  */
     (void)(__pyx_v_line.append(((char const *)"\n")));
 
-    /* "pywrapfst.pyx":4229
+    /* "pywrapfst.pyx":4235
  *     """
  *     cdef string line = tostring(expression)
  *     if not line.empty() and line.back() != b'\n':             # <<<<<<<<<<<<<<
@@ -42235,7 +42500,7 @@ static void __pyx_f_9pywrapfst_8Compiler_write(struct __pyx_obj_9pywrapfst_Compi
  */
   }
 
-  /* "pywrapfst.pyx":4231
+  /* "pywrapfst.pyx":4237
  *     if not line.empty() and line.back() != b'\n':
  *       line.append(b'\n')
  *     deref(self._sstrm) << line             # <<<<<<<<<<<<<<
@@ -42244,11 +42509,11 @@ static void __pyx_f_9pywrapfst_8Compiler_write(struct __pyx_obj_9pywrapfst_Compi
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_sstrm");
-    __PYX_ERR(0, 4231, __pyx_L1_error)
+    __PYX_ERR(0, 4237, __pyx_L1_error)
   }
   (void)(((*__pyx_v_self->_sstrm) << __pyx_v_line));
 
-  /* "pywrapfst.pyx":4212
+  /* "pywrapfst.pyx":4218
  *     return _init_XFst(tfst.release())
  * 
  *   cpdef void write(self, expression):             # <<<<<<<<<<<<<<
@@ -42288,7 +42553,7 @@ static PyObject *__pyx_pf_9pywrapfst_8Compiler_4write(struct __pyx_obj_9pywrapfs
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("write", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_8Compiler_write(__pyx_v_self, __pyx_v_expression, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4212, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_8Compiler_write(__pyx_v_self, __pyx_v_expression, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4218, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -42412,7 +42677,7 @@ static PyObject *__pyx_pf_9pywrapfst_8Compiler_8__setstate_cython__(CYTHON_UNUSE
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4253
+/* "pywrapfst.pyx":4259
  *   """
  * 
  *   def __init__(self):             # <<<<<<<<<<<<<<
@@ -42447,28 +42712,28 @@ static int __pyx_pf_9pywrapfst_9FarReader___init__(struct __pyx_obj_9pywrapfst_F
   PyObject *__pyx_t_6 = NULL;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "pywrapfst.pyx":4254
+  /* "pywrapfst.pyx":4260
  * 
  *   def __init__(self):
  *     raise FstDeletedConstructorError(             # <<<<<<<<<<<<<<
  *         "Cannot construct {}".format(self.__class__.__name__))
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_FstDeletedConstructorError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4254, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_FstDeletedConstructorError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4260, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "pywrapfst.pyx":4255
+  /* "pywrapfst.pyx":4261
  *   def __init__(self):
  *     raise FstDeletedConstructorError(
  *         "Cannot construct {}".format(self.__class__.__name__))             # <<<<<<<<<<<<<<
  * 
  *   def __repr__(self):
  */
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_Cannot_construct, __pyx_n_s_format); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 4255, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_Cannot_construct, __pyx_n_s_format); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 4261, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_class); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 4255, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_class); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 4261, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_name); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 4255, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_name); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 4261, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_t_5 = NULL;
@@ -42484,7 +42749,7 @@ static int __pyx_pf_9pywrapfst_9FarReader___init__(struct __pyx_obj_9pywrapfst_F
   __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_5, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_6);
   __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4255, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4261, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = NULL;
@@ -42500,14 +42765,14 @@ static int __pyx_pf_9pywrapfst_9FarReader___init__(struct __pyx_obj_9pywrapfst_F
   __pyx_t_1 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_4, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4254, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4260, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __PYX_ERR(0, 4254, __pyx_L1_error)
+  __PYX_ERR(0, 4260, __pyx_L1_error)
 
-  /* "pywrapfst.pyx":4253
+  /* "pywrapfst.pyx":4259
  *   """
  * 
  *   def __init__(self):             # <<<<<<<<<<<<<<
@@ -42529,7 +42794,7 @@ static int __pyx_pf_9pywrapfst_9FarReader___init__(struct __pyx_obj_9pywrapfst_F
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4257
+/* "pywrapfst.pyx":4263
  *         "Cannot construct {}".format(self.__class__.__name__))
  * 
  *   def __repr__(self):             # <<<<<<<<<<<<<<
@@ -42562,7 +42827,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_2__repr__(struct __pyx_obj_9pywr
   PyObject *__pyx_t_7 = NULL;
   __Pyx_RefNannySetupContext("__repr__", 0);
 
-  /* "pywrapfst.pyx":4258
+  /* "pywrapfst.pyx":4264
  * 
  *   def __repr__(self):
  *     return "<{} FarReader at 0x{:x}>".format(self.far_type(), id(self))             # <<<<<<<<<<<<<<
@@ -42570,15 +42835,15 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_2__repr__(struct __pyx_obj_9pywr
  *   @classmethod
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_FarReader_at_0x_x, __pyx_n_s_format); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4258, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_FarReader_at_0x_x, __pyx_n_s_format); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4264, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "far_type");
-    __PYX_ERR(0, 4258, __pyx_L1_error)
+    __PYX_ERR(0, 4264, __pyx_L1_error)
   }
-  __pyx_t_3 = __pyx_convert_PyUnicode_string_to_py_std__in_string(((struct __pyx_vtabstruct_9pywrapfst_FarReader *)__pyx_v_self->__pyx_vtab)->far_type(__pyx_v_self, 0)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4258, __pyx_L1_error)
+  __pyx_t_3 = __pyx_convert_PyUnicode_string_to_py_std__in_string(((struct __pyx_vtabstruct_9pywrapfst_FarReader *)__pyx_v_self->__pyx_vtab)->far_type(__pyx_v_self, 0)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4264, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_builtin_id, ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 4258, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_builtin_id, ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 4264, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_5 = NULL;
   __pyx_t_6 = 0;
@@ -42595,7 +42860,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_2__repr__(struct __pyx_obj_9pywr
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_2)) {
     PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_t_3, __pyx_t_4};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 2+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4258, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 2+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4264, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -42605,7 +42870,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_2__repr__(struct __pyx_obj_9pywr
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
     PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_t_3, __pyx_t_4};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 2+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4258, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 2+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4264, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -42613,7 +42878,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_2__repr__(struct __pyx_obj_9pywr
   } else
   #endif
   {
-    __pyx_t_7 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 4258, __pyx_L1_error)
+    __pyx_t_7 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 4264, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     if (__pyx_t_5) {
       __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5); __pyx_t_5 = NULL;
@@ -42624,7 +42889,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_2__repr__(struct __pyx_obj_9pywr
     PyTuple_SET_ITEM(__pyx_t_7, 1+__pyx_t_6, __pyx_t_4);
     __pyx_t_3 = 0;
     __pyx_t_4 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4258, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4264, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   }
@@ -42633,7 +42898,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_2__repr__(struct __pyx_obj_9pywr
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4257
+  /* "pywrapfst.pyx":4263
  *         "Cannot construct {}".format(self.__class__.__name__))
  * 
  *   def __repr__(self):             # <<<<<<<<<<<<<<
@@ -42657,7 +42922,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_2__repr__(struct __pyx_obj_9pywr
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4261
+/* "pywrapfst.pyx":4267
  * 
  *   @classmethod
  *   def open(cls, *filenames):             # <<<<<<<<<<<<<<
@@ -42701,7 +42966,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_4open(CYTHON_UNUSED PyTypeObject
   PyObject *__pyx_t_8 = NULL;
   __Pyx_RefNannySetupContext("open", 0);
 
-  /* "pywrapfst.pyx":4280
+  /* "pywrapfst.pyx":4286
  *     """
  *     cdef vector[string] filename_strings
  *     for filename in filenames:             # <<<<<<<<<<<<<<
@@ -42712,30 +42977,30 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_4open(CYTHON_UNUSED PyTypeObject
   for (;;) {
     if (__pyx_t_2 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_3); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 4280, __pyx_L1_error)
+    __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_3); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 4286, __pyx_L1_error)
     #else
-    __pyx_t_3 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4280, __pyx_L1_error)
+    __pyx_t_3 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4286, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     #endif
     __Pyx_XDECREF_SET(__pyx_v_filename, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "pywrapfst.pyx":4281
+    /* "pywrapfst.pyx":4287
  *     cdef vector[string] filename_strings
  *     for filename in filenames:
  *       filename_strings.push_back(tostring(filename))             # <<<<<<<<<<<<<<
  *     cdef unique_ptr[fst.FarReaderClass] tfar
  *     tfar.reset(fst.FarReaderClass.Open(filename_strings))
  */
-    __pyx_t_4 = __pyx_f_9pywrapfst_tostring(__pyx_v_filename, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4281, __pyx_L1_error)
+    __pyx_t_4 = __pyx_f_9pywrapfst_tostring(__pyx_v_filename, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4287, __pyx_L1_error)
     try {
       __pyx_v_filename_strings.push_back(__pyx_t_4);
     } catch(...) {
       __Pyx_CppExn2PyErr();
-      __PYX_ERR(0, 4281, __pyx_L1_error)
+      __PYX_ERR(0, 4287, __pyx_L1_error)
     }
 
-    /* "pywrapfst.pyx":4280
+    /* "pywrapfst.pyx":4286
  *     """
  *     cdef vector[string] filename_strings
  *     for filename in filenames:             # <<<<<<<<<<<<<<
@@ -42745,7 +43010,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_4open(CYTHON_UNUSED PyTypeObject
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "pywrapfst.pyx":4283
+  /* "pywrapfst.pyx":4289
  *       filename_strings.push_back(tostring(filename))
  *     cdef unique_ptr[fst.FarReaderClass] tfar
  *     tfar.reset(fst.FarReaderClass.Open(filename_strings))             # <<<<<<<<<<<<<<
@@ -42754,7 +43019,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_4open(CYTHON_UNUSED PyTypeObject
  */
   __pyx_v_tfar.reset(fst::script::FarReaderClass::Open(__pyx_v_filename_strings));
 
-  /* "pywrapfst.pyx":4284
+  /* "pywrapfst.pyx":4290
  *     cdef unique_ptr[fst.FarReaderClass] tfar
  *     tfar.reset(fst.FarReaderClass.Open(filename_strings))
  *     if tfar.get() == NULL:             # <<<<<<<<<<<<<<
@@ -42764,16 +43029,16 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_4open(CYTHON_UNUSED PyTypeObject
   __pyx_t_5 = ((__pyx_v_tfar.get() == NULL) != 0);
   if (unlikely(__pyx_t_5)) {
 
-    /* "pywrapfst.pyx":4285
+    /* "pywrapfst.pyx":4291
  *     tfar.reset(fst.FarReaderClass.Open(filename_strings))
  *     if tfar.get() == NULL:
  *       raise FstIOError("Read failed: {!r}".format(filenames))             # <<<<<<<<<<<<<<
  *     cdef FarReader result = FarReader.__new__(FarReader)
  *     result._reader.reset(tfar.release())
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_FstIOError); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4285, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_FstIOError); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4291, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_Read_failed_r, __pyx_n_s_format); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 4285, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_Read_failed_r, __pyx_n_s_format); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 4291, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __pyx_t_8 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_7))) {
@@ -42787,7 +43052,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_4open(CYTHON_UNUSED PyTypeObject
     }
     __pyx_t_6 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_8, __pyx_v_filenames) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_v_filenames);
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 4285, __pyx_L1_error)
+    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 4291, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_t_7 = NULL;
@@ -42803,14 +43068,14 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_4open(CYTHON_UNUSED PyTypeObject
     __pyx_t_1 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_7, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_6);
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4285, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4291, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 4285, __pyx_L1_error)
+    __PYX_ERR(0, 4291, __pyx_L1_error)
 
-    /* "pywrapfst.pyx":4284
+    /* "pywrapfst.pyx":4290
  *     cdef unique_ptr[fst.FarReaderClass] tfar
  *     tfar.reset(fst.FarReaderClass.Open(filename_strings))
  *     if tfar.get() == NULL:             # <<<<<<<<<<<<<<
@@ -42819,19 +43084,19 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_4open(CYTHON_UNUSED PyTypeObject
  */
   }
 
-  /* "pywrapfst.pyx":4286
+  /* "pywrapfst.pyx":4292
  *     if tfar.get() == NULL:
  *       raise FstIOError("Read failed: {!r}".format(filenames))
  *     cdef FarReader result = FarReader.__new__(FarReader)             # <<<<<<<<<<<<<<
  *     result._reader.reset(tfar.release())
  *     return result
  */
-  __pyx_t_1 = ((PyObject *)__pyx_tp_new_9pywrapfst_FarReader(((PyTypeObject *)__pyx_ptype_9pywrapfst_FarReader), __pyx_empty_tuple, NULL)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4286, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_tp_new_9pywrapfst_FarReader(((PyTypeObject *)__pyx_ptype_9pywrapfst_FarReader), __pyx_empty_tuple, NULL)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4292, __pyx_L1_error)
   __Pyx_GOTREF(((PyObject *)__pyx_t_1));
   __pyx_v_result = ((struct __pyx_obj_9pywrapfst_FarReader *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "pywrapfst.pyx":4287
+  /* "pywrapfst.pyx":4293
  *       raise FstIOError("Read failed: {!r}".format(filenames))
  *     cdef FarReader result = FarReader.__new__(FarReader)
  *     result._reader.reset(tfar.release())             # <<<<<<<<<<<<<<
@@ -42840,11 +43105,11 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_4open(CYTHON_UNUSED PyTypeObject
  */
   if (unlikely(((PyObject *)__pyx_v_result) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_reader");
-    __PYX_ERR(0, 4287, __pyx_L1_error)
+    __PYX_ERR(0, 4293, __pyx_L1_error)
   }
   __pyx_v_result->_reader.reset(__pyx_v_tfar.release());
 
-  /* "pywrapfst.pyx":4288
+  /* "pywrapfst.pyx":4294
  *     cdef FarReader result = FarReader.__new__(FarReader)
  *     result._reader.reset(tfar.release())
  *     return result             # <<<<<<<<<<<<<<
@@ -42856,7 +43121,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_4open(CYTHON_UNUSED PyTypeObject
   __pyx_r = ((PyObject *)__pyx_v_result);
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4261
+  /* "pywrapfst.pyx":4267
  * 
  *   @classmethod
  *   def open(cls, *filenames):             # <<<<<<<<<<<<<<
@@ -42881,7 +43146,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_4open(CYTHON_UNUSED PyTypeObject
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4290
+/* "pywrapfst.pyx":4296
  *     return result
  * 
  *   cpdef string arc_type(self):             # <<<<<<<<<<<<<<
@@ -42909,7 +43174,7 @@ static std::string __pyx_f_9pywrapfst_9FarReader_arc_type(struct __pyx_obj_9pywr
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_arc_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4290, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_arc_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4296, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_9FarReader_7arc_type)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -42925,10 +43190,10 @@ static std::string __pyx_f_9pywrapfst_9FarReader_arc_type(struct __pyx_obj_9pywr
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4290, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4296, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4290, __pyx_L1_error)
+        __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4296, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -42947,7 +43212,7 @@ static std::string __pyx_f_9pywrapfst_9FarReader_arc_type(struct __pyx_obj_9pywr
     #endif
   }
 
-  /* "pywrapfst.pyx":4296
+  /* "pywrapfst.pyx":4302
  *     Returns a string indicating the arc type.
  *     """
  *     return self._reader.get().ArcType()             # <<<<<<<<<<<<<<
@@ -42956,12 +43221,12 @@ static std::string __pyx_f_9pywrapfst_9FarReader_arc_type(struct __pyx_obj_9pywr
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_reader");
-    __PYX_ERR(0, 4296, __pyx_L1_error)
+    __PYX_ERR(0, 4302, __pyx_L1_error)
   }
   __pyx_r = __pyx_v_self->_reader.get()->ArcType();
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4290
+  /* "pywrapfst.pyx":4296
  *     return result
  * 
  *   cpdef string arc_type(self):             # <<<<<<<<<<<<<<
@@ -43002,7 +43267,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_6arc_type(struct __pyx_obj_9pywr
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("arc_type", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_f_9pywrapfst_9FarReader_arc_type(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4290, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_f_9pywrapfst_9FarReader_arc_type(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4296, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -43019,7 +43284,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_6arc_type(struct __pyx_obj_9pywr
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4298
+/* "pywrapfst.pyx":4304
  *     return self._reader.get().ArcType()
  * 
  *   cpdef bool done(self):             # <<<<<<<<<<<<<<
@@ -43047,7 +43312,7 @@ static bool __pyx_f_9pywrapfst_9FarReader_done(struct __pyx_obj_9pywrapfst_FarRe
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_done); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4298, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_done); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4304, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_9FarReader_9done)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -43063,10 +43328,10 @@ static bool __pyx_f_9pywrapfst_9FarReader_done(struct __pyx_obj_9pywrapfst_FarRe
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4298, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4304, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4298, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4304, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -43085,7 +43350,7 @@ static bool __pyx_f_9pywrapfst_9FarReader_done(struct __pyx_obj_9pywrapfst_FarRe
     #endif
   }
 
-  /* "pywrapfst.pyx":4307
+  /* "pywrapfst.pyx":4313
  *       True if the iterator is exhausted, False otherwise.
  *     """
  *     return self._reader.get().Done()             # <<<<<<<<<<<<<<
@@ -43094,12 +43359,12 @@ static bool __pyx_f_9pywrapfst_9FarReader_done(struct __pyx_obj_9pywrapfst_FarRe
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_reader");
-    __PYX_ERR(0, 4307, __pyx_L1_error)
+    __PYX_ERR(0, 4313, __pyx_L1_error)
   }
   __pyx_r = __pyx_v_self->_reader.get()->Done();
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4298
+  /* "pywrapfst.pyx":4304
  *     return self._reader.get().ArcType()
  * 
  *   cpdef bool done(self):             # <<<<<<<<<<<<<<
@@ -43140,7 +43405,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_8done(struct __pyx_obj_9pywrapfs
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("done", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_9pywrapfst_9FarReader_done(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4298, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_9pywrapfst_9FarReader_done(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4304, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -43157,7 +43422,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_8done(struct __pyx_obj_9pywrapfs
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4309
+/* "pywrapfst.pyx":4315
  *     return self._reader.get().Done()
  * 
  *   cpdef bool error(self):             # <<<<<<<<<<<<<<
@@ -43185,7 +43450,7 @@ static bool __pyx_f_9pywrapfst_9FarReader_error(struct __pyx_obj_9pywrapfst_FarR
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_error); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4309, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_error); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4315, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_9FarReader_11error)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -43201,10 +43466,10 @@ static bool __pyx_f_9pywrapfst_9FarReader_error(struct __pyx_obj_9pywrapfst_FarR
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4309, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4315, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4309, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4315, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -43223,7 +43488,7 @@ static bool __pyx_f_9pywrapfst_9FarReader_error(struct __pyx_obj_9pywrapfst_FarR
     #endif
   }
 
-  /* "pywrapfst.pyx":4318
+  /* "pywrapfst.pyx":4324
  *       True if the FarReader is in an errorful state, False otherwise.
  *     """
  *     return self._reader.get().Error()             # <<<<<<<<<<<<<<
@@ -43232,12 +43497,12 @@ static bool __pyx_f_9pywrapfst_9FarReader_error(struct __pyx_obj_9pywrapfst_FarR
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_reader");
-    __PYX_ERR(0, 4318, __pyx_L1_error)
+    __PYX_ERR(0, 4324, __pyx_L1_error)
   }
   __pyx_r = __pyx_v_self->_reader.get()->Error();
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4309
+  /* "pywrapfst.pyx":4315
  *     return self._reader.get().Done()
  * 
  *   cpdef bool error(self):             # <<<<<<<<<<<<<<
@@ -43278,7 +43543,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_10error(struct __pyx_obj_9pywrap
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("error", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_9pywrapfst_9FarReader_error(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4309, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_9pywrapfst_9FarReader_error(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4315, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -43295,7 +43560,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_10error(struct __pyx_obj_9pywrap
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4320
+/* "pywrapfst.pyx":4326
  *     return self._reader.get().Error()
  * 
  *   cpdef string far_type(self):             # <<<<<<<<<<<<<<
@@ -43323,7 +43588,7 @@ static std::string __pyx_f_9pywrapfst_9FarReader_far_type(struct __pyx_obj_9pywr
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_far_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4320, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_far_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4326, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_9FarReader_13far_type)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -43339,10 +43604,10 @@ static std::string __pyx_f_9pywrapfst_9FarReader_far_type(struct __pyx_obj_9pywr
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4320, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4326, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4320, __pyx_L1_error)
+        __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4326, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -43361,7 +43626,7 @@ static std::string __pyx_f_9pywrapfst_9FarReader_far_type(struct __pyx_obj_9pywr
     #endif
   }
 
-  /* "pywrapfst.pyx":4321
+  /* "pywrapfst.pyx":4327
  * 
  *   cpdef string far_type(self):
  *     return fst.GetFarTypeString(self._reader.get().Type())             # <<<<<<<<<<<<<<
@@ -43370,12 +43635,12 @@ static std::string __pyx_f_9pywrapfst_9FarReader_far_type(struct __pyx_obj_9pywr
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_reader");
-    __PYX_ERR(0, 4321, __pyx_L1_error)
+    __PYX_ERR(0, 4327, __pyx_L1_error)
   }
   __pyx_r = fst::GetFarTypeString(__pyx_v_self->_reader.get()->Type());
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4320
+  /* "pywrapfst.pyx":4326
  *     return self._reader.get().Error()
  * 
  *   cpdef string far_type(self):             # <<<<<<<<<<<<<<
@@ -43415,7 +43680,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_12far_type(struct __pyx_obj_9pyw
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("far_type", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_f_9pywrapfst_9FarReader_far_type(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4320, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_f_9pywrapfst_9FarReader_far_type(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4326, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -43432,7 +43697,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_12far_type(struct __pyx_obj_9pyw
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4323
+/* "pywrapfst.pyx":4329
  *     return fst.GetFarTypeString(self._reader.get().Type())
  * 
  *   cpdef bool find(self, key) except *:             # <<<<<<<<<<<<<<
@@ -43461,7 +43726,7 @@ static bool __pyx_f_9pywrapfst_9FarReader_find(struct __pyx_obj_9pywrapfst_FarRe
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_find); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4323, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_find); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4329, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_9FarReader_15find)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -43477,10 +43742,10 @@ static bool __pyx_f_9pywrapfst_9FarReader_find(struct __pyx_obj_9pywrapfst_FarRe
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_v_key) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_key);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4323, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4329, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4323, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4329, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -43499,7 +43764,7 @@ static bool __pyx_f_9pywrapfst_9FarReader_find(struct __pyx_obj_9pywrapfst_FarRe
     #endif
   }
 
-  /* "pywrapfst.pyx":4336
+  /* "pywrapfst.pyx":4342
  *       True if the key was found, False otherwise.
  *     """
  *     return self._reader.get().Find(tostring(key))             # <<<<<<<<<<<<<<
@@ -43508,13 +43773,13 @@ static bool __pyx_f_9pywrapfst_9FarReader_find(struct __pyx_obj_9pywrapfst_FarRe
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_reader");
-    __PYX_ERR(0, 4336, __pyx_L1_error)
+    __PYX_ERR(0, 4342, __pyx_L1_error)
   }
-  __pyx_t_6 = __pyx_f_9pywrapfst_tostring(__pyx_v_key, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4336, __pyx_L1_error)
+  __pyx_t_6 = __pyx_f_9pywrapfst_tostring(__pyx_v_key, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4342, __pyx_L1_error)
   __pyx_r = __pyx_v_self->_reader.get()->Find(__pyx_t_6);
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4323
+  /* "pywrapfst.pyx":4329
  *     return fst.GetFarTypeString(self._reader.get().Type())
  * 
  *   cpdef bool find(self, key) except *:             # <<<<<<<<<<<<<<
@@ -43556,8 +43821,8 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_14find(struct __pyx_obj_9pywrapf
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("find", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_9pywrapfst_9FarReader_find(__pyx_v_self, __pyx_v_key, 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4323, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4323, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst_9FarReader_find(__pyx_v_self, __pyx_v_key, 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4329, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4329, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
@@ -43574,7 +43839,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_14find(struct __pyx_obj_9pywrapf
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4338
+/* "pywrapfst.pyx":4344
  *     return self._reader.get().Find(tostring(key))
  * 
  *   cpdef _Fst get_fst(self):             # <<<<<<<<<<<<<<
@@ -43601,7 +43866,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_9FarReader_get_fst(s
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_fst); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4338, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_fst); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4344, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_9FarReader_17get_fst)) {
         __Pyx_XDECREF(((PyObject *)__pyx_r));
@@ -43618,10 +43883,10 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_9FarReader_get_fst(s
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4338, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4344, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_9pywrapfst__Fst))))) __PYX_ERR(0, 4338, __pyx_L1_error)
+        if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_9pywrapfst__Fst))))) __PYX_ERR(0, 4344, __pyx_L1_error)
         __pyx_r = ((struct __pyx_obj_9pywrapfst__Fst *)__pyx_t_2);
         __pyx_t_2 = 0;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -43640,7 +43905,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_9FarReader_get_fst(s
     #endif
   }
 
-  /* "pywrapfst.pyx":4347
+  /* "pywrapfst.pyx":4353
  *       A copy of the FST at the current position.
  *     """
  *     return _init_XFst(new fst.FstClass(             # <<<<<<<<<<<<<<
@@ -43649,7 +43914,7 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_9FarReader_get_fst(s
  */
   __Pyx_XDECREF(((PyObject *)__pyx_r));
 
-  /* "pywrapfst.pyx":4348
+  /* "pywrapfst.pyx":4354
  *     """
  *     return _init_XFst(new fst.FstClass(
  *         deref(self._reader.get().GetFstClass())))             # <<<<<<<<<<<<<<
@@ -43658,23 +43923,23 @@ static struct __pyx_obj_9pywrapfst__Fst *__pyx_f_9pywrapfst_9FarReader_get_fst(s
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_reader");
-    __PYX_ERR(0, 4348, __pyx_L1_error)
+    __PYX_ERR(0, 4354, __pyx_L1_error)
   }
 
-  /* "pywrapfst.pyx":4347
+  /* "pywrapfst.pyx":4353
  *       A copy of the FST at the current position.
  *     """
  *     return _init_XFst(new fst.FstClass(             # <<<<<<<<<<<<<<
  *         deref(self._reader.get().GetFstClass())))
  * 
  */
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__init_XFst(new fst::script::FstClass((*__pyx_v_self->_reader.get()->GetFstClass())))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4347, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst__init_XFst(new fst::script::FstClass((*__pyx_v_self->_reader.get()->GetFstClass())))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = ((struct __pyx_obj_9pywrapfst__Fst *)__pyx_t_1);
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4338
+  /* "pywrapfst.pyx":4344
  *     return self._reader.get().Find(tostring(key))
  * 
  *   cpdef _Fst get_fst(self):             # <<<<<<<<<<<<<<
@@ -43716,7 +43981,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_16get_fst(struct __pyx_obj_9pywr
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("get_fst", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_9FarReader_get_fst(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4338, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_9pywrapfst_9FarReader_get_fst(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4344, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -43733,7 +43998,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_16get_fst(struct __pyx_obj_9pywr
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4350
+/* "pywrapfst.pyx":4356
  *         deref(self._reader.get().GetFstClass())))
  * 
  *   cpdef string get_key(self):             # <<<<<<<<<<<<<<
@@ -43761,7 +44026,7 @@ static std::string __pyx_f_9pywrapfst_9FarReader_get_key(struct __pyx_obj_9pywra
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_key); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4350, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_key); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4356, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_9FarReader_19get_key)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -43777,10 +44042,10 @@ static std::string __pyx_f_9pywrapfst_9FarReader_get_key(struct __pyx_obj_9pywra
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4350, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4356, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4350, __pyx_L1_error)
+        __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4356, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -43799,7 +44064,7 @@ static std::string __pyx_f_9pywrapfst_9FarReader_get_key(struct __pyx_obj_9pywra
     #endif
   }
 
-  /* "pywrapfst.pyx":4359
+  /* "pywrapfst.pyx":4365
  *       The string key at the current position.
  *     """
  *     return self._reader.get().GetKey()             # <<<<<<<<<<<<<<
@@ -43808,12 +44073,12 @@ static std::string __pyx_f_9pywrapfst_9FarReader_get_key(struct __pyx_obj_9pywra
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_reader");
-    __PYX_ERR(0, 4359, __pyx_L1_error)
+    __PYX_ERR(0, 4365, __pyx_L1_error)
   }
   __pyx_r = __pyx_v_self->_reader.get()->GetKey();
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4350
+  /* "pywrapfst.pyx":4356
  *         deref(self._reader.get().GetFstClass())))
  * 
  *   cpdef string get_key(self):             # <<<<<<<<<<<<<<
@@ -43854,7 +44119,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_18get_key(struct __pyx_obj_9pywr
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("get_key", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_f_9pywrapfst_9FarReader_get_key(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4350, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_f_9pywrapfst_9FarReader_get_key(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4356, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -43871,7 +44136,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_18get_key(struct __pyx_obj_9pywr
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4361
+/* "pywrapfst.pyx":4367
  *     return self._reader.get().GetKey()
  * 
  *   cpdef void next(self):             # <<<<<<<<<<<<<<
@@ -43897,7 +44162,7 @@ static void __pyx_f_9pywrapfst_9FarReader_next(struct __pyx_obj_9pywrapfst_FarRe
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_next); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4361, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_next); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4367, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_9FarReader_21next)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -43913,7 +44178,7 @@ static void __pyx_f_9pywrapfst_9FarReader_next(struct __pyx_obj_9pywrapfst_FarRe
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4361, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4367, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -43933,7 +44198,7 @@ static void __pyx_f_9pywrapfst_9FarReader_next(struct __pyx_obj_9pywrapfst_FarRe
     #endif
   }
 
-  /* "pywrapfst.pyx":4367
+  /* "pywrapfst.pyx":4373
  *     Advances the iterator.
  *     """
  *     self._reader.get().Next()             # <<<<<<<<<<<<<<
@@ -43942,11 +44207,11 @@ static void __pyx_f_9pywrapfst_9FarReader_next(struct __pyx_obj_9pywrapfst_FarRe
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_reader");
-    __PYX_ERR(0, 4367, __pyx_L1_error)
+    __PYX_ERR(0, 4373, __pyx_L1_error)
   }
   __pyx_v_self->_reader.get()->Next();
 
-  /* "pywrapfst.pyx":4361
+  /* "pywrapfst.pyx":4367
  *     return self._reader.get().GetKey()
  * 
  *   cpdef void next(self):             # <<<<<<<<<<<<<<
@@ -43986,7 +44251,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_20next(struct __pyx_obj_9pywrapf
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("next", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_9FarReader_next(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4361, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_9FarReader_next(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4367, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -44003,7 +44268,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_20next(struct __pyx_obj_9pywrapf
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4369
+/* "pywrapfst.pyx":4375
  *     self._reader.get().Next()
  * 
  *   cpdef void reset(self):             # <<<<<<<<<<<<<<
@@ -44029,7 +44294,7 @@ static void __pyx_f_9pywrapfst_9FarReader_reset(struct __pyx_obj_9pywrapfst_FarR
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_reset); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4369, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_reset); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4375, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_9FarReader_23reset)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -44045,7 +44310,7 @@ static void __pyx_f_9pywrapfst_9FarReader_reset(struct __pyx_obj_9pywrapfst_FarR
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4369, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4375, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -44065,7 +44330,7 @@ static void __pyx_f_9pywrapfst_9FarReader_reset(struct __pyx_obj_9pywrapfst_FarR
     #endif
   }
 
-  /* "pywrapfst.pyx":4375
+  /* "pywrapfst.pyx":4381
  *     Resets the iterator to the initial position.
  *     """
  *     self._reader.get().Reset()             # <<<<<<<<<<<<<<
@@ -44074,11 +44339,11 @@ static void __pyx_f_9pywrapfst_9FarReader_reset(struct __pyx_obj_9pywrapfst_FarR
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_reader");
-    __PYX_ERR(0, 4375, __pyx_L1_error)
+    __PYX_ERR(0, 4381, __pyx_L1_error)
   }
   __pyx_v_self->_reader.get()->Reset();
 
-  /* "pywrapfst.pyx":4369
+  /* "pywrapfst.pyx":4375
  *     self._reader.get().Next()
  * 
  *   cpdef void reset(self):             # <<<<<<<<<<<<<<
@@ -44118,7 +44383,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_22reset(struct __pyx_obj_9pywrap
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("reset", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_9FarReader_reset(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4369, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9pywrapfst_9FarReader_reset(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4375, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -44135,7 +44400,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_22reset(struct __pyx_obj_9pywrap
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4377
+/* "pywrapfst.pyx":4383
  *     self._reader.get().Reset()
  * 
  *   def __getitem__(self, key):             # <<<<<<<<<<<<<<
@@ -44164,7 +44429,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_24__getitem__(struct __pyx_obj_9
   PyObject *__pyx_t_3 = NULL;
   __Pyx_RefNannySetupContext("__getitem__", 0);
 
-  /* "pywrapfst.pyx":4378
+  /* "pywrapfst.pyx":4384
  * 
  *   def __getitem__(self, key):
  *     if self._reader.get().Find(tostring(key)):             # <<<<<<<<<<<<<<
@@ -44173,13 +44438,13 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_24__getitem__(struct __pyx_obj_9
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_reader");
-    __PYX_ERR(0, 4378, __pyx_L1_error)
+    __PYX_ERR(0, 4384, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_key, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4378, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_key, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4384, __pyx_L1_error)
   __pyx_t_2 = (__pyx_v_self->_reader.get()->Find(__pyx_t_1) != 0);
   if (likely(__pyx_t_2)) {
 
-    /* "pywrapfst.pyx":4379
+    /* "pywrapfst.pyx":4385
  *   def __getitem__(self, key):
  *     if self._reader.get().Find(tostring(key)):
  *       return self.get_fst()             # <<<<<<<<<<<<<<
@@ -44189,15 +44454,15 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_24__getitem__(struct __pyx_obj_9
     __Pyx_XDECREF(__pyx_r);
     if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "get_fst");
-      __PYX_ERR(0, 4379, __pyx_L1_error)
+      __PYX_ERR(0, 4385, __pyx_L1_error)
     }
-    __pyx_t_3 = ((PyObject *)((struct __pyx_vtabstruct_9pywrapfst_FarReader *)__pyx_v_self->__pyx_vtab)->get_fst(__pyx_v_self, 0)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4379, __pyx_L1_error)
+    __pyx_t_3 = ((PyObject *)((struct __pyx_vtabstruct_9pywrapfst_FarReader *)__pyx_v_self->__pyx_vtab)->get_fst(__pyx_v_self, 0)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4385, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_r = __pyx_t_3;
     __pyx_t_3 = 0;
     goto __pyx_L0;
 
-    /* "pywrapfst.pyx":4378
+    /* "pywrapfst.pyx":4384
  * 
  *   def __getitem__(self, key):
  *     if self._reader.get().Find(tostring(key)):             # <<<<<<<<<<<<<<
@@ -44206,7 +44471,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_24__getitem__(struct __pyx_obj_9
  */
   }
 
-  /* "pywrapfst.pyx":4381
+  /* "pywrapfst.pyx":4387
  *       return self.get_fst()
  *     else:
  *       raise KeyError(key)             # <<<<<<<<<<<<<<
@@ -44214,14 +44479,14 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_24__getitem__(struct __pyx_obj_9
  * 
  */
   /*else*/ {
-    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_builtin_KeyError, __pyx_v_key); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4381, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_CallOneArg(__pyx_builtin_KeyError, __pyx_v_key); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4387, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __PYX_ERR(0, 4381, __pyx_L1_error)
+    __PYX_ERR(0, 4387, __pyx_L1_error)
   }
 
-  /* "pywrapfst.pyx":4377
+  /* "pywrapfst.pyx":4383
  *     self._reader.get().Reset()
  * 
  *   def __getitem__(self, key):             # <<<<<<<<<<<<<<
@@ -44347,7 +44612,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarReader_28__setstate_cython__(CYTHON_UNU
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4404
+/* "pywrapfst.pyx":4410
  *   """
  * 
  *   def __init__(self):             # <<<<<<<<<<<<<<
@@ -44382,28 +44647,28 @@ static int __pyx_pf_9pywrapfst_9FarWriter___init__(struct __pyx_obj_9pywrapfst_F
   PyObject *__pyx_t_6 = NULL;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "pywrapfst.pyx":4405
+  /* "pywrapfst.pyx":4411
  * 
  *   def __init__(self):
  *     raise FstDeletedConstructorError(             # <<<<<<<<<<<<<<
  *         "Cannot construct {}".format(self.__class__.__name__))
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_FstDeletedConstructorError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4405, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_FstDeletedConstructorError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4411, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "pywrapfst.pyx":4406
+  /* "pywrapfst.pyx":4412
  *   def __init__(self):
  *     raise FstDeletedConstructorError(
  *         "Cannot construct {}".format(self.__class__.__name__))             # <<<<<<<<<<<<<<
  * 
  *   def __repr__(self):
  */
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_Cannot_construct, __pyx_n_s_format); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 4406, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_Cannot_construct, __pyx_n_s_format); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 4412, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_class); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 4406, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_class); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 4412, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_name); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 4406, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_name); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 4412, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_t_5 = NULL;
@@ -44419,7 +44684,7 @@ static int __pyx_pf_9pywrapfst_9FarWriter___init__(struct __pyx_obj_9pywrapfst_F
   __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_5, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_6);
   __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4406, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4412, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = NULL;
@@ -44435,14 +44700,14 @@ static int __pyx_pf_9pywrapfst_9FarWriter___init__(struct __pyx_obj_9pywrapfst_F
   __pyx_t_1 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_4, __pyx_t_3) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4405, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4411, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __PYX_ERR(0, 4405, __pyx_L1_error)
+  __PYX_ERR(0, 4411, __pyx_L1_error)
 
-  /* "pywrapfst.pyx":4404
+  /* "pywrapfst.pyx":4410
  *   """
  * 
  *   def __init__(self):             # <<<<<<<<<<<<<<
@@ -44464,7 +44729,7 @@ static int __pyx_pf_9pywrapfst_9FarWriter___init__(struct __pyx_obj_9pywrapfst_F
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4408
+/* "pywrapfst.pyx":4414
  *         "Cannot construct {}".format(self.__class__.__name__))
  * 
  *   def __repr__(self):             # <<<<<<<<<<<<<<
@@ -44497,7 +44762,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_2__repr__(struct __pyx_obj_9pywr
   PyObject *__pyx_t_7 = NULL;
   __Pyx_RefNannySetupContext("__repr__", 0);
 
-  /* "pywrapfst.pyx":4409
+  /* "pywrapfst.pyx":4415
  * 
  *   def __repr__(self):
  *     return "<{} FarWriter at 0x{:x}>".format(self.far_type(), id(self))             # <<<<<<<<<<<<<<
@@ -44505,15 +44770,15 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_2__repr__(struct __pyx_obj_9pywr
  *   @classmethod
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_FarWriter_at_0x_x, __pyx_n_s_format); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4409, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_FarWriter_at_0x_x, __pyx_n_s_format); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4415, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "far_type");
-    __PYX_ERR(0, 4409, __pyx_L1_error)
+    __PYX_ERR(0, 4415, __pyx_L1_error)
   }
-  __pyx_t_3 = __pyx_convert_PyUnicode_string_to_py_std__in_string(((struct __pyx_vtabstruct_9pywrapfst_FarWriter *)__pyx_v_self->__pyx_vtab)->far_type(__pyx_v_self, 0)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4409, __pyx_L1_error)
+  __pyx_t_3 = __pyx_convert_PyUnicode_string_to_py_std__in_string(((struct __pyx_vtabstruct_9pywrapfst_FarWriter *)__pyx_v_self->__pyx_vtab)->far_type(__pyx_v_self, 0)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 4415, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_builtin_id, ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 4409, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_builtin_id, ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 4415, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_5 = NULL;
   __pyx_t_6 = 0;
@@ -44530,7 +44795,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_2__repr__(struct __pyx_obj_9pywr
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_2)) {
     PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_t_3, __pyx_t_4};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 2+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4409, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 2+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4415, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -44540,7 +44805,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_2__repr__(struct __pyx_obj_9pywr
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
     PyObject *__pyx_temp[3] = {__pyx_t_5, __pyx_t_3, __pyx_t_4};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 2+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4409, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 2+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4415, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -44548,7 +44813,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_2__repr__(struct __pyx_obj_9pywr
   } else
   #endif
   {
-    __pyx_t_7 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 4409, __pyx_L1_error)
+    __pyx_t_7 = PyTuple_New(2+__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 4415, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     if (__pyx_t_5) {
       __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_5); __pyx_t_5 = NULL;
@@ -44559,7 +44824,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_2__repr__(struct __pyx_obj_9pywr
     PyTuple_SET_ITEM(__pyx_t_7, 1+__pyx_t_6, __pyx_t_4);
     __pyx_t_3 = 0;
     __pyx_t_4 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4409, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4415, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   }
@@ -44568,7 +44833,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_2__repr__(struct __pyx_obj_9pywr
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4408
+  /* "pywrapfst.pyx":4414
  *         "Cannot construct {}".format(self.__class__.__name__))
  * 
  *   def __repr__(self):             # <<<<<<<<<<<<<<
@@ -44592,7 +44857,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_2__repr__(struct __pyx_obj_9pywr
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4412
+/* "pywrapfst.pyx":4418
  * 
  *   @classmethod
  *   def create(cls, filename, arc_type=b"standard", far_type=b"default"):             # <<<<<<<<<<<<<<
@@ -44647,7 +44912,7 @@ static PyObject *__pyx_pw_9pywrapfst_9FarWriter_5create(PyObject *__pyx_v_cls, P
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "create") < 0)) __PYX_ERR(0, 4412, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "create") < 0)) __PYX_ERR(0, 4418, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -44666,7 +44931,7 @@ static PyObject *__pyx_pw_9pywrapfst_9FarWriter_5create(PyObject *__pyx_v_cls, P
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("create", 0, 1, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 4412, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("create", 0, 1, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 4418, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.FarWriter.create", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -44695,27 +44960,27 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_4create(CYTHON_UNUSED PyTypeObje
   PyObject *__pyx_t_8 = NULL;
   __Pyx_RefNannySetupContext("create", 0);
 
-  /* "pywrapfst.pyx":4433
+  /* "pywrapfst.pyx":4439
  *       FstIOError: Read failed.
  *     """
  *     cdef fst.FarType ft = fst.GetFarType(tostring(far_type))             # <<<<<<<<<<<<<<
  *     cdef fst.FarWriterClass *tfar = fst.FarWriterClass.Create(
  *         tostring(filename), tostring(arc_type), ft)
  */
-  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_far_type, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4433, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_far_type, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4439, __pyx_L1_error)
   __pyx_v_ft = fst::script::GetFarType(__pyx_t_1);
 
-  /* "pywrapfst.pyx":4435
+  /* "pywrapfst.pyx":4441
  *     cdef fst.FarType ft = fst.GetFarType(tostring(far_type))
  *     cdef fst.FarWriterClass *tfar = fst.FarWriterClass.Create(
  *         tostring(filename), tostring(arc_type), ft)             # <<<<<<<<<<<<<<
  *     if tfar == NULL:
  *       raise FstIOError("Open failed: {!r}".format(filename))
  */
-  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_filename, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4435, __pyx_L1_error)
-  __pyx_t_2 = __pyx_f_9pywrapfst_tostring(__pyx_v_arc_type, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4435, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_9pywrapfst_tostring(__pyx_v_filename, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4441, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_9pywrapfst_tostring(__pyx_v_arc_type, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4441, __pyx_L1_error)
 
-  /* "pywrapfst.pyx":4434
+  /* "pywrapfst.pyx":4440
  *     """
  *     cdef fst.FarType ft = fst.GetFarType(tostring(far_type))
  *     cdef fst.FarWriterClass *tfar = fst.FarWriterClass.Create(             # <<<<<<<<<<<<<<
@@ -44724,7 +44989,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_4create(CYTHON_UNUSED PyTypeObje
  */
   __pyx_v_tfar = fst::script::FarWriterClass::Create(__pyx_t_1, __pyx_t_2, __pyx_v_ft);
 
-  /* "pywrapfst.pyx":4436
+  /* "pywrapfst.pyx":4442
  *     cdef fst.FarWriterClass *tfar = fst.FarWriterClass.Create(
  *         tostring(filename), tostring(arc_type), ft)
  *     if tfar == NULL:             # <<<<<<<<<<<<<<
@@ -44734,16 +44999,16 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_4create(CYTHON_UNUSED PyTypeObje
   __pyx_t_3 = ((__pyx_v_tfar == NULL) != 0);
   if (unlikely(__pyx_t_3)) {
 
-    /* "pywrapfst.pyx":4437
+    /* "pywrapfst.pyx":4443
  *         tostring(filename), tostring(arc_type), ft)
  *     if tfar == NULL:
  *       raise FstIOError("Open failed: {!r}".format(filename))             # <<<<<<<<<<<<<<
  *     cdef FarWriter result = FarWriter.__new__(FarWriter)
  *     result._writer.reset(tfar)
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_FstIOError); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 4437, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_FstIOError); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 4443, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_Open_failed_r, __pyx_n_s_format); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 4437, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_kp_u_Open_failed_r, __pyx_n_s_format); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 4443, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __pyx_t_8 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_7))) {
@@ -44757,7 +45022,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_4create(CYTHON_UNUSED PyTypeObje
     }
     __pyx_t_6 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_8, __pyx_v_filename) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_v_filename);
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 4437, __pyx_L1_error)
+    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 4443, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_t_7 = NULL;
@@ -44773,14 +45038,14 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_4create(CYTHON_UNUSED PyTypeObje
     __pyx_t_4 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_7, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_6);
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 4437, __pyx_L1_error)
+    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 4443, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_Raise(__pyx_t_4, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __PYX_ERR(0, 4437, __pyx_L1_error)
+    __PYX_ERR(0, 4443, __pyx_L1_error)
 
-    /* "pywrapfst.pyx":4436
+    /* "pywrapfst.pyx":4442
  *     cdef fst.FarWriterClass *tfar = fst.FarWriterClass.Create(
  *         tostring(filename), tostring(arc_type), ft)
  *     if tfar == NULL:             # <<<<<<<<<<<<<<
@@ -44789,19 +45054,19 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_4create(CYTHON_UNUSED PyTypeObje
  */
   }
 
-  /* "pywrapfst.pyx":4438
+  /* "pywrapfst.pyx":4444
  *     if tfar == NULL:
  *       raise FstIOError("Open failed: {!r}".format(filename))
  *     cdef FarWriter result = FarWriter.__new__(FarWriter)             # <<<<<<<<<<<<<<
  *     result._writer.reset(tfar)
  *     return result
  */
-  __pyx_t_4 = ((PyObject *)__pyx_tp_new_9pywrapfst_FarWriter(((PyTypeObject *)__pyx_ptype_9pywrapfst_FarWriter), __pyx_empty_tuple, NULL)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 4438, __pyx_L1_error)
+  __pyx_t_4 = ((PyObject *)__pyx_tp_new_9pywrapfst_FarWriter(((PyTypeObject *)__pyx_ptype_9pywrapfst_FarWriter), __pyx_empty_tuple, NULL)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 4444, __pyx_L1_error)
   __Pyx_GOTREF(((PyObject *)__pyx_t_4));
   __pyx_v_result = ((struct __pyx_obj_9pywrapfst_FarWriter *)__pyx_t_4);
   __pyx_t_4 = 0;
 
-  /* "pywrapfst.pyx":4439
+  /* "pywrapfst.pyx":4445
  *       raise FstIOError("Open failed: {!r}".format(filename))
  *     cdef FarWriter result = FarWriter.__new__(FarWriter)
  *     result._writer.reset(tfar)             # <<<<<<<<<<<<<<
@@ -44810,11 +45075,11 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_4create(CYTHON_UNUSED PyTypeObje
  */
   if (unlikely(((PyObject *)__pyx_v_result) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_writer");
-    __PYX_ERR(0, 4439, __pyx_L1_error)
+    __PYX_ERR(0, 4445, __pyx_L1_error)
   }
   __pyx_v_result->_writer.reset(__pyx_v_tfar);
 
-  /* "pywrapfst.pyx":4440
+  /* "pywrapfst.pyx":4446
  *     cdef FarWriter result = FarWriter.__new__(FarWriter)
  *     result._writer.reset(tfar)
  *     return result             # <<<<<<<<<<<<<<
@@ -44826,7 +45091,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_4create(CYTHON_UNUSED PyTypeObje
   __pyx_r = ((PyObject *)__pyx_v_result);
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4412
+  /* "pywrapfst.pyx":4418
  * 
  *   @classmethod
  *   def create(cls, filename, arc_type=b"standard", far_type=b"default"):             # <<<<<<<<<<<<<<
@@ -44850,7 +45115,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_4create(CYTHON_UNUSED PyTypeObje
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4444
+/* "pywrapfst.pyx":4450
  *   # NB: Invoking this method may be dangerous: calling any other method on the
  *   # instance after this is invoked may result in a null dereference.
  *   cdef void close(self):             # <<<<<<<<<<<<<<
@@ -44862,7 +45127,7 @@ static void __pyx_f_9pywrapfst_9FarWriter_close(struct __pyx_obj_9pywrapfst_FarW
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("close", 0);
 
-  /* "pywrapfst.pyx":4445
+  /* "pywrapfst.pyx":4451
  *   # instance after this is invoked may result in a null dereference.
  *   cdef void close(self):
  *     self._writer.reset()             # <<<<<<<<<<<<<<
@@ -44871,11 +45136,11 @@ static void __pyx_f_9pywrapfst_9FarWriter_close(struct __pyx_obj_9pywrapfst_FarW
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_writer");
-    __PYX_ERR(0, 4445, __pyx_L1_error)
+    __PYX_ERR(0, 4451, __pyx_L1_error)
   }
   __pyx_v_self->_writer.reset();
 
-  /* "pywrapfst.pyx":4444
+  /* "pywrapfst.pyx":4450
  *   # NB: Invoking this method may be dangerous: calling any other method on the
  *   # instance after this is invoked may result in a null dereference.
  *   cdef void close(self):             # <<<<<<<<<<<<<<
@@ -44891,7 +45156,7 @@ static void __pyx_f_9pywrapfst_9FarWriter_close(struct __pyx_obj_9pywrapfst_FarW
   __Pyx_RefNannyFinishContext();
 }
 
-/* "pywrapfst.pyx":4447
+/* "pywrapfst.pyx":4453
  *     self._writer.reset()
  * 
  *   cpdef void add(self, key, _Fst ifst) except *:             # <<<<<<<<<<<<<<
@@ -44921,7 +45186,7 @@ static void __pyx_f_9pywrapfst_9FarWriter_add(struct __pyx_obj_9pywrapfst_FarWri
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_add); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4447, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_add); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4453, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_9FarWriter_7add)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -44940,7 +45205,7 @@ static void __pyx_f_9pywrapfst_9FarWriter_add(struct __pyx_obj_9pywrapfst_FarWri
         #if CYTHON_FAST_PYCALL
         if (PyFunction_Check(__pyx_t_3)) {
           PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_key, ((PyObject *)__pyx_v_ifst)};
-          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4447, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4453, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
           __Pyx_GOTREF(__pyx_t_2);
         } else
@@ -44948,13 +45213,13 @@ static void __pyx_f_9pywrapfst_9FarWriter_add(struct __pyx_obj_9pywrapfst_FarWri
         #if CYTHON_FAST_PYCCALL
         if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
           PyObject *__pyx_temp[3] = {__pyx_t_4, __pyx_v_key, ((PyObject *)__pyx_v_ifst)};
-          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4447, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_5, 2+__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4453, __pyx_L1_error)
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
           __Pyx_GOTREF(__pyx_t_2);
         } else
         #endif
         {
-          __pyx_t_6 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 4447, __pyx_L1_error)
+          __pyx_t_6 = PyTuple_New(2+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 4453, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
           if (__pyx_t_4) {
             __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_4); __pyx_t_4 = NULL;
@@ -44965,7 +45230,7 @@ static void __pyx_f_9pywrapfst_9FarWriter_add(struct __pyx_obj_9pywrapfst_FarWri
           __Pyx_INCREF(((PyObject *)__pyx_v_ifst));
           __Pyx_GIVEREF(((PyObject *)__pyx_v_ifst));
           PyTuple_SET_ITEM(__pyx_t_6, 1+__pyx_t_5, ((PyObject *)__pyx_v_ifst));
-          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4447, __pyx_L1_error)
+          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_6, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4453, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         }
@@ -44987,7 +45252,7 @@ static void __pyx_f_9pywrapfst_9FarWriter_add(struct __pyx_obj_9pywrapfst_FarWri
     #endif
   }
 
-  /* "pywrapfst.pyx":4466
+  /* "pywrapfst.pyx":4472
  *     # Failure here results from passing an FST with a different arc type than
  *     # used by the FAR was initialized to use.
  *     if not self._writer.get().Add(tostring(key), deref(ifst._fst)):             # <<<<<<<<<<<<<<
@@ -44996,24 +45261,24 @@ static void __pyx_f_9pywrapfst_9FarWriter_add(struct __pyx_obj_9pywrapfst_FarWri
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_writer");
-    __PYX_ERR(0, 4466, __pyx_L1_error)
+    __PYX_ERR(0, 4472, __pyx_L1_error)
   }
-  __pyx_t_7 = __pyx_f_9pywrapfst_tostring(__pyx_v_key, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4466, __pyx_L1_error)
+  __pyx_t_7 = __pyx_f_9pywrapfst_tostring(__pyx_v_key, NULL); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4472, __pyx_L1_error)
   if (unlikely(((PyObject *)__pyx_v_ifst) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_fst");
-    __PYX_ERR(0, 4466, __pyx_L1_error)
+    __PYX_ERR(0, 4472, __pyx_L1_error)
   }
   __pyx_t_8 = ((!(__pyx_v_self->_writer.get()->Add(__pyx_t_7, (*__pyx_v_ifst->_fst)) != 0)) != 0);
   if (unlikely(__pyx_t_8)) {
 
-    /* "pywrapfst.pyx":4467
+    /* "pywrapfst.pyx":4473
  *     # used by the FAR was initialized to use.
  *     if not self._writer.get().Add(tostring(key), deref(ifst._fst)):
  *       raise FstOpError("Incompatible or invalid arc type")             # <<<<<<<<<<<<<<
  *     # An error here usually indicates a key out of order.
  *     if self._writer.get().Error():
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_FstOpError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4467, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_FstOpError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4473, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_3 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -45027,14 +45292,14 @@ static void __pyx_f_9pywrapfst_9FarWriter_add(struct __pyx_obj_9pywrapfst_FarWri
     }
     __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_kp_u_Incompatible_or_invalid_arc_type) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_kp_u_Incompatible_or_invalid_arc_type);
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4467, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4473, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 4467, __pyx_L1_error)
+    __PYX_ERR(0, 4473, __pyx_L1_error)
 
-    /* "pywrapfst.pyx":4466
+    /* "pywrapfst.pyx":4472
  *     # Failure here results from passing an FST with a different arc type than
  *     # used by the FAR was initialized to use.
  *     if not self._writer.get().Add(tostring(key), deref(ifst._fst)):             # <<<<<<<<<<<<<<
@@ -45043,7 +45308,7 @@ static void __pyx_f_9pywrapfst_9FarWriter_add(struct __pyx_obj_9pywrapfst_FarWri
  */
   }
 
-  /* "pywrapfst.pyx":4469
+  /* "pywrapfst.pyx":4475
  *       raise FstOpError("Incompatible or invalid arc type")
  *     # An error here usually indicates a key out of order.
  *     if self._writer.get().Error():             # <<<<<<<<<<<<<<
@@ -45052,19 +45317,19 @@ static void __pyx_f_9pywrapfst_9FarWriter_add(struct __pyx_obj_9pywrapfst_FarWri
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_writer");
-    __PYX_ERR(0, 4469, __pyx_L1_error)
+    __PYX_ERR(0, 4475, __pyx_L1_error)
   }
   __pyx_t_8 = (__pyx_v_self->_writer.get()->Error() != 0);
   if (unlikely(__pyx_t_8)) {
 
-    /* "pywrapfst.pyx":4470
+    /* "pywrapfst.pyx":4476
  *     # An error here usually indicates a key out of order.
  *     if self._writer.get().Error():
  *       raise FstArgError("Key out of order")             # <<<<<<<<<<<<<<
  * 
  *   cpdef string arc_type(self):
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_FstArgError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4470, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_FstArgError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4476, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_3 = NULL;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -45078,14 +45343,14 @@ static void __pyx_f_9pywrapfst_9FarWriter_add(struct __pyx_obj_9pywrapfst_FarWri
     }
     __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_kp_u_Key_out_of_order) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_kp_u_Key_out_of_order);
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4470, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4476, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 4470, __pyx_L1_error)
+    __PYX_ERR(0, 4476, __pyx_L1_error)
 
-    /* "pywrapfst.pyx":4469
+    /* "pywrapfst.pyx":4475
  *       raise FstOpError("Incompatible or invalid arc type")
  *     # An error here usually indicates a key out of order.
  *     if self._writer.get().Error():             # <<<<<<<<<<<<<<
@@ -45094,7 +45359,7 @@ static void __pyx_f_9pywrapfst_9FarWriter_add(struct __pyx_obj_9pywrapfst_FarWri
  */
   }
 
-  /* "pywrapfst.pyx":4447
+  /* "pywrapfst.pyx":4453
  *     self._writer.reset()
  * 
  *   cpdef void add(self, key, _Fst ifst) except *:             # <<<<<<<<<<<<<<
@@ -45147,11 +45412,11 @@ static PyObject *__pyx_pw_9pywrapfst_9FarWriter_7add(PyObject *__pyx_v_self, PyO
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ifst)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("add", 1, 2, 2, 1); __PYX_ERR(0, 4447, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("add", 1, 2, 2, 1); __PYX_ERR(0, 4453, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "add") < 0)) __PYX_ERR(0, 4447, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "add") < 0)) __PYX_ERR(0, 4453, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -45164,13 +45429,13 @@ static PyObject *__pyx_pw_9pywrapfst_9FarWriter_7add(PyObject *__pyx_v_self, PyO
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("add", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 4447, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("add", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 4453, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pywrapfst.FarWriter.add", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 4447, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ifst), __pyx_ptype_9pywrapfst__Fst, 1, "ifst", 0))) __PYX_ERR(0, 4453, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_9FarWriter_6add(((struct __pyx_obj_9pywrapfst_FarWriter *)__pyx_v_self), __pyx_v_key, __pyx_v_ifst);
 
   /* function exit code */
@@ -45188,8 +45453,8 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_6add(struct __pyx_obj_9pywrapfst
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("add", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_f_9pywrapfst_9FarWriter_add(__pyx_v_self, __pyx_v_key, __pyx_v_ifst, 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4447, __pyx_L1_error)
-  __pyx_t_1 = __Pyx_void_to_None(NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4447, __pyx_L1_error)
+  __pyx_f_9pywrapfst_9FarWriter_add(__pyx_v_self, __pyx_v_key, __pyx_v_ifst, 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4453, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4453, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -45206,7 +45471,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_6add(struct __pyx_obj_9pywrapfst
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4472
+/* "pywrapfst.pyx":4478
  *       raise FstArgError("Key out of order")
  * 
  *   cpdef string arc_type(self):             # <<<<<<<<<<<<<<
@@ -45234,7 +45499,7 @@ static std::string __pyx_f_9pywrapfst_9FarWriter_arc_type(struct __pyx_obj_9pywr
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_arc_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4472, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_arc_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4478, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_9FarWriter_9arc_type)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -45250,10 +45515,10 @@ static std::string __pyx_f_9pywrapfst_9FarWriter_arc_type(struct __pyx_obj_9pywr
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4472, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4478, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4472, __pyx_L1_error)
+        __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4478, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -45272,7 +45537,7 @@ static std::string __pyx_f_9pywrapfst_9FarWriter_arc_type(struct __pyx_obj_9pywr
     #endif
   }
 
-  /* "pywrapfst.pyx":4478
+  /* "pywrapfst.pyx":4484
  *     Returns a string indicating the arc type.
  *     """
  *     return self._writer.get().ArcType()             # <<<<<<<<<<<<<<
@@ -45281,12 +45546,12 @@ static std::string __pyx_f_9pywrapfst_9FarWriter_arc_type(struct __pyx_obj_9pywr
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_writer");
-    __PYX_ERR(0, 4478, __pyx_L1_error)
+    __PYX_ERR(0, 4484, __pyx_L1_error)
   }
   __pyx_r = __pyx_v_self->_writer.get()->ArcType();
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4472
+  /* "pywrapfst.pyx":4478
  *       raise FstArgError("Key out of order")
  * 
  *   cpdef string arc_type(self):             # <<<<<<<<<<<<<<
@@ -45327,7 +45592,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_8arc_type(struct __pyx_obj_9pywr
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("arc_type", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_f_9pywrapfst_9FarWriter_arc_type(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4472, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_f_9pywrapfst_9FarWriter_arc_type(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4478, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -45344,7 +45609,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_8arc_type(struct __pyx_obj_9pywr
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4480
+/* "pywrapfst.pyx":4486
  *     return self._writer.get().ArcType()
  * 
  *   cpdef bool error(self):             # <<<<<<<<<<<<<<
@@ -45372,7 +45637,7 @@ static bool __pyx_f_9pywrapfst_9FarWriter_error(struct __pyx_obj_9pywrapfst_FarW
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_error); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4480, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_error); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4486, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_9FarWriter_11error)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -45388,10 +45653,10 @@ static bool __pyx_f_9pywrapfst_9FarWriter_error(struct __pyx_obj_9pywrapfst_FarW
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4480, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4486, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4480, __pyx_L1_error)
+        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(0, 4486, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -45410,7 +45675,7 @@ static bool __pyx_f_9pywrapfst_9FarWriter_error(struct __pyx_obj_9pywrapfst_FarW
     #endif
   }
 
-  /* "pywrapfst.pyx":4489
+  /* "pywrapfst.pyx":4495
  *       True if the FarWriter is in an errorful state, False otherwise.
  *     """
  *     return self._writer.get().Error()             # <<<<<<<<<<<<<<
@@ -45419,12 +45684,12 @@ static bool __pyx_f_9pywrapfst_9FarWriter_error(struct __pyx_obj_9pywrapfst_FarW
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_writer");
-    __PYX_ERR(0, 4489, __pyx_L1_error)
+    __PYX_ERR(0, 4495, __pyx_L1_error)
   }
   __pyx_r = __pyx_v_self->_writer.get()->Error();
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4480
+  /* "pywrapfst.pyx":4486
  *     return self._writer.get().ArcType()
  * 
  *   cpdef bool error(self):             # <<<<<<<<<<<<<<
@@ -45465,7 +45730,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_10error(struct __pyx_obj_9pywrap
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("error", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_9pywrapfst_9FarWriter_error(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4480, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_9pywrapfst_9FarWriter_error(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4486, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -45482,7 +45747,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_10error(struct __pyx_obj_9pywrap
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4491
+/* "pywrapfst.pyx":4497
  *     return self._writer.get().Error()
  * 
  *   cpdef string far_type(self):             # <<<<<<<<<<<<<<
@@ -45510,7 +45775,7 @@ static std::string __pyx_f_9pywrapfst_9FarWriter_far_type(struct __pyx_obj_9pywr
     else {
       PY_UINT64_T type_dict_guard = (likely(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict)) ? __PYX_GET_DICT_VERSION(Py_TYPE(((PyObject *)__pyx_v_self))->tp_dict) : 0;
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_far_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4491, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_far_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4497, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9pywrapfst_9FarWriter_13far_type)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -45526,10 +45791,10 @@ static std::string __pyx_f_9pywrapfst_9FarWriter_far_type(struct __pyx_obj_9pywr
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4491, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4497, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4491, __pyx_L1_error)
+        __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_t_2); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4497, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __pyx_r = __pyx_t_5;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -45548,7 +45813,7 @@ static std::string __pyx_f_9pywrapfst_9FarWriter_far_type(struct __pyx_obj_9pywr
     #endif
   }
 
-  /* "pywrapfst.pyx":4497
+  /* "pywrapfst.pyx":4503
  *     Returns a string indicating the FAR type.
  *     """
  *     return fst.GetFarTypeString(self._writer.get().Type())             # <<<<<<<<<<<<<<
@@ -45557,12 +45822,12 @@ static std::string __pyx_f_9pywrapfst_9FarWriter_far_type(struct __pyx_obj_9pywr
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "_writer");
-    __PYX_ERR(0, 4497, __pyx_L1_error)
+    __PYX_ERR(0, 4503, __pyx_L1_error)
   }
   __pyx_r = fst::GetFarTypeString(__pyx_v_self->_writer.get()->Type());
   goto __pyx_L0;
 
-  /* "pywrapfst.pyx":4491
+  /* "pywrapfst.pyx":4497
  *     return self._writer.get().Error()
  * 
  *   cpdef string far_type(self):             # <<<<<<<<<<<<<<
@@ -45603,7 +45868,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_12far_type(struct __pyx_obj_9pyw
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("far_type", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_f_9pywrapfst_9FarWriter_far_type(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4491, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_f_9pywrapfst_9FarWriter_far_type(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4497, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -45620,7 +45885,7 @@ static PyObject *__pyx_pf_9pywrapfst_9FarWriter_12far_type(struct __pyx_obj_9pyw
   return __pyx_r;
 }
 
-/* "pywrapfst.pyx":4500
+/* "pywrapfst.pyx":4506
  * 
  *   # Dictionary-like assignment.
  *   def __setitem__(self, key, _Fst fst):             # <<<<<<<<<<<<<<
@@ -45634,7 +45899,7 @@ static int __pyx_pw_9pywrapfst_9FarWriter_15__setitem__(PyObject *__pyx_v_self, 
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__setitem__ (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_fst), __pyx_ptype_9pywrapfst__Fst, 1, "fst", 0))) __PYX_ERR(0, 4500, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_fst), __pyx_ptype_9pywrapfst__Fst, 1, "fst", 0))) __PYX_ERR(0, 4506, __pyx_L1_error)
   __pyx_r = __pyx_pf_9pywrapfst_9FarWriter_14__setitem__(((struct __pyx_obj_9pywrapfst_FarWriter *)__pyx_v_self), ((PyObject *)__pyx_v_key), ((struct __pyx_obj_9pywrapfst__Fst *)__pyx_v_fst));
 
   /* function exit code */
@@ -45651,7 +45916,7 @@ static int __pyx_pf_9pywrapfst_9FarWriter_14__setitem__(struct __pyx_obj_9pywrap
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__setitem__", 0);
 
-  /* "pywrapfst.pyx":4501
+  /* "pywrapfst.pyx":4507
  *   # Dictionary-like assignment.
  *   def __setitem__(self, key, _Fst fst):
  *     self.add(key, fst)             # <<<<<<<<<<<<<<
@@ -45660,11 +45925,11 @@ static int __pyx_pf_9pywrapfst_9FarWriter_14__setitem__(struct __pyx_obj_9pywrap
  */
   if (unlikely(((PyObject *)__pyx_v_self) == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "add");
-    __PYX_ERR(0, 4501, __pyx_L1_error)
+    __PYX_ERR(0, 4507, __pyx_L1_error)
   }
-  ((struct __pyx_vtabstruct_9pywrapfst_FarWriter *)__pyx_v_self->__pyx_vtab)->add(__pyx_v_self, __pyx_v_key, __pyx_v_fst, 0); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4501, __pyx_L1_error)
+  ((struct __pyx_vtabstruct_9pywrapfst_FarWriter *)__pyx_v_self->__pyx_vtab)->add(__pyx_v_self, __pyx_v_key, __pyx_v_fst, 0); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4507, __pyx_L1_error)
 
-  /* "pywrapfst.pyx":4500
+  /* "pywrapfst.pyx":4506
  * 
  *   # Dictionary-like assignment.
  *   def __setitem__(self, key, _Fst fst):             # <<<<<<<<<<<<<<
@@ -47659,17 +47924,17 @@ static void __pyx_tp_dealloc_9pywrapfst_MutableArcIterator(PyObject *o) {
 }
 
 static PyMethodDef __pyx_methods_9pywrapfst_MutableArcIterator[] = {
-  {"done", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_5done, METH_NOARGS, __pyx_doc_9pywrapfst_18MutableArcIterator_4done},
-  {"flags", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_7flags, METH_NOARGS, __pyx_doc_9pywrapfst_18MutableArcIterator_6flags},
-  {"next", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_9next, METH_NOARGS, __pyx_doc_9pywrapfst_18MutableArcIterator_8next},
-  {"position", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_11position, METH_NOARGS, __pyx_doc_9pywrapfst_18MutableArcIterator_10position},
-  {"reset", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_13reset, METH_NOARGS, __pyx_doc_9pywrapfst_18MutableArcIterator_12reset},
-  {"seek", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_15seek, METH_O, __pyx_doc_9pywrapfst_18MutableArcIterator_14seek},
-  {"set_flags", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9pywrapfst_18MutableArcIterator_17set_flags, METH_VARARGS|METH_KEYWORDS, __pyx_doc_9pywrapfst_18MutableArcIterator_16set_flags},
-  {"set_value", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_19set_value, METH_O, __pyx_doc_9pywrapfst_18MutableArcIterator_18set_value},
-  {"value", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_21value, METH_NOARGS, __pyx_doc_9pywrapfst_18MutableArcIterator_20value},
-  {"__reduce_cython__", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_23__reduce_cython__, METH_NOARGS, 0},
-  {"__setstate_cython__", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_25__setstate_cython__, METH_O, 0},
+  {"done", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_8done, METH_NOARGS, __pyx_doc_9pywrapfst_18MutableArcIterator_7done},
+  {"flags", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_10flags, METH_NOARGS, __pyx_doc_9pywrapfst_18MutableArcIterator_9flags},
+  {"next", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_12next, METH_NOARGS, __pyx_doc_9pywrapfst_18MutableArcIterator_11next},
+  {"position", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_14position, METH_NOARGS, __pyx_doc_9pywrapfst_18MutableArcIterator_13position},
+  {"reset", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_16reset, METH_NOARGS, __pyx_doc_9pywrapfst_18MutableArcIterator_15reset},
+  {"seek", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_18seek, METH_O, __pyx_doc_9pywrapfst_18MutableArcIterator_17seek},
+  {"set_flags", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9pywrapfst_18MutableArcIterator_20set_flags, METH_VARARGS|METH_KEYWORDS, __pyx_doc_9pywrapfst_18MutableArcIterator_19set_flags},
+  {"set_value", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_22set_value, METH_O, __pyx_doc_9pywrapfst_18MutableArcIterator_21set_value},
+  {"value", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_24value, METH_NOARGS, __pyx_doc_9pywrapfst_18MutableArcIterator_23value},
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_26__reduce_cython__, METH_NOARGS, 0},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_9pywrapfst_18MutableArcIterator_28__setstate_cython__, METH_O, 0},
   {0, 0, 0, 0}
 };
 
@@ -47704,7 +47969,7 @@ static PyTypeObject __pyx_type_9pywrapfst_MutableArcIterator = {
   0, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
-  0, /*tp_iter*/
+  __pyx_pw_9pywrapfst_18MutableArcIterator_5__iter__, /*tp_iter*/
   0, /*tp_iternext*/
   __pyx_methods_9pywrapfst_MutableArcIterator, /*tp_methods*/
   0, /*tp_members*/
@@ -48172,6 +48437,101 @@ static PyTypeObject __pyx_type_9pywrapfst_FarWriter = {
   #endif
 };
 
+static struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__ *__pyx_freelist_9pywrapfst___pyx_scope_struct____iter__[8];
+static int __pyx_freecount_9pywrapfst___pyx_scope_struct____iter__ = 0;
+
+static PyObject *__pyx_tp_new_9pywrapfst___pyx_scope_struct____iter__(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+  PyObject *o;
+  if (CYTHON_COMPILING_IN_CPYTHON && likely((__pyx_freecount_9pywrapfst___pyx_scope_struct____iter__ > 0) & (t->tp_basicsize == sizeof(struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__)))) {
+    o = (PyObject*)__pyx_freelist_9pywrapfst___pyx_scope_struct____iter__[--__pyx_freecount_9pywrapfst___pyx_scope_struct____iter__];
+    memset(o, 0, sizeof(struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__));
+    (void) PyObject_INIT(o, t);
+    PyObject_GC_Track(o);
+  } else {
+    o = (*t->tp_alloc)(t, 0);
+    if (unlikely(!o)) return 0;
+  }
+  return o;
+}
+
+static void __pyx_tp_dealloc_9pywrapfst___pyx_scope_struct____iter__(PyObject *o) {
+  struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__ *p = (struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__ *)o;
+  PyObject_GC_UnTrack(o);
+  Py_CLEAR(p->__pyx_v_self);
+  if (CYTHON_COMPILING_IN_CPYTHON && ((__pyx_freecount_9pywrapfst___pyx_scope_struct____iter__ < 8) & (Py_TYPE(o)->tp_basicsize == sizeof(struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__)))) {
+    __pyx_freelist_9pywrapfst___pyx_scope_struct____iter__[__pyx_freecount_9pywrapfst___pyx_scope_struct____iter__++] = ((struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__ *)o);
+  } else {
+    (*Py_TYPE(o)->tp_free)(o);
+  }
+}
+
+static int __pyx_tp_traverse_9pywrapfst___pyx_scope_struct____iter__(PyObject *o, visitproc v, void *a) {
+  int e;
+  struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__ *p = (struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__ *)o;
+  if (p->__pyx_v_self) {
+    e = (*v)(((PyObject *)p->__pyx_v_self), a); if (e) return e;
+  }
+  return 0;
+}
+
+static PyTypeObject __pyx_type_9pywrapfst___pyx_scope_struct____iter__ = {
+  PyVarObject_HEAD_INIT(0, 0)
+  "pywrapfst.__pyx_scope_struct____iter__", /*tp_name*/
+  sizeof(struct __pyx_obj_9pywrapfst___pyx_scope_struct____iter__), /*tp_basicsize*/
+  0, /*tp_itemsize*/
+  __pyx_tp_dealloc_9pywrapfst___pyx_scope_struct____iter__, /*tp_dealloc*/
+  0, /*tp_print*/
+  0, /*tp_getattr*/
+  0, /*tp_setattr*/
+  #if PY_MAJOR_VERSION < 3
+  0, /*tp_compare*/
+  #endif
+  #if PY_MAJOR_VERSION >= 3
+  0, /*tp_as_async*/
+  #endif
+  0, /*tp_repr*/
+  0, /*tp_as_number*/
+  0, /*tp_as_sequence*/
+  0, /*tp_as_mapping*/
+  0, /*tp_hash*/
+  0, /*tp_call*/
+  0, /*tp_str*/
+  0, /*tp_getattro*/
+  0, /*tp_setattro*/
+  0, /*tp_as_buffer*/
+  Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
+  0, /*tp_doc*/
+  __pyx_tp_traverse_9pywrapfst___pyx_scope_struct____iter__, /*tp_traverse*/
+  0, /*tp_clear*/
+  0, /*tp_richcompare*/
+  0, /*tp_weaklistoffset*/
+  0, /*tp_iter*/
+  0, /*tp_iternext*/
+  0, /*tp_methods*/
+  0, /*tp_members*/
+  0, /*tp_getset*/
+  0, /*tp_base*/
+  0, /*tp_dict*/
+  0, /*tp_descr_get*/
+  0, /*tp_descr_set*/
+  0, /*tp_dictoffset*/
+  0, /*tp_init*/
+  0, /*tp_alloc*/
+  __pyx_tp_new_9pywrapfst___pyx_scope_struct____iter__, /*tp_new*/
+  0, /*tp_free*/
+  0, /*tp_is_gc*/
+  0, /*tp_bases*/
+  0, /*tp_mro*/
+  0, /*tp_cache*/
+  0, /*tp_subclasses*/
+  0, /*tp_weaklist*/
+  0, /*tp_del*/
+  0, /*tp_version_tag*/
+  #if PY_VERSION_HEX >= 0x030400a1
+  0, /*tp_finalize*/
+  #endif
+};
+
 static PyMethodDef __pyx_methods[] = {
   {"_read_SymbolTable_from_string", (PyCFunction)__pyx_pw_9pywrapfst_9_read_SymbolTable_from_string, METH_O, 0},
   {"compact_symbol_table", (PyCFunction)__pyx_pw_9pywrapfst_11compact_symbol_table, METH_O, __pyx_doc_9pywrapfst_10compact_symbol_table},
@@ -48322,6 +48682,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_u_Key_out_of_order, __pyx_k_Key_out_of_order, sizeof(__pyx_k_Key_out_of_order), 0, 1, 0, 0},
   {&__pyx_n_s_MUTABLE, __pyx_k_MUTABLE, sizeof(__pyx_k_MUTABLE), 0, 0, 1, 1},
   {&__pyx_n_s_MutableArcIterator, __pyx_k_MutableArcIterator, sizeof(__pyx_k_MutableArcIterator), 0, 0, 1, 1},
+  {&__pyx_n_s_MutableArcIterator___iter, __pyx_k_MutableArcIterator___iter, sizeof(__pyx_k_MutableArcIterator___iter), 0, 0, 1, 1},
   {&__pyx_kp_u_MutableArcIterator_at_0x_x, __pyx_k_MutableArcIterator_at_0x_x, sizeof(__pyx_k_MutableArcIterator_at_0x_x), 0, 1, 0, 0},
   {&__pyx_n_s_MutableFst, __pyx_k_MutableFst, sizeof(__pyx_k_MutableFst), 0, 0, 1, 1},
   {&__pyx_n_s_MutableFstSymbolTable, __pyx_k_MutableFstSymbolTable, sizeof(__pyx_k_MutableFstSymbolTable), 0, 0, 1, 1},
@@ -48410,6 +48771,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_arc, __pyx_k_arc, sizeof(__pyx_k_arc), 0, 0, 1, 1},
   {&__pyx_n_s_arc_type, __pyx_k_arc_type, sizeof(__pyx_k_arc_type), 0, 0, 1, 1},
   {&__pyx_n_s_arcs, __pyx_k_arcs, sizeof(__pyx_k_arcs), 0, 0, 1, 1},
+  {&__pyx_n_s_args, __pyx_k_args, sizeof(__pyx_k_args), 0, 0, 1, 1},
   {&__pyx_n_s_attach_new_isymbols, __pyx_k_attach_new_isymbols, sizeof(__pyx_k_attach_new_isymbols), 0, 0, 1, 1},
   {&__pyx_n_s_attach_new_osymbols, __pyx_k_attach_new_osymbols, sizeof(__pyx_k_attach_new_osymbols), 0, 0, 1, 1},
   {&__pyx_n_b_auto, __pyx_k_auto, sizeof(__pyx_k_auto), 0, 0, 0, 1},
@@ -48418,6 +48780,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_checksum, __pyx_k_checksum, sizeof(__pyx_k_checksum), 0, 0, 1, 1},
   {&__pyx_n_s_class, __pyx_k_class, sizeof(__pyx_k_class), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
+  {&__pyx_n_s_close, __pyx_k_close, sizeof(__pyx_k_close), 0, 0, 1, 1},
   {&__pyx_n_s_closure_plus, __pyx_k_closure_plus, sizeof(__pyx_k_closure_plus), 0, 0, 1, 1},
   {&__pyx_n_s_cls, __pyx_k_cls, sizeof(__pyx_k_cls), 0, 0, 1, 1},
   {&__pyx_n_s_communicate, __pyx_k_communicate, sizeof(__pyx_k_communicate), 0, 0, 1, 1},
@@ -48473,6 +48836,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_input_table, __pyx_k_input_table, sizeof(__pyx_k_input_table), 0, 0, 1, 1},
   {&__pyx_n_s_ipairs, __pyx_k_ipairs, sizeof(__pyx_k_ipairs), 0, 0, 1, 1},
   {&__pyx_n_s_isymbols, __pyx_k_isymbols, sizeof(__pyx_k_isymbols), 0, 0, 1, 1},
+  {&__pyx_n_s_iter, __pyx_k_iter, sizeof(__pyx_k_iter), 0, 0, 1, 1},
   {&__pyx_n_s_keep_isymbols, __pyx_k_keep_isymbols, sizeof(__pyx_k_keep_isymbols), 0, 0, 1, 1},
   {&__pyx_n_s_keep_osymbols, __pyx_k_keep_osymbols, sizeof(__pyx_k_keep_osymbols), 0, 0, 1, 1},
   {&__pyx_n_s_keep_state_numbering, __pyx_k_keep_state_numbering, sizeof(__pyx_k_keep_state_numbering), 0, 0, 1, 1},
@@ -48566,6 +48930,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_self__siter_self__table_cannot_b, __pyx_k_self__siter_self__table_cannot_b, sizeof(__pyx_k_self__siter_self__table_cannot_b), 0, 0, 1, 0},
   {&__pyx_kp_s_self__weight_cannot_be_converted, __pyx_k_self__weight_cannot_be_converted, sizeof(__pyx_k_self__weight_cannot_be_converted), 0, 0, 1, 0},
   {&__pyx_kp_s_self__writer_cannot_be_converted, __pyx_k_self__writer_cannot_be_converted, sizeof(__pyx_k_self__writer_cannot_be_converted), 0, 0, 1, 0},
+  {&__pyx_n_s_send, __pyx_k_send, sizeof(__pyx_k_send), 0, 0, 1, 1},
   {&__pyx_n_s_set_flags, __pyx_k_set_flags, sizeof(__pyx_k_set_flags), 0, 0, 1, 1},
   {&__pyx_n_s_set_input_symbols, __pyx_k_set_input_symbols, sizeof(__pyx_k_set_input_symbols), 0, 0, 1, 1},
   {&__pyx_n_s_set_name, __pyx_k_set_name, sizeof(__pyx_k_set_name), 0, 0, 1, 1},
@@ -48591,6 +48956,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_test_2, __pyx_k_test_2, sizeof(__pyx_k_test_2), 0, 0, 1, 1},
   {&__pyx_n_s_text, __pyx_k_text, sizeof(__pyx_k_text), 0, 0, 1, 1},
+  {&__pyx_n_s_throw, __pyx_k_throw, sizeof(__pyx_k_throw), 0, 0, 1, 1},
   {&__pyx_n_s_times, __pyx_k_times, sizeof(__pyx_k_times), 0, 0, 1, 1},
   {&__pyx_n_s_title, __pyx_k_title, sizeof(__pyx_k_title), 0, 0, 1, 1},
   {&__pyx_n_s_to_final, __pyx_k_to_final, sizeof(__pyx_k_to_final), 0, 0, 1, 1},
@@ -48627,7 +48993,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin_id = __Pyx_GetBuiltinName(__pyx_n_s_id); if (!__pyx_builtin_id) __PYX_ERR(0, 356, __pyx_L1_error)
   __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) __PYX_ERR(1, 2, __pyx_L1_error)
   __pyx_builtin_StopIteration = __Pyx_GetBuiltinName(__pyx_n_s_StopIteration); if (!__pyx_builtin_StopIteration) __PYX_ERR(0, 1167, __pyx_L1_error)
-  __pyx_builtin_KeyError = __Pyx_GetBuiltinName(__pyx_n_s_KeyError); if (!__pyx_builtin_KeyError) __PYX_ERR(0, 4381, __pyx_L1_error)
+  __pyx_builtin_KeyError = __Pyx_GetBuiltinName(__pyx_n_s_KeyError); if (!__pyx_builtin_KeyError) __PYX_ERR(0, 4387, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -48939,17 +49305,17 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__74);
   __pyx_codeobj__75 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__74, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pywrapfst_pyx, __pyx_n_s_read_from_string, 2802, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__75)) __PYX_ERR(0, 2802, __pyx_L1_error)
 
-  /* "pywrapfst.pyx":3968
+  /* "pywrapfst.pyx":3974
  * 
  * 
  * def shortestdistance(_Fst ifst,             # <<<<<<<<<<<<<<
  *                      float delta=fst.kShortestDelta,
  *                      int64 nstate=fst.kNoStateId,
  */
-  __pyx_tuple__76 = PyTuple_Pack(8, __pyx_n_s_ifst, __pyx_n_s_delta, __pyx_n_s_nstate, __pyx_n_s_queue_type, __pyx_n_s_reverse, __pyx_n_s_distance, __pyx_n_s_weight_type, __pyx_n_s_weight); if (unlikely(!__pyx_tuple__76)) __PYX_ERR(0, 3968, __pyx_L1_error)
+  __pyx_tuple__76 = PyTuple_Pack(8, __pyx_n_s_ifst, __pyx_n_s_delta, __pyx_n_s_nstate, __pyx_n_s_queue_type, __pyx_n_s_reverse, __pyx_n_s_distance, __pyx_n_s_weight_type, __pyx_n_s_weight); if (unlikely(!__pyx_tuple__76)) __PYX_ERR(0, 3974, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__76);
   __Pyx_GIVEREF(__pyx_tuple__76);
-  __pyx_codeobj__77 = (PyObject*)__Pyx_PyCode_New(5, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__76, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pywrapfst_pyx, __pyx_n_s_shortestdistance, 3968, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__77)) __PYX_ERR(0, 3968, __pyx_L1_error)
+  __pyx_codeobj__77 = (PyObject*)__Pyx_PyCode_New(5, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__76, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pywrapfst_pyx, __pyx_n_s_shortestdistance, 3974, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__77)) __PYX_ERR(0, 3974, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -49312,26 +49678,26 @@ static int __Pyx_modinit_type_init_code(void) {
   __pyx_vtable_9pywrapfst_StateIterator.next = (void (*)(struct __pyx_obj_9pywrapfst_StateIterator *, int __pyx_skip_dispatch))__pyx_f_9pywrapfst_13StateIterator_next;
   __pyx_vtable_9pywrapfst_StateIterator.reset = (void (*)(struct __pyx_obj_9pywrapfst_StateIterator *, int __pyx_skip_dispatch))__pyx_f_9pywrapfst_13StateIterator_reset;
   __pyx_vtable_9pywrapfst_StateIterator.value = (__pyx_t_10basictypes_int64 (*)(struct __pyx_obj_9pywrapfst_StateIterator *, int __pyx_skip_dispatch))__pyx_f_9pywrapfst_13StateIterator_value;
-  if (PyType_Ready(&__pyx_type_9pywrapfst_StateIterator) < 0) __PYX_ERR(0, 3209, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_9pywrapfst_StateIterator) < 0) __PYX_ERR(0, 3215, __pyx_L1_error)
   __pyx_type_9pywrapfst_StateIterator.tp_print = 0;
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_9pywrapfst_StateIterator.tp_dictoffset && __pyx_type_9pywrapfst_StateIterator.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_9pywrapfst_StateIterator.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_9pywrapfst_StateIterator.tp_dict, __pyx_vtabptr_9pywrapfst_StateIterator) < 0) __PYX_ERR(0, 3209, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_StateIterator, (PyObject *)&__pyx_type_9pywrapfst_StateIterator) < 0) __PYX_ERR(0, 3209, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_9pywrapfst_StateIterator) < 0) __PYX_ERR(0, 3209, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_9pywrapfst_StateIterator.tp_dict, __pyx_vtabptr_9pywrapfst_StateIterator) < 0) __PYX_ERR(0, 3215, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_StateIterator, (PyObject *)&__pyx_type_9pywrapfst_StateIterator) < 0) __PYX_ERR(0, 3215, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_9pywrapfst_StateIterator) < 0) __PYX_ERR(0, 3215, __pyx_L1_error)
   __pyx_ptype_9pywrapfst_StateIterator = &__pyx_type_9pywrapfst_StateIterator;
   __pyx_vtabptr_9pywrapfst_Compiler = &__pyx_vtable_9pywrapfst_Compiler;
   __pyx_vtable_9pywrapfst_Compiler.compile = (struct __pyx_obj_9pywrapfst__Fst *(*)(struct __pyx_obj_9pywrapfst_Compiler *, int __pyx_skip_dispatch))__pyx_f_9pywrapfst_8Compiler_compile;
   __pyx_vtable_9pywrapfst_Compiler.write = (void (*)(struct __pyx_obj_9pywrapfst_Compiler *, PyObject *, int __pyx_skip_dispatch))__pyx_f_9pywrapfst_8Compiler_write;
-  if (PyType_Ready(&__pyx_type_9pywrapfst_Compiler) < 0) __PYX_ERR(0, 4107, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_9pywrapfst_Compiler) < 0) __PYX_ERR(0, 4113, __pyx_L1_error)
   __pyx_type_9pywrapfst_Compiler.tp_print = 0;
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_9pywrapfst_Compiler.tp_dictoffset && __pyx_type_9pywrapfst_Compiler.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_9pywrapfst_Compiler.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_9pywrapfst_Compiler.tp_dict, __pyx_vtabptr_9pywrapfst_Compiler) < 0) __PYX_ERR(0, 4107, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Compiler, (PyObject *)&__pyx_type_9pywrapfst_Compiler) < 0) __PYX_ERR(0, 4107, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_9pywrapfst_Compiler) < 0) __PYX_ERR(0, 4107, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_9pywrapfst_Compiler.tp_dict, __pyx_vtabptr_9pywrapfst_Compiler) < 0) __PYX_ERR(0, 4113, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Compiler, (PyObject *)&__pyx_type_9pywrapfst_Compiler) < 0) __PYX_ERR(0, 4113, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_9pywrapfst_Compiler) < 0) __PYX_ERR(0, 4113, __pyx_L1_error)
   __pyx_ptype_9pywrapfst_Compiler = &__pyx_type_9pywrapfst_Compiler;
   __pyx_vtabptr_9pywrapfst_FarReader = &__pyx_vtable_9pywrapfst_FarReader;
   __pyx_vtable_9pywrapfst_FarReader.arc_type = (std::string (*)(struct __pyx_obj_9pywrapfst_FarReader *, int __pyx_skip_dispatch))__pyx_f_9pywrapfst_9FarReader_arc_type;
@@ -49343,14 +49709,14 @@ static int __Pyx_modinit_type_init_code(void) {
   __pyx_vtable_9pywrapfst_FarReader.get_key = (std::string (*)(struct __pyx_obj_9pywrapfst_FarReader *, int __pyx_skip_dispatch))__pyx_f_9pywrapfst_9FarReader_get_key;
   __pyx_vtable_9pywrapfst_FarReader.next = (void (*)(struct __pyx_obj_9pywrapfst_FarReader *, int __pyx_skip_dispatch))__pyx_f_9pywrapfst_9FarReader_next;
   __pyx_vtable_9pywrapfst_FarReader.reset = (void (*)(struct __pyx_obj_9pywrapfst_FarReader *, int __pyx_skip_dispatch))__pyx_f_9pywrapfst_9FarReader_reset;
-  if (PyType_Ready(&__pyx_type_9pywrapfst_FarReader) < 0) __PYX_ERR(0, 4237, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_9pywrapfst_FarReader) < 0) __PYX_ERR(0, 4243, __pyx_L1_error)
   __pyx_type_9pywrapfst_FarReader.tp_print = 0;
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_9pywrapfst_FarReader.tp_dictoffset && __pyx_type_9pywrapfst_FarReader.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_9pywrapfst_FarReader.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_9pywrapfst_FarReader.tp_dict, __pyx_vtabptr_9pywrapfst_FarReader) < 0) __PYX_ERR(0, 4237, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_FarReader, (PyObject *)&__pyx_type_9pywrapfst_FarReader) < 0) __PYX_ERR(0, 4237, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_9pywrapfst_FarReader) < 0) __PYX_ERR(0, 4237, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_9pywrapfst_FarReader.tp_dict, __pyx_vtabptr_9pywrapfst_FarReader) < 0) __PYX_ERR(0, 4243, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_FarReader, (PyObject *)&__pyx_type_9pywrapfst_FarReader) < 0) __PYX_ERR(0, 4243, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_9pywrapfst_FarReader) < 0) __PYX_ERR(0, 4243, __pyx_L1_error)
   __pyx_ptype_9pywrapfst_FarReader = &__pyx_type_9pywrapfst_FarReader;
   __pyx_vtabptr_9pywrapfst_FarWriter = &__pyx_vtable_9pywrapfst_FarWriter;
   __pyx_vtable_9pywrapfst_FarWriter.arc_type = (std::string (*)(struct __pyx_obj_9pywrapfst_FarWriter *, int __pyx_skip_dispatch))__pyx_f_9pywrapfst_9FarWriter_arc_type;
@@ -49358,15 +49724,21 @@ static int __Pyx_modinit_type_init_code(void) {
   __pyx_vtable_9pywrapfst_FarWriter.add = (void (*)(struct __pyx_obj_9pywrapfst_FarWriter *, PyObject *, struct __pyx_obj_9pywrapfst__Fst *, int __pyx_skip_dispatch))__pyx_f_9pywrapfst_9FarWriter_add;
   __pyx_vtable_9pywrapfst_FarWriter.error = (bool (*)(struct __pyx_obj_9pywrapfst_FarWriter *, int __pyx_skip_dispatch))__pyx_f_9pywrapfst_9FarWriter_error;
   __pyx_vtable_9pywrapfst_FarWriter.far_type = (std::string (*)(struct __pyx_obj_9pywrapfst_FarWriter *, int __pyx_skip_dispatch))__pyx_f_9pywrapfst_9FarWriter_far_type;
-  if (PyType_Ready(&__pyx_type_9pywrapfst_FarWriter) < 0) __PYX_ERR(0, 4384, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_9pywrapfst_FarWriter) < 0) __PYX_ERR(0, 4390, __pyx_L1_error)
   __pyx_type_9pywrapfst_FarWriter.tp_print = 0;
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_9pywrapfst_FarWriter.tp_dictoffset && __pyx_type_9pywrapfst_FarWriter.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_9pywrapfst_FarWriter.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_9pywrapfst_FarWriter.tp_dict, __pyx_vtabptr_9pywrapfst_FarWriter) < 0) __PYX_ERR(0, 4384, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_FarWriter, (PyObject *)&__pyx_type_9pywrapfst_FarWriter) < 0) __PYX_ERR(0, 4384, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_9pywrapfst_FarWriter) < 0) __PYX_ERR(0, 4384, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_9pywrapfst_FarWriter.tp_dict, __pyx_vtabptr_9pywrapfst_FarWriter) < 0) __PYX_ERR(0, 4390, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_FarWriter, (PyObject *)&__pyx_type_9pywrapfst_FarWriter) < 0) __PYX_ERR(0, 4390, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_9pywrapfst_FarWriter) < 0) __PYX_ERR(0, 4390, __pyx_L1_error)
   __pyx_ptype_9pywrapfst_FarWriter = &__pyx_type_9pywrapfst_FarWriter;
+  if (PyType_Ready(&__pyx_type_9pywrapfst___pyx_scope_struct____iter__) < 0) __PYX_ERR(0, 3115, __pyx_L1_error)
+  __pyx_type_9pywrapfst___pyx_scope_struct____iter__.tp_print = 0;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_9pywrapfst___pyx_scope_struct____iter__.tp_dictoffset && __pyx_type_9pywrapfst___pyx_scope_struct____iter__.tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_type_9pywrapfst___pyx_scope_struct____iter__.tp_getattro = __Pyx_PyObject_GenericGetAttrNoDict;
+  }
+  __pyx_ptype_9pywrapfst___pyx_scope_struct____iter__ = &__pyx_type_9pywrapfst___pyx_scope_struct____iter__;
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -51071,7 +51443,7 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_ENCODE_FLAGS, __pyx_t_1) < 0) __PYX_ERR(0, 2911, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "pywrapfst.pyx":3277
+  /* "pywrapfst.pyx":3283
  * 
  * cdef _Fst _map(_Fst ifst,
  *                float delta=fst.kDelta,             # <<<<<<<<<<<<<<
@@ -51080,7 +51452,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__31 = fst::kDelta;
 
-  /* "pywrapfst.pyx":3291
+  /* "pywrapfst.pyx":3297
  * 
  * cpdef _Fst arcmap(_Fst ifst,
  *                   float delta=fst.kDelta,             # <<<<<<<<<<<<<<
@@ -51089,7 +51461,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__32 = fst::kDelta;
 
-  /* "pywrapfst.pyx":3290
+  /* "pywrapfst.pyx":3296
  * 
  * 
  * cpdef _Fst arcmap(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -51098,7 +51470,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__32 = fst::kDelta;
 
-  /* "pywrapfst.pyx":3403
+  /* "pywrapfst.pyx":3409
  * 
  * cpdef _MutableFst determinize(_Fst ifst,
  *                               float delta=fst.kShortestDelta,             # <<<<<<<<<<<<<<
@@ -51107,7 +51479,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__33 = fst::kShortestDelta;
 
-  /* "pywrapfst.pyx":3405
+  /* "pywrapfst.pyx":3411
  *                               float delta=fst.kShortestDelta,
  *                               det_type=b"functional",
  *                               int64 nstate=fst.kNoStateId,             # <<<<<<<<<<<<<<
@@ -51116,7 +51488,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__34 = fst::kNoStateId;
 
-  /* "pywrapfst.pyx":3403
+  /* "pywrapfst.pyx":3409
  * 
  * cpdef _MutableFst determinize(_Fst ifst,
  *                               float delta=fst.kShortestDelta,             # <<<<<<<<<<<<<<
@@ -51125,7 +51497,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__33 = fst::kShortestDelta;
 
-  /* "pywrapfst.pyx":3405
+  /* "pywrapfst.pyx":3411
  *                               float delta=fst.kShortestDelta,
  *                               det_type=b"functional",
  *                               int64 nstate=fst.kNoStateId,             # <<<<<<<<<<<<<<
@@ -51134,7 +51506,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__34 = fst::kNoStateId;
 
-  /* "pywrapfst.pyx":3496
+  /* "pywrapfst.pyx":3502
  * 
  * cpdef _MutableFst disambiguate(_Fst ifst,
  *                                float delta=fst.kDelta,             # <<<<<<<<<<<<<<
@@ -51143,7 +51515,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__35 = fst::kDelta;
 
-  /* "pywrapfst.pyx":3497
+  /* "pywrapfst.pyx":3503
  * cpdef _MutableFst disambiguate(_Fst ifst,
  *                                float delta=fst.kDelta,
  *                                int64 nstate=fst.kNoStateId,             # <<<<<<<<<<<<<<
@@ -51152,7 +51524,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__36 = fst::kNoStateId;
 
-  /* "pywrapfst.pyx":3496
+  /* "pywrapfst.pyx":3502
  * 
  * cpdef _MutableFst disambiguate(_Fst ifst,
  *                                float delta=fst.kDelta,             # <<<<<<<<<<<<<<
@@ -51161,7 +51533,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__35 = fst::kDelta;
 
-  /* "pywrapfst.pyx":3497
+  /* "pywrapfst.pyx":3503
  * cpdef _MutableFst disambiguate(_Fst ifst,
  *                                float delta=fst.kDelta,
  *                                int64 nstate=fst.kNoStateId,             # <<<<<<<<<<<<<<
@@ -51170,7 +51542,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__36 = fst::kNoStateId;
 
-  /* "pywrapfst.pyx":3567
+  /* "pywrapfst.pyx":3573
  * 
  * 
  * cpdef bool equal(_Fst ifst1, _Fst ifst2, float delta=fst.kDelta):             # <<<<<<<<<<<<<<
@@ -51180,7 +51552,7 @@ if (!__Pyx_RefNanny) {
   __pyx_k__37 = fst::kDelta;
   __pyx_k__37 = fst::kDelta;
 
-  /* "pywrapfst.pyx":3590
+  /* "pywrapfst.pyx":3596
  * 
  * 
  * cpdef bool equivalent(_Fst ifst1, _Fst ifst2, float delta=fst.kDelta) except *:             # <<<<<<<<<<<<<<
@@ -51190,7 +51562,7 @@ if (!__Pyx_RefNanny) {
   __pyx_k__38 = fst::kDelta;
   __pyx_k__38 = fst::kDelta;
 
-  /* "pywrapfst.pyx":3646
+  /* "pywrapfst.pyx":3652
  * 
  * 
  * cpdef bool isomorphic(_Fst ifst1, _Fst ifst2, float delta=fst.kDelta):             # <<<<<<<<<<<<<<
@@ -51200,7 +51572,7 @@ if (!__Pyx_RefNanny) {
   __pyx_k__39 = fst::kDelta;
   __pyx_k__39 = fst::kDelta;
 
-  /* "pywrapfst.pyx":3673
+  /* "pywrapfst.pyx":3679
  * 
  * cpdef _MutableFst prune(_Fst ifst,
  *                         float delta=fst.kDelta,             # <<<<<<<<<<<<<<
@@ -51209,7 +51581,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__40 = fst::kDelta;
 
-  /* "pywrapfst.pyx":3674
+  /* "pywrapfst.pyx":3680
  * cpdef _MutableFst prune(_Fst ifst,
  *                         float delta=fst.kDelta,
  *                         int64 nstate=fst.kNoStateId,             # <<<<<<<<<<<<<<
@@ -51218,7 +51590,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__41 = fst::kNoStateId;
 
-  /* "pywrapfst.pyx":3673
+  /* "pywrapfst.pyx":3679
  * 
  * cpdef _MutableFst prune(_Fst ifst,
  *                         float delta=fst.kDelta,             # <<<<<<<<<<<<<<
@@ -51227,7 +51599,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__40 = fst::kDelta;
 
-  /* "pywrapfst.pyx":3674
+  /* "pywrapfst.pyx":3680
  * cpdef _MutableFst prune(_Fst ifst,
  *                         float delta=fst.kDelta,
  *                         int64 nstate=fst.kNoStateId,             # <<<<<<<<<<<<<<
@@ -51236,7 +51608,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__41 = fst::kNoStateId;
 
-  /* "pywrapfst.pyx":3706
+  /* "pywrapfst.pyx":3712
  * 
  * cpdef _MutableFst push(_Fst ifst,
  *                        float delta=fst.kDelta,             # <<<<<<<<<<<<<<
@@ -51245,7 +51617,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__42 = fst::kDelta;
 
-  /* "pywrapfst.pyx":3705
+  /* "pywrapfst.pyx":3711
  * 
  * 
  * cpdef _MutableFst push(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -51254,7 +51626,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__42 = fst::kDelta;
 
-  /* "pywrapfst.pyx":3762
+  /* "pywrapfst.pyx":3768
  *                           _Fst ifst2,
  *                           int32 npath=1,
  *                           float delta=fst.kDelta,             # <<<<<<<<<<<<<<
@@ -51263,7 +51635,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__43 = fst::kDelta;
 
-  /* "pywrapfst.pyx":3765
+  /* "pywrapfst.pyx":3771
  *                           time_t seed=0,
  *                           select=b"uniform",
  *                           int32 max_length=INT32_MAX) except *:             # <<<<<<<<<<<<<<
@@ -51272,7 +51644,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__44 = INT32_MAX;
 
-  /* "pywrapfst.pyx":3762
+  /* "pywrapfst.pyx":3768
  *                           _Fst ifst2,
  *                           int32 npath=1,
  *                           float delta=fst.kDelta,             # <<<<<<<<<<<<<<
@@ -51281,7 +51653,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__43 = fst::kDelta;
 
-  /* "pywrapfst.pyx":3765
+  /* "pywrapfst.pyx":3771
  *                           time_t seed=0,
  *                           select=b"uniform",
  *                           int32 max_length=INT32_MAX) except *:             # <<<<<<<<<<<<<<
@@ -51290,7 +51662,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__44 = INT32_MAX;
 
-  /* "pywrapfst.pyx":3809
+  /* "pywrapfst.pyx":3815
  *                           time_t seed=0,
  *                           select=b"uniform",
  *                           int32 max_length=INT32_MAX,             # <<<<<<<<<<<<<<
@@ -51299,7 +51671,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__45 = INT32_MAX;
 
-  /* "pywrapfst.pyx":3805
+  /* "pywrapfst.pyx":3811
  * 
  * 
  * cpdef _MutableFst randgen(_Fst ifst,             # <<<<<<<<<<<<<<
@@ -51308,7 +51680,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__45 = INT32_MAX;
 
-  /* "pywrapfst.pyx":3947
+  /* "pywrapfst.pyx":3953
  * 
  * cdef vector[fst.WeightClass] *_shortestdistance(_Fst ifst,
  *                                                 float delta=fst.kShortestDelta,             # <<<<<<<<<<<<<<
@@ -51317,7 +51689,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__46 = fst::kShortestDelta;
 
-  /* "pywrapfst.pyx":3948
+  /* "pywrapfst.pyx":3954
  * cdef vector[fst.WeightClass] *_shortestdistance(_Fst ifst,
  *                                                 float delta=fst.kShortestDelta,
  *                                                 int64 nstate=fst.kNoStateId,             # <<<<<<<<<<<<<<
@@ -51326,7 +51698,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__47 = fst::kNoStateId;
 
-  /* "pywrapfst.pyx":3969
+  /* "pywrapfst.pyx":3975
  * 
  * def shortestdistance(_Fst ifst,
  *                      float delta=fst.kShortestDelta,             # <<<<<<<<<<<<<<
@@ -51335,7 +51707,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__48 = fst::kShortestDelta;
 
-  /* "pywrapfst.pyx":3970
+  /* "pywrapfst.pyx":3976
  * def shortestdistance(_Fst ifst,
  *                      float delta=fst.kShortestDelta,
  *                      int64 nstate=fst.kNoStateId,             # <<<<<<<<<<<<<<
@@ -51344,19 +51716,19 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__49 = fst::kNoStateId;
 
-  /* "pywrapfst.pyx":3968
+  /* "pywrapfst.pyx":3974
  * 
  * 
  * def shortestdistance(_Fst ifst,             # <<<<<<<<<<<<<<
  *                      float delta=fst.kShortestDelta,
  *                      int64 nstate=fst.kNoStateId,
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_9pywrapfst_53shortestdistance, NULL, __pyx_n_s_pywrapfst_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3968, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_9pywrapfst_53shortestdistance, NULL, __pyx_n_s_pywrapfst_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3974, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_shortestdistance, __pyx_t_1) < 0) __PYX_ERR(0, 3968, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_shortestdistance, __pyx_t_1) < 0) __PYX_ERR(0, 3974, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "pywrapfst.pyx":4006
+  /* "pywrapfst.pyx":4012
  * 
  * cpdef _MutableFst shortestpath(_Fst ifst,
  *                                float delta=fst.kShortestDelta,             # <<<<<<<<<<<<<<
@@ -51365,7 +51737,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__50 = fst::kShortestDelta;
 
-  /* "pywrapfst.pyx":4008
+  /* "pywrapfst.pyx":4014
  *                                float delta=fst.kShortestDelta,
  *                                int32 nshortest=1,
  *                                int64 nstate=fst.kNoStateId,             # <<<<<<<<<<<<<<
@@ -51374,7 +51746,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__51 = fst::kNoStateId;
 
-  /* "pywrapfst.pyx":4006
+  /* "pywrapfst.pyx":4012
  * 
  * cpdef _MutableFst shortestpath(_Fst ifst,
  *                                float delta=fst.kShortestDelta,             # <<<<<<<<<<<<<<
@@ -51383,7 +51755,7 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__50 = fst::kShortestDelta;
 
-  /* "pywrapfst.pyx":4008
+  /* "pywrapfst.pyx":4014
  *                                float delta=fst.kShortestDelta,
  *                                int32 nshortest=1,
  *                                int64 nstate=fst.kNoStateId,             # <<<<<<<<<<<<<<
@@ -51392,75 +51764,75 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_k__51 = fst::kNoStateId;
 
-  /* "pywrapfst.pyx":4159
+  /* "pywrapfst.pyx":4165
  * 
  *   def __cinit__(self,
  *                 string fst_type=b"vector",             # <<<<<<<<<<<<<<
  *                 string arc_type=b"standard",
  *                 SymbolTable isymbols=None,
  */
-  __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_n_b_vector); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4159, __pyx_L1_error)
+  __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_n_b_vector); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4165, __pyx_L1_error)
   __pyx_k__52 = __pyx_t_5;
 
-  /* "pywrapfst.pyx":4160
+  /* "pywrapfst.pyx":4166
  *   def __cinit__(self,
  *                 string fst_type=b"vector",
  *                 string arc_type=b"standard",             # <<<<<<<<<<<<<<
  *                 SymbolTable isymbols=None,
  *                 SymbolTable osymbols=None,
  */
-  __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_n_b_standard); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4160, __pyx_L1_error)
+  __pyx_t_5 = __pyx_convert_string_from_py_std__in_string(__pyx_n_b_standard); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 4166, __pyx_L1_error)
   __pyx_k__53 = __pyx_t_5;
 
-  /* "pywrapfst.pyx":4261
+  /* "pywrapfst.pyx":4267
  * 
  *   @classmethod
  *   def open(cls, *filenames):             # <<<<<<<<<<<<<<
  *     """
  *     FarReader.open(*filenames)
  */
-  __Pyx_GetNameInClass(__pyx_t_1, (PyObject *)__pyx_ptype_9pywrapfst_FarReader, __pyx_n_s_open); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4261, __pyx_L1_error)
+  __Pyx_GetNameInClass(__pyx_t_1, (PyObject *)__pyx_ptype_9pywrapfst_FarReader, __pyx_n_s_open); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4267, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
 
-  /* "pywrapfst.pyx":4260
+  /* "pywrapfst.pyx":4266
  *     return "<{} FarReader at 0x{:x}>".format(self.far_type(), id(self))
  * 
  *   @classmethod             # <<<<<<<<<<<<<<
  *   def open(cls, *filenames):
  *     """
  */
-  __pyx_t_2 = __Pyx_Method_ClassMethod(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4260, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Method_ClassMethod(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4266, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_9pywrapfst_FarReader->tp_dict, __pyx_n_s_open, __pyx_t_2) < 0) __PYX_ERR(0, 4261, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_9pywrapfst_FarReader->tp_dict, __pyx_n_s_open, __pyx_t_2) < 0) __PYX_ERR(0, 4267, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_9pywrapfst_FarReader);
 
-  /* "pywrapfst.pyx":4412
+  /* "pywrapfst.pyx":4418
  * 
  *   @classmethod
  *   def create(cls, filename, arc_type=b"standard", far_type=b"default"):             # <<<<<<<<<<<<<<
  *     """
  *     FarWriter.
  */
-  __Pyx_GetNameInClass(__pyx_t_2, (PyObject *)__pyx_ptype_9pywrapfst_FarWriter, __pyx_n_s_create); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4412, __pyx_L1_error)
+  __Pyx_GetNameInClass(__pyx_t_2, (PyObject *)__pyx_ptype_9pywrapfst_FarWriter, __pyx_n_s_create); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 4418, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "pywrapfst.pyx":4411
+  /* "pywrapfst.pyx":4417
  *     return "<{} FarWriter at 0x{:x}>".format(self.far_type(), id(self))
  * 
  *   @classmethod             # <<<<<<<<<<<<<<
  *   def create(cls, filename, arc_type=b"standard", far_type=b"default"):
  *     """
  */
-  __pyx_t_1 = __Pyx_Method_ClassMethod(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4411, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Method_ClassMethod(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4417, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_9pywrapfst_FarWriter->tp_dict, __pyx_n_s_create, __pyx_t_1) < 0) __PYX_ERR(0, 4412, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_9pywrapfst_FarWriter->tp_dict, __pyx_n_s_create, __pyx_t_1) < 0) __PYX_ERR(0, 4418, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   PyType_Modified(__pyx_ptype_9pywrapfst_FarWriter);
 
-  /* "pywrapfst.pyx":4504
+  /* "pywrapfst.pyx":4510
  * 
  * # Masks fst_error_fatal in-module.
  * fst.FLAGS_fst_error_fatal = False             # <<<<<<<<<<<<<<
@@ -55741,6 +56113,1046 @@ raise_neg_overflow:
     PyErr_SetString(PyExc_OverflowError,
         "can't convert negative value to int");
     return (int) -1;
+}
+
+/* PyObjectGetMethod */
+static int __Pyx_PyObject_GetMethod(PyObject *obj, PyObject *name, PyObject **method) {
+    PyObject *attr;
+#if CYTHON_UNPACK_METHODS && CYTHON_COMPILING_IN_CPYTHON && CYTHON_USE_PYTYPE_LOOKUP
+    PyTypeObject *tp = Py_TYPE(obj);
+    PyObject *descr;
+    descrgetfunc f = NULL;
+    PyObject **dictptr, *dict;
+    int meth_found = 0;
+    assert (*method == NULL);
+    if (unlikely(tp->tp_getattro != PyObject_GenericGetAttr)) {
+        attr = __Pyx_PyObject_GetAttrStr(obj, name);
+        goto try_unpack;
+    }
+    if (unlikely(tp->tp_dict == NULL) && unlikely(PyType_Ready(tp) < 0)) {
+        return 0;
+    }
+    descr = _PyType_Lookup(tp, name);
+    if (likely(descr != NULL)) {
+        Py_INCREF(descr);
+#if PY_MAJOR_VERSION >= 3
+        #ifdef __Pyx_CyFunction_USED
+        if (likely(PyFunction_Check(descr) || (Py_TYPE(descr) == &PyMethodDescr_Type) || __Pyx_CyFunction_Check(descr)))
+        #else
+        if (likely(PyFunction_Check(descr) || (Py_TYPE(descr) == &PyMethodDescr_Type)))
+        #endif
+#else
+        #ifdef __Pyx_CyFunction_USED
+        if (likely(PyFunction_Check(descr) || __Pyx_CyFunction_Check(descr)))
+        #else
+        if (likely(PyFunction_Check(descr)))
+        #endif
+#endif
+        {
+            meth_found = 1;
+        } else {
+            f = Py_TYPE(descr)->tp_descr_get;
+            if (f != NULL && PyDescr_IsData(descr)) {
+                attr = f(descr, obj, (PyObject *)Py_TYPE(obj));
+                Py_DECREF(descr);
+                goto try_unpack;
+            }
+        }
+    }
+    dictptr = _PyObject_GetDictPtr(obj);
+    if (dictptr != NULL && (dict = *dictptr) != NULL) {
+        Py_INCREF(dict);
+        attr = __Pyx_PyDict_GetItemStr(dict, name);
+        if (attr != NULL) {
+            Py_INCREF(attr);
+            Py_DECREF(dict);
+            Py_XDECREF(descr);
+            goto try_unpack;
+        }
+        Py_DECREF(dict);
+    }
+    if (meth_found) {
+        *method = descr;
+        return 1;
+    }
+    if (f != NULL) {
+        attr = f(descr, obj, (PyObject *)Py_TYPE(obj));
+        Py_DECREF(descr);
+        goto try_unpack;
+    }
+    if (descr != NULL) {
+        *method = descr;
+        return 0;
+    }
+    PyErr_Format(PyExc_AttributeError,
+#if PY_MAJOR_VERSION >= 3
+                 "'%.50s' object has no attribute '%U'",
+                 tp->tp_name, name);
+#else
+                 "'%.50s' object has no attribute '%.400s'",
+                 tp->tp_name, PyString_AS_STRING(name));
+#endif
+    return 0;
+#else
+    attr = __Pyx_PyObject_GetAttrStr(obj, name);
+    goto try_unpack;
+#endif
+try_unpack:
+#if CYTHON_UNPACK_METHODS
+    if (likely(attr) && PyMethod_Check(attr) && likely(PyMethod_GET_SELF(attr) == obj)) {
+        PyObject *function = PyMethod_GET_FUNCTION(attr);
+        Py_INCREF(function);
+        Py_DECREF(attr);
+        *method = function;
+        return 1;
+    }
+#endif
+    *method = attr;
+    return 0;
+}
+
+/* PyObjectCallMethod1 */
+static PyObject* __Pyx__PyObject_CallMethod1(PyObject* method, PyObject* arg) {
+    PyObject *result = __Pyx_PyObject_CallOneArg(method, arg);
+    Py_DECREF(method);
+    return result;
+}
+static PyObject* __Pyx_PyObject_CallMethod1(PyObject* obj, PyObject* method_name, PyObject* arg) {
+    PyObject *method = NULL, *result;
+    int is_method = __Pyx_PyObject_GetMethod(obj, method_name, &method);
+    if (likely(is_method)) {
+        result = __Pyx_PyObject_Call2Args(method, obj, arg);
+        Py_DECREF(method);
+        return result;
+    }
+    if (unlikely(!method)) return NULL;
+    return __Pyx__PyObject_CallMethod1(method, arg);
+}
+
+/* CoroutineBase */
+#include <structmember.h>
+#include <frameobject.h>
+#define __Pyx_Coroutine_Undelegate(gen) Py_CLEAR((gen)->yieldfrom)
+static int __Pyx_PyGen__FetchStopIterationValue(CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject **pvalue) {
+    PyObject *et, *ev, *tb;
+    PyObject *value = NULL;
+    __Pyx_ErrFetch(&et, &ev, &tb);
+    if (!et) {
+        Py_XDECREF(tb);
+        Py_XDECREF(ev);
+        Py_INCREF(Py_None);
+        *pvalue = Py_None;
+        return 0;
+    }
+    if (likely(et == PyExc_StopIteration)) {
+        if (!ev) {
+            Py_INCREF(Py_None);
+            value = Py_None;
+        }
+#if PY_VERSION_HEX >= 0x030300A0
+        else if (Py_TYPE(ev) == (PyTypeObject*)PyExc_StopIteration) {
+            value = ((PyStopIterationObject *)ev)->value;
+            Py_INCREF(value);
+            Py_DECREF(ev);
+        }
+#endif
+        else if (unlikely(PyTuple_Check(ev))) {
+            if (PyTuple_GET_SIZE(ev) >= 1) {
+#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+                value = PyTuple_GET_ITEM(ev, 0);
+                Py_INCREF(value);
+#else
+                value = PySequence_ITEM(ev, 0);
+#endif
+            } else {
+                Py_INCREF(Py_None);
+                value = Py_None;
+            }
+            Py_DECREF(ev);
+        }
+        else if (!__Pyx_TypeCheck(ev, (PyTypeObject*)PyExc_StopIteration)) {
+            value = ev;
+        }
+        if (likely(value)) {
+            Py_XDECREF(tb);
+            Py_DECREF(et);
+            *pvalue = value;
+            return 0;
+        }
+    } else if (!__Pyx_PyErr_GivenExceptionMatches(et, PyExc_StopIteration)) {
+        __Pyx_ErrRestore(et, ev, tb);
+        return -1;
+    }
+    PyErr_NormalizeException(&et, &ev, &tb);
+    if (unlikely(!PyObject_TypeCheck(ev, (PyTypeObject*)PyExc_StopIteration))) {
+        __Pyx_ErrRestore(et, ev, tb);
+        return -1;
+    }
+    Py_XDECREF(tb);
+    Py_DECREF(et);
+#if PY_VERSION_HEX >= 0x030300A0
+    value = ((PyStopIterationObject *)ev)->value;
+    Py_INCREF(value);
+    Py_DECREF(ev);
+#else
+    {
+        PyObject* args = __Pyx_PyObject_GetAttrStr(ev, __pyx_n_s_args);
+        Py_DECREF(ev);
+        if (likely(args)) {
+            value = PySequence_GetItem(args, 0);
+            Py_DECREF(args);
+        }
+        if (unlikely(!value)) {
+            __Pyx_ErrRestore(NULL, NULL, NULL);
+            Py_INCREF(Py_None);
+            value = Py_None;
+        }
+    }
+#endif
+    *pvalue = value;
+    return 0;
+}
+static CYTHON_INLINE
+void __Pyx_Coroutine_ExceptionClear(__Pyx_ExcInfoStruct *exc_state) {
+    PyObject *t, *v, *tb;
+    t = exc_state->exc_type;
+    v = exc_state->exc_value;
+    tb = exc_state->exc_traceback;
+    exc_state->exc_type = NULL;
+    exc_state->exc_value = NULL;
+    exc_state->exc_traceback = NULL;
+    Py_XDECREF(t);
+    Py_XDECREF(v);
+    Py_XDECREF(tb);
+}
+#define __Pyx_Coroutine_AlreadyRunningError(gen)  (__Pyx__Coroutine_AlreadyRunningError(gen), (PyObject*)NULL)
+static void __Pyx__Coroutine_AlreadyRunningError(CYTHON_UNUSED __pyx_CoroutineObject *gen) {
+    const char *msg;
+    if (0) {
+    #ifdef __Pyx_Coroutine_USED
+    } else if (__Pyx_Coroutine_Check((PyObject*)gen)) {
+        msg = "coroutine already executing";
+    #endif
+    #ifdef __Pyx_AsyncGen_USED
+    } else if (__Pyx_AsyncGen_CheckExact((PyObject*)gen)) {
+        msg = "async generator already executing";
+    #endif
+    } else {
+        msg = "generator already executing";
+    }
+    PyErr_SetString(PyExc_ValueError, msg);
+}
+#define __Pyx_Coroutine_NotStartedError(gen)  (__Pyx__Coroutine_NotStartedError(gen), (PyObject*)NULL)
+static void __Pyx__Coroutine_NotStartedError(CYTHON_UNUSED PyObject *gen) {
+    const char *msg;
+    if (0) {
+    #ifdef __Pyx_Coroutine_USED
+    } else if (__Pyx_Coroutine_Check(gen)) {
+        msg = "can't send non-None value to a just-started coroutine";
+    #endif
+    #ifdef __Pyx_AsyncGen_USED
+    } else if (__Pyx_AsyncGen_CheckExact(gen)) {
+        msg = "can't send non-None value to a just-started async generator";
+    #endif
+    } else {
+        msg = "can't send non-None value to a just-started generator";
+    }
+    PyErr_SetString(PyExc_TypeError, msg);
+}
+#define __Pyx_Coroutine_AlreadyTerminatedError(gen, value, closing)  (__Pyx__Coroutine_AlreadyTerminatedError(gen, value, closing), (PyObject*)NULL)
+static void __Pyx__Coroutine_AlreadyTerminatedError(CYTHON_UNUSED PyObject *gen, PyObject *value, CYTHON_UNUSED int closing) {
+    #ifdef __Pyx_Coroutine_USED
+    if (!closing && __Pyx_Coroutine_Check(gen)) {
+        PyErr_SetString(PyExc_RuntimeError, "cannot reuse already awaited coroutine");
+    } else
+    #endif
+    if (value) {
+        #ifdef __Pyx_AsyncGen_USED
+        if (__Pyx_AsyncGen_CheckExact(gen))
+            PyErr_SetNone(__Pyx_PyExc_StopAsyncIteration);
+        else
+        #endif
+        PyErr_SetNone(PyExc_StopIteration);
+    }
+}
+static
+PyObject *__Pyx_Coroutine_SendEx(__pyx_CoroutineObject *self, PyObject *value, int closing) {
+    __Pyx_PyThreadState_declare
+    PyThreadState *tstate;
+    __Pyx_ExcInfoStruct *exc_state;
+    PyObject *retval;
+    assert(!self->is_running);
+    if (unlikely(self->resume_label == 0)) {
+        if (unlikely(value && value != Py_None)) {
+            return __Pyx_Coroutine_NotStartedError((PyObject*)self);
+        }
+    }
+    if (unlikely(self->resume_label == -1)) {
+        return __Pyx_Coroutine_AlreadyTerminatedError((PyObject*)self, value, closing);
+    }
+#if CYTHON_FAST_THREAD_STATE
+    __Pyx_PyThreadState_assign
+    tstate = __pyx_tstate;
+#else
+    tstate = __Pyx_PyThreadState_Current;
+#endif
+    exc_state = &self->gi_exc_state;
+    if (exc_state->exc_type) {
+        #if CYTHON_COMPILING_IN_PYPY || CYTHON_COMPILING_IN_PYSTON
+        #else
+        if (exc_state->exc_traceback) {
+            PyTracebackObject *tb = (PyTracebackObject *) exc_state->exc_traceback;
+            PyFrameObject *f = tb->tb_frame;
+            Py_XINCREF(tstate->frame);
+            assert(f->f_back == NULL);
+            f->f_back = tstate->frame;
+        }
+        #endif
+    }
+#if CYTHON_USE_EXC_INFO_STACK
+    exc_state->previous_item = tstate->exc_info;
+    tstate->exc_info = exc_state;
+#else
+    if (exc_state->exc_type) {
+        __Pyx_ExceptionSwap(&exc_state->exc_type, &exc_state->exc_value, &exc_state->exc_traceback);
+    } else {
+        __Pyx_Coroutine_ExceptionClear(exc_state);
+        __Pyx_ExceptionSave(&exc_state->exc_type, &exc_state->exc_value, &exc_state->exc_traceback);
+    }
+#endif
+    self->is_running = 1;
+    retval = self->body((PyObject *) self, tstate, value);
+    self->is_running = 0;
+#if CYTHON_USE_EXC_INFO_STACK
+    exc_state = &self->gi_exc_state;
+    tstate->exc_info = exc_state->previous_item;
+    exc_state->previous_item = NULL;
+    __Pyx_Coroutine_ResetFrameBackpointer(exc_state);
+#endif
+    return retval;
+}
+static CYTHON_INLINE void __Pyx_Coroutine_ResetFrameBackpointer(__Pyx_ExcInfoStruct *exc_state) {
+    PyObject *exc_tb = exc_state->exc_traceback;
+    if (likely(exc_tb)) {
+#if CYTHON_COMPILING_IN_PYPY || CYTHON_COMPILING_IN_PYSTON
+#else
+        PyTracebackObject *tb = (PyTracebackObject *) exc_tb;
+        PyFrameObject *f = tb->tb_frame;
+        Py_CLEAR(f->f_back);
+#endif
+    }
+}
+static CYTHON_INLINE
+PyObject *__Pyx_Coroutine_MethodReturn(CYTHON_UNUSED PyObject* gen, PyObject *retval) {
+    if (unlikely(!retval)) {
+        __Pyx_PyThreadState_declare
+        __Pyx_PyThreadState_assign
+        if (!__Pyx_PyErr_Occurred()) {
+            PyObject *exc = PyExc_StopIteration;
+            #ifdef __Pyx_AsyncGen_USED
+            if (__Pyx_AsyncGen_CheckExact(gen))
+                exc = __Pyx_PyExc_StopAsyncIteration;
+            #endif
+            __Pyx_PyErr_SetNone(exc);
+        }
+    }
+    return retval;
+}
+static CYTHON_INLINE
+PyObject *__Pyx_Coroutine_FinishDelegation(__pyx_CoroutineObject *gen) {
+    PyObject *ret;
+    PyObject *val = NULL;
+    __Pyx_Coroutine_Undelegate(gen);
+    __Pyx_PyGen__FetchStopIterationValue(__Pyx_PyThreadState_Current, &val);
+    ret = __Pyx_Coroutine_SendEx(gen, val, 0);
+    Py_XDECREF(val);
+    return ret;
+}
+static PyObject *__Pyx_Coroutine_Send(PyObject *self, PyObject *value) {
+    PyObject *retval;
+    __pyx_CoroutineObject *gen = (__pyx_CoroutineObject*) self;
+    PyObject *yf = gen->yieldfrom;
+    if (unlikely(gen->is_running))
+        return __Pyx_Coroutine_AlreadyRunningError(gen);
+    if (yf) {
+        PyObject *ret;
+        gen->is_running = 1;
+        #ifdef __Pyx_Generator_USED
+        if (__Pyx_Generator_CheckExact(yf)) {
+            ret = __Pyx_Coroutine_Send(yf, value);
+        } else
+        #endif
+        #ifdef __Pyx_Coroutine_USED
+        if (__Pyx_Coroutine_Check(yf)) {
+            ret = __Pyx_Coroutine_Send(yf, value);
+        } else
+        #endif
+        #ifdef __Pyx_AsyncGen_USED
+        if (__pyx_PyAsyncGenASend_CheckExact(yf)) {
+            ret = __Pyx_async_gen_asend_send(yf, value);
+        } else
+        #endif
+        #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x03030000 && (defined(__linux__) || PY_VERSION_HEX >= 0x030600B3)
+        if (PyGen_CheckExact(yf)) {
+            ret = _PyGen_Send((PyGenObject*)yf, value == Py_None ? NULL : value);
+        } else
+        #endif
+        #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x03050000 && defined(PyCoro_CheckExact) && (defined(__linux__) || PY_VERSION_HEX >= 0x030600B3)
+        if (PyCoro_CheckExact(yf)) {
+            ret = _PyGen_Send((PyGenObject*)yf, value == Py_None ? NULL : value);
+        } else
+        #endif
+        {
+            if (value == Py_None)
+                ret = Py_TYPE(yf)->tp_iternext(yf);
+            else
+                ret = __Pyx_PyObject_CallMethod1(yf, __pyx_n_s_send, value);
+        }
+        gen->is_running = 0;
+        if (likely(ret)) {
+            return ret;
+        }
+        retval = __Pyx_Coroutine_FinishDelegation(gen);
+    } else {
+        retval = __Pyx_Coroutine_SendEx(gen, value, 0);
+    }
+    return __Pyx_Coroutine_MethodReturn(self, retval);
+}
+static int __Pyx_Coroutine_CloseIter(__pyx_CoroutineObject *gen, PyObject *yf) {
+    PyObject *retval = NULL;
+    int err = 0;
+    #ifdef __Pyx_Generator_USED
+    if (__Pyx_Generator_CheckExact(yf)) {
+        retval = __Pyx_Coroutine_Close(yf);
+        if (!retval)
+            return -1;
+    } else
+    #endif
+    #ifdef __Pyx_Coroutine_USED
+    if (__Pyx_Coroutine_Check(yf)) {
+        retval = __Pyx_Coroutine_Close(yf);
+        if (!retval)
+            return -1;
+    } else
+    if (__Pyx_CoroutineAwait_CheckExact(yf)) {
+        retval = __Pyx_CoroutineAwait_Close((__pyx_CoroutineAwaitObject*)yf, NULL);
+        if (!retval)
+            return -1;
+    } else
+    #endif
+    #ifdef __Pyx_AsyncGen_USED
+    if (__pyx_PyAsyncGenASend_CheckExact(yf)) {
+        retval = __Pyx_async_gen_asend_close(yf, NULL);
+    } else
+    if (__pyx_PyAsyncGenAThrow_CheckExact(yf)) {
+        retval = __Pyx_async_gen_athrow_close(yf, NULL);
+    } else
+    #endif
+    {
+        PyObject *meth;
+        gen->is_running = 1;
+        meth = __Pyx_PyObject_GetAttrStr(yf, __pyx_n_s_close);
+        if (unlikely(!meth)) {
+            if (!PyErr_ExceptionMatches(PyExc_AttributeError)) {
+                PyErr_WriteUnraisable(yf);
+            }
+            PyErr_Clear();
+        } else {
+            retval = PyObject_CallFunction(meth, NULL);
+            Py_DECREF(meth);
+            if (!retval)
+                err = -1;
+        }
+        gen->is_running = 0;
+    }
+    Py_XDECREF(retval);
+    return err;
+}
+static PyObject *__Pyx_Generator_Next(PyObject *self) {
+    __pyx_CoroutineObject *gen = (__pyx_CoroutineObject*) self;
+    PyObject *yf = gen->yieldfrom;
+    if (unlikely(gen->is_running))
+        return __Pyx_Coroutine_AlreadyRunningError(gen);
+    if (yf) {
+        PyObject *ret;
+        gen->is_running = 1;
+        #ifdef __Pyx_Generator_USED
+        if (__Pyx_Generator_CheckExact(yf)) {
+            ret = __Pyx_Generator_Next(yf);
+        } else
+        #endif
+        #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x03030000 && (defined(__linux__) || PY_VERSION_HEX >= 0x030600B3)
+        if (PyGen_CheckExact(yf)) {
+            ret = _PyGen_Send((PyGenObject*)yf, NULL);
+        } else
+        #endif
+        #ifdef __Pyx_Coroutine_USED
+        if (__Pyx_Coroutine_Check(yf)) {
+            ret = __Pyx_Coroutine_Send(yf, Py_None);
+        } else
+        #endif
+            ret = Py_TYPE(yf)->tp_iternext(yf);
+        gen->is_running = 0;
+        if (likely(ret)) {
+            return ret;
+        }
+        return __Pyx_Coroutine_FinishDelegation(gen);
+    }
+    return __Pyx_Coroutine_SendEx(gen, Py_None, 0);
+}
+static PyObject *__Pyx_Coroutine_Close_Method(PyObject *self, CYTHON_UNUSED PyObject *arg) {
+    return __Pyx_Coroutine_Close(self);
+}
+static PyObject *__Pyx_Coroutine_Close(PyObject *self) {
+    __pyx_CoroutineObject *gen = (__pyx_CoroutineObject *) self;
+    PyObject *retval, *raised_exception;
+    PyObject *yf = gen->yieldfrom;
+    int err = 0;
+    if (unlikely(gen->is_running))
+        return __Pyx_Coroutine_AlreadyRunningError(gen);
+    if (yf) {
+        Py_INCREF(yf);
+        err = __Pyx_Coroutine_CloseIter(gen, yf);
+        __Pyx_Coroutine_Undelegate(gen);
+        Py_DECREF(yf);
+    }
+    if (err == 0)
+        PyErr_SetNone(PyExc_GeneratorExit);
+    retval = __Pyx_Coroutine_SendEx(gen, NULL, 1);
+    if (unlikely(retval)) {
+        const char *msg;
+        Py_DECREF(retval);
+        if ((0)) {
+        #ifdef __Pyx_Coroutine_USED
+        } else if (__Pyx_Coroutine_Check(self)) {
+            msg = "coroutine ignored GeneratorExit";
+        #endif
+        #ifdef __Pyx_AsyncGen_USED
+        } else if (__Pyx_AsyncGen_CheckExact(self)) {
+#if PY_VERSION_HEX < 0x03060000
+            msg = "async generator ignored GeneratorExit - might require Python 3.6+ finalisation (PEP 525)";
+#else
+            msg = "async generator ignored GeneratorExit";
+#endif
+        #endif
+        } else {
+            msg = "generator ignored GeneratorExit";
+        }
+        PyErr_SetString(PyExc_RuntimeError, msg);
+        return NULL;
+    }
+    raised_exception = PyErr_Occurred();
+    if (likely(!raised_exception || __Pyx_PyErr_GivenExceptionMatches2(raised_exception, PyExc_GeneratorExit, PyExc_StopIteration))) {
+        if (raised_exception) PyErr_Clear();
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+    return NULL;
+}
+static PyObject *__Pyx__Coroutine_Throw(PyObject *self, PyObject *typ, PyObject *val, PyObject *tb,
+                                        PyObject *args, int close_on_genexit) {
+    __pyx_CoroutineObject *gen = (__pyx_CoroutineObject *) self;
+    PyObject *yf = gen->yieldfrom;
+    if (unlikely(gen->is_running))
+        return __Pyx_Coroutine_AlreadyRunningError(gen);
+    if (yf) {
+        PyObject *ret;
+        Py_INCREF(yf);
+        if (__Pyx_PyErr_GivenExceptionMatches(typ, PyExc_GeneratorExit) && close_on_genexit) {
+            int err = __Pyx_Coroutine_CloseIter(gen, yf);
+            Py_DECREF(yf);
+            __Pyx_Coroutine_Undelegate(gen);
+            if (err < 0)
+                return __Pyx_Coroutine_MethodReturn(self, __Pyx_Coroutine_SendEx(gen, NULL, 0));
+            goto throw_here;
+        }
+        gen->is_running = 1;
+        if (0
+        #ifdef __Pyx_Generator_USED
+            || __Pyx_Generator_CheckExact(yf)
+        #endif
+        #ifdef __Pyx_Coroutine_USED
+            || __Pyx_Coroutine_Check(yf)
+        #endif
+            ) {
+            ret = __Pyx__Coroutine_Throw(yf, typ, val, tb, args, close_on_genexit);
+        #ifdef __Pyx_Coroutine_USED
+        } else if (__Pyx_CoroutineAwait_CheckExact(yf)) {
+            ret = __Pyx__Coroutine_Throw(((__pyx_CoroutineAwaitObject*)yf)->coroutine, typ, val, tb, args, close_on_genexit);
+        #endif
+        } else {
+            PyObject *meth = __Pyx_PyObject_GetAttrStr(yf, __pyx_n_s_throw);
+            if (unlikely(!meth)) {
+                Py_DECREF(yf);
+                if (!PyErr_ExceptionMatches(PyExc_AttributeError)) {
+                    gen->is_running = 0;
+                    return NULL;
+                }
+                PyErr_Clear();
+                __Pyx_Coroutine_Undelegate(gen);
+                gen->is_running = 0;
+                goto throw_here;
+            }
+            if (likely(args)) {
+                ret = PyObject_CallObject(meth, args);
+            } else {
+                ret = PyObject_CallFunctionObjArgs(meth, typ, val, tb, NULL);
+            }
+            Py_DECREF(meth);
+        }
+        gen->is_running = 0;
+        Py_DECREF(yf);
+        if (!ret) {
+            ret = __Pyx_Coroutine_FinishDelegation(gen);
+        }
+        return __Pyx_Coroutine_MethodReturn(self, ret);
+    }
+throw_here:
+    __Pyx_Raise(typ, val, tb, NULL);
+    return __Pyx_Coroutine_MethodReturn(self, __Pyx_Coroutine_SendEx(gen, NULL, 0));
+}
+static PyObject *__Pyx_Coroutine_Throw(PyObject *self, PyObject *args) {
+    PyObject *typ;
+    PyObject *val = NULL;
+    PyObject *tb = NULL;
+    if (!PyArg_UnpackTuple(args, (char *)"throw", 1, 3, &typ, &val, &tb))
+        return NULL;
+    return __Pyx__Coroutine_Throw(self, typ, val, tb, args, 1);
+}
+static CYTHON_INLINE int __Pyx_Coroutine_traverse_excstate(__Pyx_ExcInfoStruct *exc_state, visitproc visit, void *arg) {
+    Py_VISIT(exc_state->exc_type);
+    Py_VISIT(exc_state->exc_value);
+    Py_VISIT(exc_state->exc_traceback);
+    return 0;
+}
+static int __Pyx_Coroutine_traverse(__pyx_CoroutineObject *gen, visitproc visit, void *arg) {
+    Py_VISIT(gen->closure);
+    Py_VISIT(gen->classobj);
+    Py_VISIT(gen->yieldfrom);
+    return __Pyx_Coroutine_traverse_excstate(&gen->gi_exc_state, visit, arg);
+}
+static int __Pyx_Coroutine_clear(PyObject *self) {
+    __pyx_CoroutineObject *gen = (__pyx_CoroutineObject *) self;
+    Py_CLEAR(gen->closure);
+    Py_CLEAR(gen->classobj);
+    Py_CLEAR(gen->yieldfrom);
+    __Pyx_Coroutine_ExceptionClear(&gen->gi_exc_state);
+#ifdef __Pyx_AsyncGen_USED
+    if (__Pyx_AsyncGen_CheckExact(self)) {
+        Py_CLEAR(((__pyx_PyAsyncGenObject*)gen)->ag_finalizer);
+    }
+#endif
+    Py_CLEAR(gen->gi_code);
+    Py_CLEAR(gen->gi_name);
+    Py_CLEAR(gen->gi_qualname);
+    Py_CLEAR(gen->gi_modulename);
+    return 0;
+}
+static void __Pyx_Coroutine_dealloc(PyObject *self) {
+    __pyx_CoroutineObject *gen = (__pyx_CoroutineObject *) self;
+    PyObject_GC_UnTrack(gen);
+    if (gen->gi_weakreflist != NULL)
+        PyObject_ClearWeakRefs(self);
+    if (gen->resume_label >= 0) {
+        PyObject_GC_Track(self);
+#if PY_VERSION_HEX >= 0x030400a1 && CYTHON_USE_TP_FINALIZE
+        if (PyObject_CallFinalizerFromDealloc(self))
+#else
+        Py_TYPE(gen)->tp_del(self);
+        if (self->ob_refcnt > 0)
+#endif
+        {
+            return;
+        }
+        PyObject_GC_UnTrack(self);
+    }
+#ifdef __Pyx_AsyncGen_USED
+    if (__Pyx_AsyncGen_CheckExact(self)) {
+        /* We have to handle this case for asynchronous generators
+           right here, because this code has to be between UNTRACK
+           and GC_Del. */
+        Py_CLEAR(((__pyx_PyAsyncGenObject*)self)->ag_finalizer);
+    }
+#endif
+    __Pyx_Coroutine_clear(self);
+    PyObject_GC_Del(gen);
+}
+static void __Pyx_Coroutine_del(PyObject *self) {
+    PyObject *error_type, *error_value, *error_traceback;
+    __pyx_CoroutineObject *gen = (__pyx_CoroutineObject *) self;
+    __Pyx_PyThreadState_declare
+    if (gen->resume_label < 0) {
+        return;
+    }
+#if !CYTHON_USE_TP_FINALIZE
+    assert(self->ob_refcnt == 0);
+    self->ob_refcnt = 1;
+#endif
+    __Pyx_PyThreadState_assign
+    __Pyx_ErrFetch(&error_type, &error_value, &error_traceback);
+#ifdef __Pyx_AsyncGen_USED
+    if (__Pyx_AsyncGen_CheckExact(self)) {
+        __pyx_PyAsyncGenObject *agen = (__pyx_PyAsyncGenObject*)self;
+        PyObject *finalizer = agen->ag_finalizer;
+        if (finalizer && !agen->ag_closed) {
+            PyObject *res = __Pyx_PyObject_CallOneArg(finalizer, self);
+            if (unlikely(!res)) {
+                PyErr_WriteUnraisable(self);
+            } else {
+                Py_DECREF(res);
+            }
+            __Pyx_ErrRestore(error_type, error_value, error_traceback);
+            return;
+        }
+    }
+#endif
+    if (unlikely(gen->resume_label == 0 && !error_value)) {
+#ifdef __Pyx_Coroutine_USED
+#ifdef __Pyx_Generator_USED
+    if (!__Pyx_Generator_CheckExact(self))
+#endif
+        {
+        PyObject_GC_UnTrack(self);
+#if PY_MAJOR_VERSION >= 3  || defined(PyErr_WarnFormat)
+        if (unlikely(PyErr_WarnFormat(PyExc_RuntimeWarning, 1, "coroutine '%.50S' was never awaited", gen->gi_qualname) < 0))
+            PyErr_WriteUnraisable(self);
+#else
+        {PyObject *msg;
+        char *cmsg;
+        #if CYTHON_COMPILING_IN_PYPY
+        msg = NULL;
+        cmsg = (char*) "coroutine was never awaited";
+        #else
+        char *cname;
+        PyObject *qualname;
+        qualname = gen->gi_qualname;
+        cname = PyString_AS_STRING(qualname);
+        msg = PyString_FromFormat("coroutine '%.50s' was never awaited", cname);
+        if (unlikely(!msg)) {
+            PyErr_Clear();
+            cmsg = (char*) "coroutine was never awaited";
+        } else {
+            cmsg = PyString_AS_STRING(msg);
+        }
+        #endif
+        if (unlikely(PyErr_WarnEx(PyExc_RuntimeWarning, cmsg, 1) < 0))
+            PyErr_WriteUnraisable(self);
+        Py_XDECREF(msg);}
+#endif
+        PyObject_GC_Track(self);
+        }
+#endif
+    } else {
+        PyObject *res = __Pyx_Coroutine_Close(self);
+        if (unlikely(!res)) {
+            if (PyErr_Occurred())
+                PyErr_WriteUnraisable(self);
+        } else {
+            Py_DECREF(res);
+        }
+    }
+    __Pyx_ErrRestore(error_type, error_value, error_traceback);
+#if !CYTHON_USE_TP_FINALIZE
+    assert(self->ob_refcnt > 0);
+    if (--self->ob_refcnt == 0) {
+        return;
+    }
+    {
+        Py_ssize_t refcnt = self->ob_refcnt;
+        _Py_NewReference(self);
+        self->ob_refcnt = refcnt;
+    }
+#if CYTHON_COMPILING_IN_CPYTHON
+    assert(PyType_IS_GC(self->ob_type) &&
+           _Py_AS_GC(self)->gc.gc_refs != _PyGC_REFS_UNTRACKED);
+    _Py_DEC_REFTOTAL;
+#endif
+#ifdef COUNT_ALLOCS
+    --Py_TYPE(self)->tp_frees;
+    --Py_TYPE(self)->tp_allocs;
+#endif
+#endif
+}
+static PyObject *
+__Pyx_Coroutine_get_name(__pyx_CoroutineObject *self, CYTHON_UNUSED void *context)
+{
+    PyObject *name = self->gi_name;
+    if (unlikely(!name)) name = Py_None;
+    Py_INCREF(name);
+    return name;
+}
+static int
+__Pyx_Coroutine_set_name(__pyx_CoroutineObject *self, PyObject *value, CYTHON_UNUSED void *context)
+{
+    PyObject *tmp;
+#if PY_MAJOR_VERSION >= 3
+    if (unlikely(value == NULL || !PyUnicode_Check(value)))
+#else
+    if (unlikely(value == NULL || !PyString_Check(value)))
+#endif
+    {
+        PyErr_SetString(PyExc_TypeError,
+                        "__name__ must be set to a string object");
+        return -1;
+    }
+    tmp = self->gi_name;
+    Py_INCREF(value);
+    self->gi_name = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static PyObject *
+__Pyx_Coroutine_get_qualname(__pyx_CoroutineObject *self, CYTHON_UNUSED void *context)
+{
+    PyObject *name = self->gi_qualname;
+    if (unlikely(!name)) name = Py_None;
+    Py_INCREF(name);
+    return name;
+}
+static int
+__Pyx_Coroutine_set_qualname(__pyx_CoroutineObject *self, PyObject *value, CYTHON_UNUSED void *context)
+{
+    PyObject *tmp;
+#if PY_MAJOR_VERSION >= 3
+    if (unlikely(value == NULL || !PyUnicode_Check(value)))
+#else
+    if (unlikely(value == NULL || !PyString_Check(value)))
+#endif
+    {
+        PyErr_SetString(PyExc_TypeError,
+                        "__qualname__ must be set to a string object");
+        return -1;
+    }
+    tmp = self->gi_qualname;
+    Py_INCREF(value);
+    self->gi_qualname = value;
+    Py_XDECREF(tmp);
+    return 0;
+}
+static __pyx_CoroutineObject *__Pyx__Coroutine_New(
+            PyTypeObject* type, __pyx_coroutine_body_t body, PyObject *code, PyObject *closure,
+            PyObject *name, PyObject *qualname, PyObject *module_name) {
+    __pyx_CoroutineObject *gen = PyObject_GC_New(__pyx_CoroutineObject, type);
+    if (unlikely(!gen))
+        return NULL;
+    return __Pyx__Coroutine_NewInit(gen, body, code, closure, name, qualname, module_name);
+}
+static __pyx_CoroutineObject *__Pyx__Coroutine_NewInit(
+            __pyx_CoroutineObject *gen, __pyx_coroutine_body_t body, PyObject *code, PyObject *closure,
+            PyObject *name, PyObject *qualname, PyObject *module_name) {
+    gen->body = body;
+    gen->closure = closure;
+    Py_XINCREF(closure);
+    gen->is_running = 0;
+    gen->resume_label = 0;
+    gen->classobj = NULL;
+    gen->yieldfrom = NULL;
+    gen->gi_exc_state.exc_type = NULL;
+    gen->gi_exc_state.exc_value = NULL;
+    gen->gi_exc_state.exc_traceback = NULL;
+#if CYTHON_USE_EXC_INFO_STACK
+    gen->gi_exc_state.previous_item = NULL;
+#endif
+    gen->gi_weakreflist = NULL;
+    Py_XINCREF(qualname);
+    gen->gi_qualname = qualname;
+    Py_XINCREF(name);
+    gen->gi_name = name;
+    Py_XINCREF(module_name);
+    gen->gi_modulename = module_name;
+    Py_XINCREF(code);
+    gen->gi_code = code;
+    PyObject_GC_Track(gen);
+    return gen;
+}
+
+/* PatchModuleWithCoroutine */
+static PyObject* __Pyx_Coroutine_patch_module(PyObject* module, const char* py_code) {
+#if defined(__Pyx_Generator_USED) || defined(__Pyx_Coroutine_USED)
+    int result;
+    PyObject *globals, *result_obj;
+    globals = PyDict_New();  if (unlikely(!globals)) goto ignore;
+    result = PyDict_SetItemString(globals, "_cython_coroutine_type",
+    #ifdef __Pyx_Coroutine_USED
+        (PyObject*)__pyx_CoroutineType);
+    #else
+        Py_None);
+    #endif
+    if (unlikely(result < 0)) goto ignore;
+    result = PyDict_SetItemString(globals, "_cython_generator_type",
+    #ifdef __Pyx_Generator_USED
+        (PyObject*)__pyx_GeneratorType);
+    #else
+        Py_None);
+    #endif
+    if (unlikely(result < 0)) goto ignore;
+    if (unlikely(PyDict_SetItemString(globals, "_module", module) < 0)) goto ignore;
+    if (unlikely(PyDict_SetItemString(globals, "__builtins__", __pyx_b) < 0)) goto ignore;
+    result_obj = PyRun_String(py_code, Py_file_input, globals, globals);
+    if (unlikely(!result_obj)) goto ignore;
+    Py_DECREF(result_obj);
+    Py_DECREF(globals);
+    return module;
+ignore:
+    Py_XDECREF(globals);
+    PyErr_WriteUnraisable(module);
+    if (unlikely(PyErr_WarnEx(PyExc_RuntimeWarning, "Cython module failed to patch module with custom type", 1) < 0)) {
+        Py_DECREF(module);
+        module = NULL;
+    }
+#else
+    py_code++;
+#endif
+    return module;
+}
+
+/* PatchGeneratorABC */
+#ifndef CYTHON_REGISTER_ABCS
+#define CYTHON_REGISTER_ABCS 1
+#endif
+#if defined(__Pyx_Generator_USED) || defined(__Pyx_Coroutine_USED)
+static PyObject* __Pyx_patch_abc_module(PyObject *module);
+static PyObject* __Pyx_patch_abc_module(PyObject *module) {
+    module = __Pyx_Coroutine_patch_module(
+        module, ""
+"if _cython_generator_type is not None:\n"
+"    try: Generator = _module.Generator\n"
+"    except AttributeError: pass\n"
+"    else: Generator.register(_cython_generator_type)\n"
+"if _cython_coroutine_type is not None:\n"
+"    try: Coroutine = _module.Coroutine\n"
+"    except AttributeError: pass\n"
+"    else: Coroutine.register(_cython_coroutine_type)\n"
+    );
+    return module;
+}
+#endif
+static int __Pyx_patch_abc(void) {
+#if defined(__Pyx_Generator_USED) || defined(__Pyx_Coroutine_USED)
+    static int abc_patched = 0;
+    if (CYTHON_REGISTER_ABCS && !abc_patched) {
+        PyObject *module;
+        module = PyImport_ImportModule((PY_MAJOR_VERSION >= 3) ? "collections.abc" : "collections");
+        if (!module) {
+            PyErr_WriteUnraisable(NULL);
+            if (unlikely(PyErr_WarnEx(PyExc_RuntimeWarning,
+                    ((PY_MAJOR_VERSION >= 3) ?
+                        "Cython module failed to register with collections.abc module" :
+                        "Cython module failed to register with collections module"), 1) < 0)) {
+                return -1;
+            }
+        } else {
+            module = __Pyx_patch_abc_module(module);
+            abc_patched = 1;
+            if (unlikely(!module))
+                return -1;
+            Py_DECREF(module);
+        }
+        module = PyImport_ImportModule("backports_abc");
+        if (module) {
+            module = __Pyx_patch_abc_module(module);
+            Py_XDECREF(module);
+        }
+        if (!module) {
+            PyErr_Clear();
+        }
+    }
+#else
+    if ((0)) __Pyx_Coroutine_patch_module(NULL, NULL);
+#endif
+    return 0;
+}
+
+/* Generator */
+static PyMethodDef __pyx_Generator_methods[] = {
+    {"send", (PyCFunction) __Pyx_Coroutine_Send, METH_O,
+     (char*) PyDoc_STR("send(arg) -> send 'arg' into generator,\nreturn next yielded value or raise StopIteration.")},
+    {"throw", (PyCFunction) __Pyx_Coroutine_Throw, METH_VARARGS,
+     (char*) PyDoc_STR("throw(typ[,val[,tb]]) -> raise exception in generator,\nreturn next yielded value or raise StopIteration.")},
+    {"close", (PyCFunction) __Pyx_Coroutine_Close_Method, METH_NOARGS,
+     (char*) PyDoc_STR("close() -> raise GeneratorExit inside generator.")},
+    {0, 0, 0, 0}
+};
+static PyMemberDef __pyx_Generator_memberlist[] = {
+    {(char *) "gi_running", T_BOOL, offsetof(__pyx_CoroutineObject, is_running), READONLY, NULL},
+    {(char*) "gi_yieldfrom", T_OBJECT, offsetof(__pyx_CoroutineObject, yieldfrom), READONLY,
+     (char*) PyDoc_STR("object being iterated by 'yield from', or None")},
+    {(char*) "gi_code", T_OBJECT, offsetof(__pyx_CoroutineObject, gi_code), READONLY, NULL},
+    {0, 0, 0, 0, 0}
+};
+static PyGetSetDef __pyx_Generator_getsets[] = {
+    {(char *) "__name__", (getter)__Pyx_Coroutine_get_name, (setter)__Pyx_Coroutine_set_name,
+     (char*) PyDoc_STR("name of the generator"), 0},
+    {(char *) "__qualname__", (getter)__Pyx_Coroutine_get_qualname, (setter)__Pyx_Coroutine_set_qualname,
+     (char*) PyDoc_STR("qualified name of the generator"), 0},
+    {0, 0, 0, 0, 0}
+};
+static PyTypeObject __pyx_GeneratorType_type = {
+    PyVarObject_HEAD_INIT(0, 0)
+    "generator",
+    sizeof(__pyx_CoroutineObject),
+    0,
+    (destructor) __Pyx_Coroutine_dealloc,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_HAVE_FINALIZE,
+    0,
+    (traverseproc) __Pyx_Coroutine_traverse,
+    0,
+    0,
+    offsetof(__pyx_CoroutineObject, gi_weakreflist),
+    0,
+    (iternextfunc) __Pyx_Generator_Next,
+    __pyx_Generator_methods,
+    __pyx_Generator_memberlist,
+    __pyx_Generator_getsets,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+#if CYTHON_USE_TP_FINALIZE
+    0,
+#else
+    __Pyx_Coroutine_del,
+#endif
+    0,
+#if CYTHON_USE_TP_FINALIZE
+    __Pyx_Coroutine_del,
+#elif PY_VERSION_HEX >= 0x030400a1
+    0,
+#endif
+};
+static int __pyx_Generator_init(void) {
+    __pyx_GeneratorType_type.tp_getattro = __Pyx_PyObject_GenericGetAttrNoDict;
+    __pyx_GeneratorType_type.tp_iter = PyObject_SelfIter;
+    __pyx_GeneratorType = __Pyx_FetchCommonType(&__pyx_GeneratorType_type);
+    if (unlikely(!__pyx_GeneratorType)) {
+        return -1;
+    }
+    return 0;
 }
 
 /* CheckBinaryVersion */

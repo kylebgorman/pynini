@@ -185,21 +185,21 @@ void CDRewriteRule<Arc>::MakeMarker(
       if (num_states == 0) {
         *fst = sigma;
       } else {
-        for (StateId i = 0; i < num_states; ++i) {
-          if (fst->Final(i) == Weight::Zero()) {
-            fst->SetFinal(i, Weight::One());
+        for (StateId s = 0; s < num_states; ++s) {
+          if (fst->Final(s) == Weight::Zero()) {
+            fst->SetFinal(s, Weight::One());
           } else {
-            const auto j = fst->AddState();
-            fst->SetFinal(j, fst->Final(i));
-            for (ArcIterator<StdFst> aiter(*fst, i); !aiter.Done();
+            const auto i = fst->AddState();
+            fst->SetFinal(i, fst->Final(s));
+            for (ArcIterator<StdFst> aiter(*fst, s); !aiter.Done();
                  aiter.Next()) {
-              fst->AddArc(j, aiter.Value());
+              fst->AddArc(i, aiter.Value());
             }
             fst->SetFinal(i, Weight::Zero());
-            fst->DeleteArcs(i);
+            fst->DeleteArcs(s);
             for (const auto &marker : markers) {
               fst->AddArc(
-                  i, StdArc(marker.first, marker.second, Weight::One(), j));
+                  s, StdArc(marker.first, marker.second, Weight::One(), i));
             }
           }
         }
@@ -210,13 +210,13 @@ void CDRewriteRule<Arc>::MakeMarker(
       if (num_states == 0) {
         *fst = sigma;
       } else {
-        for (StateId i = 0; i < num_states; ++i) {
-          if (fst->Final(i) == Weight::Zero()) {
-            fst->SetFinal(i, Weight::One());
+        for (StateId s = 0; s < num_states; ++s) {
+          if (fst->Final(s) == Weight::Zero()) {
+            fst->SetFinal(s, Weight::One());
           } else {
             for (const auto &marker : markers) {
               fst->AddArc(
-                  i, StdArc(marker.first, marker.second, Weight::One(), i));
+                  s, StdArc(marker.first, marker.second, Weight::One(), s));
             }
           }
         }
@@ -259,9 +259,11 @@ void CDRewriteRule<Arc>::MakeMarker(
 template <class Arc>
 void CDRewriteRule<Arc>::IgnoreMarkers(
     MutableFst<Arc> *fst, const std::vector<std::pair<Label, Label>> &markers) {
-  for (typename Arc::StateId i = 0; i < fst->NumStates(); ++i) {
+  for (StateIterator<MutableFst<Arc>> siter(*fst); !siter.Done();
+       siter.Next()) {
+    const auto s = siter.Value();
     for (const auto &marker : markers) {
-      fst->AddArc(i, Arc(marker.first, marker.second, Arc::Weight::One(), i));
+      fst->AddArc(s, Arc(marker.first, marker.second, Arc::Weight::One(), s));
     }
   }
 }

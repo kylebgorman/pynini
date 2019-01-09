@@ -3111,6 +3111,12 @@ cdef class MutableArcIterator(object):
     self._mfst = ifst._mfst
     self._aiter.reset(new fst.MutableArcIteratorClass(ifst._mfst.get(), state))
 
+  # Magic method used to get a Pythonic Iterator API out of the C++ API
+  def __iter__(self):
+    while not self.done():
+      yield self.value()
+      self.next()
+
   cpdef bool done(self):
     """
     done(self)

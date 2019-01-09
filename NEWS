@@ -2,6 +2,7 @@ v. 2.0.4 (compatible with OpenFst 1.7.0)
 ========================================
 
 * Composition-based implementation of cross-product
+* Pythonic iteration for MutableArcIterator
 * Logging cleanup
 
 v. 2.0.3 (compatible with OpenFst 1.7.0)
