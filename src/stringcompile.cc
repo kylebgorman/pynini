@@ -110,7 +110,7 @@ SymbolTable *GetSymbolTable(StringTokenType ttype, const SymbolTable *syms) {
 
 // Adds an integer to the symbol table; using a byte symbol when in byte range.
 void AddIntegerToSymbolTable(int64 label, SymbolTable *syms) {
-  if (0 <= label && label <= 256) return;
+  if (0 <= label && label <= 255) return;
   std::stringstream sstrm;
   sstrm << label;
   syms->AddSymbol(sstrm.str(), label);

@@ -72,7 +72,7 @@ class PrefixTree {
   StateId NumStates() const { return num_states_; }
 
   // Add an entry to the prefix tree, consisting of two label sequences and a
-  // weight.  Each label sequence must be provided as a pair of iterators.
+  // weight. Each label sequence must be provided as a pair of iterators.
   template <class Iterator1, class Iterator2>
   void Add(Iterator1 iter1, Iterator1 end1,
            Iterator2 iter2, Iterator2 end2,
@@ -83,7 +83,7 @@ class PrefixTree {
       root_->state = num_states_++;
     }
     INode *n = root_;
-    for (/* empty */; iter1 != end1; ++iter1) {
+    for (; iter1 != end1; ++iter1) {
       if (!*iter1) continue;  // Skips over epsilons.
       n = LookupOrInsertNew(&n->children, *iter1);
       if (kNoStateId == n->state) n->state = num_states_++;
@@ -93,13 +93,18 @@ class PrefixTree {
       n->output->state = num_states_++;
     }
     ONode *o = n->output;
-    for (/* empty */; iter2 != end2; ++iter2) {
+    for (; iter2 != end2; ++iter2) {
       if (!*iter2) continue;  // Skips over epsilons.
       o = LookupOrInsertNew(&o->children, *iter2);
-      if (kNoStateId == o->state)
-        o->state = num_states_++;
+      if (kNoStateId == o->state) o->state = num_states_++;
     }
     o->weight = Plus(o->weight, weight);
+  }
+
+  template <class Container1, class Container2>
+  void Add(const Container1 &cont1, const Container2 &cont2,
+           const Weight &weight = Weight::One()) {
+    Add(cont1.begin(), cont1.end(), cont2.begin(), cont2.end(), weight);
   }
 
   // Removes all elements from this prefix tree.

@@ -27,12 +27,6 @@ void Optimize(MutableFstClass *fst, bool compute_props) {
   Apply<Operation<OptimizeArgs>>("Optimize", fst->ArcType(), &args);
 }
 
-void OptimizeStringCrossProducts(MutableFstClass *fst, bool compute_props) {
-  OptimizeArgs args(fst, compute_props);
-  Apply<Operation<OptimizeArgs>>("OptimizeStringCrossProducts", fst->ArcType(),
-                                 &args);
-}
-
 void OptimizeDifferenceRhs(MutableFstClass *fst, bool compute_props) {
   OptimizeArgs args(fst, compute_props);
   Apply<Operation<OptimizeArgs>>("OptimizeDifferenceRhs", fst->ArcType(),
@@ -42,10 +36,6 @@ void OptimizeDifferenceRhs(MutableFstClass *fst, bool compute_props) {
 REGISTER_FST_OPERATION(Optimize, StdArc, OptimizeArgs);
 REGISTER_FST_OPERATION(Optimize, LogArc, OptimizeArgs);
 REGISTER_FST_OPERATION(Optimize, Log64Arc, OptimizeArgs);
-
-REGISTER_FST_OPERATION(OptimizeStringCrossProducts, StdArc, OptimizeArgs);
-REGISTER_FST_OPERATION(OptimizeStringCrossProducts, LogArc, OptimizeArgs);
-REGISTER_FST_OPERATION(OptimizeStringCrossProducts, Log64Arc, OptimizeArgs);
 
 REGISTER_FST_OPERATION(OptimizeDifferenceRhs, StdArc, OptimizeArgs);
 REGISTER_FST_OPERATION(OptimizeDifferenceRhs, LogArc, OptimizeArgs);

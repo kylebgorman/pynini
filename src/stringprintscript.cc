@@ -20,9 +20,9 @@
 namespace fst {
 namespace script {
 
-bool PrintString(const FstClass &fst, StringTokenType ttype, string *str,
-                 const SymbolTable *syms, bool rm_epsilon) {
-  PrintStringInnerArgs iargs(fst, ttype, str, syms, rm_epsilon);
+bool PrintString(const FstClass &fst, string *str, StringTokenType ttype,
+                 const SymbolTable *syms) {
+  PrintStringInnerArgs iargs(fst, str, ttype, syms);
   PrintStringArgs args(iargs);
   Apply<Operation<PrintStringArgs>>("PrintString", fst.ArcType(), &args);
   return args.retval;

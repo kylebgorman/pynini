@@ -31,47 +31,48 @@ using std::string;
 namespace fst {
 namespace script {
 
-using StringFileInnerArgs = std::tuple<const string &, StringTokenType,
-    StringTokenType, MutableFstClass *, const SymbolTable *,
-    const SymbolTable *, bool, bool>;
+using StringFileInnerArgs =
+    std::tuple<const string &, MutableFstClass *, StringTokenType,
+               StringTokenType, const SymbolTable *, const SymbolTable *, bool,
+               bool>;
 
 using StringFileArgs = WithReturnValue<bool, StringFileInnerArgs>;
 
 template <class Arc>
 void StringFile(StringFileArgs *args) {
-  MutableFst<Arc> *fst = std::get<3>(args->args)->GetMutableFst<Arc>();
+  MutableFst<Arc> *fst = std::get<1>(args->args)->GetMutableFst<Arc>();
   args->retval = CompileStringFile(
-      std::get<0>(args->args), std::get<1>(args->args), std::get<2>(args->args),
-      fst, std::get<4>(args->args), std::get<5>(args->args),
+      std::get<0>(args->args), fst, std::get<2>(args->args),
+      std::get<3>(args->args), std::get<4>(args->args), std::get<5>(args->args),
       std::get<6>(args->args), std::get<7>(args->args));
 }
 
-bool StringFile(const string &fname, StringTokenType itype,
-                StringTokenType otype, MutableFstClass *fst,
+bool StringFile(const string &fname, MutableFstClass *fst,
+                StringTokenType itype = BYTE, StringTokenType otype = BYTE,
                 const SymbolTable *isyms = nullptr,
                 const SymbolTable *osyms = nullptr,
                 bool attach_input_symbols = true,
                 bool attach_output_symbols = true);
 
-using StringMapInnerArgs = std::tuple<
-    const std::vector<std::vector<string>> &, StringTokenType,
-    StringTokenType, MutableFstClass *, const SymbolTable *,
-    const SymbolTable *, bool, bool>;
+using StringMapInnerArgs =
+    std::tuple<const std::vector<std::vector<string>> &, MutableFstClass *,
+               StringTokenType, StringTokenType, const SymbolTable *,
+               const SymbolTable *, bool, bool>;
 
 using StringMapArgs = WithReturnValue<bool, StringMapInnerArgs>;
 
 template <class Arc>
 void StringMap(StringMapArgs *args) {
-  MutableFst<Arc> *fst = std::get<3>(args->args)->GetMutableFst<Arc>();
+  MutableFst<Arc> *fst = std::get<1>(args->args)->GetMutableFst<Arc>();
   args->retval = CompileStringMap(
-      std::get<0>(args->args), std::get<1>(args->args), std::get<2>(args->args),
-      fst, std::get<4>(args->args), std::get<5>(args->args),
+      std::get<0>(args->args), fst, std::get<2>(args->args),
+      std::get<3>(args->args), std::get<4>(args->args), std::get<5>(args->args),
       std::get<6>(args->args), std::get<7>(args->args));
 }
 
 bool StringMap(const std::vector<std::vector<string>> &lines,
-               StringTokenType itype, StringTokenType otype,
-               MutableFstClass *fst, const SymbolTable *isyms = nullptr,
+               MutableFstClass *fst, StringTokenType itype = BYTE,
+               StringTokenType otype = BYTE, const SymbolTable *isyms = nullptr,
                const SymbolTable *osyms = nullptr,
                bool attach_input_symbols = true,
                bool attach_output_symbols = true);

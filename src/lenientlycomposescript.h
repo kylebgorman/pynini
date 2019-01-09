@@ -40,7 +40,7 @@ void LenientlyCompose(LenientlyComposeArgs *args) {
 
 void LenientlyCompose(const FstClass &ifst1, const FstClass &ifst2,
                       const FstClass &sigma_star, MutableFstClass *ofst,
-                      const ComposeOptions &copts = ComposeOptions());
+                      const ComposeOptions &opts = ComposeOptions());
 
 }  // namespace script
 }  // namespace fst

@@ -15,12 +15,12 @@
 // For general information on the Pynini grammar compilation library, see
 // pynini.opengrm.org.
 
-#ifndef PYNINI_MERGESCRIPT_H_
-#define PYNINI_MERGESCRIPT_H_
+#ifndef PYNINI_MERGESYMBOLSSCRIPT_H_
+#define PYNINI_MERGESYMBOLSSCRIPT_H_
 
 #include <fst/script/arg-packs.h>
 #include <fst/script/fst-class.h>
-#include "merge.h"
+#include "mergesymbols.h"
 
 namespace fst {
 namespace script {
@@ -44,5 +44,5 @@ void MergeSymbols(MutableFstClass *fst1, MutableFstClass *fst2,
 }  // namespace script
 }  // namespace fst
 
-#endif  // PYNINI_MERGESCRIPT_H_
+#endif  // PYNINI_MERGESYMBOLSSCRIPT_H_
 

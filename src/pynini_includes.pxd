@@ -25,14 +25,13 @@ from libcpp.string cimport string
 from basictypes cimport int32
 from basictypes cimport int64
 
+from fst cimport ComposeOptions
 from fst cimport FstClass
 from fst cimport MutableFstClass
 from fst cimport QueueType
 from fst cimport ReplaceOptions
 from fst cimport SymbolTable
 from fst cimport WeightClass
-
-from fst_util cimport StringTokenType
 
 
 ctypedef pair[string, const FstClass *] StringFstClassPair
@@ -44,6 +43,7 @@ cdef extern from "<fst/extensions/mpdt/mpdtlib.h>" namespace "fst" nogil:
   cdef cppclass MPdtComposeOptions:
 
     MPdtComposeOptions(bool, PdtComposeFilter)
+
 
   cdef cppclass MPdtExpandOptions:
 
@@ -71,8 +71,11 @@ cdef extern from "<fst/extensions/mpdt/read_write_utils.h>" \
   bool ReadLabelTriples[L](const string &, vector[pair[L, L]] *, vector[L] *,
                            bool)
 
+  # TODO(kbg): The last argument is actually const but externally Cython 0.28
+  # freaks out if it is so annotated. Re-annotate it const once this has been
+  # fixed with the most recent Cython release.
   bool WriteLabelTriples[L](const string &, const vector[pair[L, L]] &,
-                            const vector[L] &)
+                            vector[L] &)
 
 
 cdef extern from "<fst/extensions/pdt/pdtlib.h>" namespace "fst" nogil:
@@ -130,6 +133,11 @@ cdef extern from "<fst/fstlib.h>" namespace "fst" nogil:
 
   bool WriteLabelPairs[L](const string &, const vector[pair[L, L]] &)
 
+  enum StringTokenType:
+    SYMBOL
+    BYTE
+    UTF8
+
 
 cdef extern from "cdrewrite.h" \
     namespace "fst" nogil:
@@ -150,6 +158,122 @@ cdef extern from "getters.h" \
   cdef bool GetCDRewriteDirection(const string &, CDRewriteDirection *)
 
   cdef bool GetCDRewriteMode(const string &, CDRewriteMode *)
+
+
+
+cdef extern from "crossproductscript.h" \
+    namespace "fst::script" nogil:
+
+  void CrossProduct(const FstClass &, const FstClass &, MutableFstClass *,
+                    const WeightClass &)
+
+
+cdef extern from "lenientlycomposescript.h" \
+    namespace "fst::script" nogil:
+
+  void LenientlyCompose(const FstClass &, const FstClass &,
+                        const FstClass &, MutableFstClass *,
+                        const ComposeOptions &)
+
+
+cdef extern from "mergesymbols.h" namespace "fst":
+
+  enum MergeSymbolsType:
+    MERGE_INPUT_SYMBOLS
+    MERGE_OUTPUT_SYMBOLS
+    MERGE_INPUT_AND_OUTPUT_SYMBOLS
+    MERGE_LEFT_OUTPUT_AND_RIGHT_INPUT_SYMBOLS
+
+
+cdef extern from "mergesymbolsscript.h" \
+    namespace "fst::script" nogil:
+
+  void MergeSymbols(MutableFstClass *, MutableFstClass *, MergeSymbolsType)
+
+
+cdef extern from "optimizescript.h" \
+    namespace "fst::script" nogil:
+
+  void Optimize(MutableFstClass *, bool)
+
+  void OptimizeAcceptor(MutableFstClass *, bool)
+
+  void OptimizeTransducer(MutableFstClass *, bool)
+
+  void OptimizeStringCrossProducts(MutableFstClass *, bool)
+
+  void OptimizeDifferenceRhs(MutableFstClass *, bool)
+
+
+cdef extern from "repeatscript.h" \
+    namespace "fst::script" nogil:
+
+  void Repeat(MutableFstClass *, int32, int32)
+
+
+cdef extern from "pathsscript.h" \
+    namespace "fst::script" nogil:
+
+  cdef cppclass StringPathIteratorClass:
+
+    StringPathIteratorClass(const FstClass &, StringTokenType, StringTokenType,
+                            const SymbolTable *, const SymbolTable *)
+
+    bool Done()
+
+    bool Error()
+
+    vector[int64] ILabels()
+
+    string IString()
+
+    void Next()
+
+    void Reset()
+
+    vector[int64] OLabels()
+
+    string OString()
+
+    WeightClass Weight()
+
+
+cdef extern from "stringcompilescript.h" \
+    namespace "fst" nogil:
+
+  SymbolTable *GetByteSymbolTable()
+
+
+cdef extern from "stringcompilescript.h" \
+    namespace "fst::script" nogil:
+
+  bool CompileString(const string &, MutableFstClass *, StringTokenType,
+                     const SymbolTable *, const WeightClass &, bool)
+
+
+cdef extern from "stringmapscript.h" \
+    namespace "fst::script" nogil:
+
+  bool StringFile(const string &, MutableFstClass *, StringTokenType,
+                  StringTokenType, const SymbolTable *, const SymbolTable *,
+                  bool, bool)
+
+  bool StringMap(const vector[vector[string]] &, MutableFstClass *,
+                 StringTokenType, StringTokenType, const SymbolTable *,
+                 const SymbolTable *, bool, bool)
+
+
+cdef extern from "stringprintscript.h" \
+    namespace "fst::script" nogil:
+
+  bool PrintString(const FstClass &, string *, StringTokenType,
+                   const SymbolTable *)
+
+
+cdef extern from "stringtokentype.h" \
+    namespace "fst::script" nogil:
+
+  bool GetStringTokenType(const string &, StringTokenType *)
 
 
 cdef extern from "pynini_cdrewrite.h" \

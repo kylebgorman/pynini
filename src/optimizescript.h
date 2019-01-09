@@ -36,15 +36,6 @@ void Optimize(OptimizeArgs *args) {
 void Optimize(MutableFstClass *fst, bool compute_props = false);
 
 template <class Arc>
-void OptimizeStringCrossProducts(OptimizeArgs *args) {
-  MutableFst<Arc> *fst = std::get<0>(*args)->GetMutableFst<Arc>();
-  OptimizeStringCrossProducts(fst, std::get<1>(*args));
-}
-
-void OptimizeStringCrossProducts(MutableFstClass *fst,
-                                 bool compute_props = false);
-
-template <class Arc>
 void OptimizeDifferenceRhs(OptimizeArgs *args) {
   MutableFst<Arc> *fst = std::get<0>(*args)->GetMutableFst<Arc>();
   OptimizeDifferenceRhs(fst, std::get<1>(*args));

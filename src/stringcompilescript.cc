@@ -21,14 +21,14 @@
 namespace fst {
 namespace script {
 
-bool CompileString(const string &str, const WeightClass &wc,
-                   StringTokenType ttype, MutableFstClass *fst,
-                   const SymbolTable *syms, bool attach_symbols) {
-  if (!fst->WeightTypesMatch(wc, "CompileSymbolString")) {
+bool CompileString(const string &str, MutableFstClass *fst,
+                   StringTokenType ttype, const SymbolTable *syms,
+                   const WeightClass &weight, bool attach_symbols) {
+  if (!fst->WeightTypesMatch(weight, "CompileSymbolString")) {
     fst->SetProperties(kError, kError);
     return false;
   }
-  CompileStringInnerArgs iargs(str, wc, ttype, fst, syms, attach_symbols);
+  CompileStringInnerArgs iargs(str, fst, ttype, syms, weight, attach_symbols);
   CompileStringArgs args(iargs);
   Apply<Operation<CompileStringArgs>>("CompileString", fst->ArcType(), &args);
   return args.retval;

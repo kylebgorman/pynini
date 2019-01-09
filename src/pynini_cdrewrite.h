@@ -34,74 +34,9 @@ DECLARE_int32(left_boundary_index);
 DECLARE_string(left_boundary_symbol);
 DECLARE_int32(right_boundary_index);
 DECLARE_string(right_boundary_symbol);
-DECLARE_bool(cdrewrite_verify);
 
 namespace fst {
 namespace internal {
-
-// Helpers for handling boundary symbols.
-
-template <class Arc>
-void AddBoundarySymbolArcsToSigmaStar(MutableFst<Arc> *sigma_star) {
-  for (StateIterator<MutableFst<Arc>> siter(*sigma_star); !siter.Done();
-       siter.Next()) {
-    const auto state = siter.Value();
-    if (sigma_star->Final(state) != Arc::Weight::Zero()) {
-      sigma_star->AddArc(
-          state, Arc(FLAGS_left_boundary_index, FLAGS_left_boundary_index,
-                     Arc::Weight::One(), sigma_star->Start()));
-      sigma_star->AddArc(
-          state, Arc(FLAGS_right_boundary_index, FLAGS_right_boundary_index,
-                     Arc::Weight::One(), sigma_star->Start()));
-    }
-  }
-}
-
-template <class Arc>
-void MakeBoundaryInserter(const Fst<Arc> &sigma_star, MutableFst<Arc> *fst) {
-  // The resulting FST inserts BOS superinitially and inserts EOS superfinally.
-  VectorFst<Arc> tfst;
-  auto start = tfst.AddState();
-  auto end = tfst.AddState();
-  tfst.SetStart(start);
-  tfst.AddArc(start,
-              Arc(0, FLAGS_left_boundary_index, Arc::Weight::One(), end));
-  tfst.SetFinal(end, Arc::Weight::One());
-  Concat(&tfst, sigma_star);
-  start = fst->AddState();
-  end = fst->AddState();
-  fst->SetStart(start);
-  fst->AddArc(start,
-              Arc(0, FLAGS_right_boundary_index, Arc::Weight::One(), end));
-  fst->SetFinal(end, Arc::Weight::One());
-  Concat(tfst, fst);
-}
-
-// Helper for detecting unconditioned insertion rules.
-
-template <class Arc>
-bool AllInputEpsilons(const Fst<Arc> &fst) {
-  for (StateIterator<Fst<Arc>> siter(fst); !siter.Done(); siter.Next()) {
-    for (ArcIterator<Fst<Arc>> aiter(fst, siter.Value()); !aiter.Done();
-         aiter.Next()) {
-      if (aiter.Value().ilabel) return false;
-    }
-  }
-  return true;
-}
-
-template <class Arc>
-bool IsUnconditionedInsertion(const Fst<Arc> &tau, const Fst<Arc> &lambda,
-                              const Fst<Arc> &rho) {
-  // If any of the following are true, the requested rule is not an
-  // unconditioned insertion:
-  //
-  // * tau has at least one arc without an epsilon input label
-  // * rho has at least one arc without an epsilon label
-  // * lambda has at least one arc without an epsilon label
-  return (AllInputEpsilons(tau) && AllInputEpsilons(lambda) &&
-          AllInputEpsilons(rho));
-}
 
 // The input FSTs are mutated during preparation. Outside of the internal
 // namespace, the four input arguments are all immutable const references,
@@ -112,16 +47,6 @@ void PyniniCDRewrite(MutableFst<Arc> *tau, MutableFst<Arc> *lambda,
                      MutableFst<Arc> *rho, MutableFst<Arc> *sigma_star,
                      MutableFst<Arc> *ofst, CDRewriteDirection cd,
                      CDRewriteMode cm) {
-  // Unconditioned insertion is not obviously well-defined, and breaks the
-  // boundary symbol logic, so we forbid it explicitly here.
-  if (IsUnconditionedInsertion(*tau, *lambda, *rho)) {
-    FSTERROR() << "PyniniCDRewrite: Unconditioned insertion is undefined; "
-               << "specify a non-null lambda or rho for any insertion rule";
-    ofst->SetProperties(kError, kError);
-    return;
-  }
-  VectorFst<Arc> inserter;
-  MakeBoundaryInserter(*sigma_star, &inserter);
   // During compilation, all symbols are stored in a single "global" table,
   // while FST symbol tables are nulled out. The global table is initialized
   // from sigma_star's symbol table, as it is likely to be closer to the
@@ -148,16 +73,9 @@ void PyniniCDRewrite(MutableFst<Arc> *tau, MutableFst<Arc> *lambda,
   syms.reset(PrepareInputSymbols(syms.get(), rho));
   syms.reset(PrepareOutputSymbols(syms.get(), rho));
   DeleteSymbols(rho);
-  AddBoundarySymbolArcsToSigmaStar(sigma_star);
   // Actually compiles the rewrite rule.
-  CDRewriteCompile(*tau, *lambda, *rho, *sigma_star, ofst, cd, cm);
-  // Applies boundary filters.
-  VectorFst<Arc> tfst;
-  ArcSort(&inserter, OLabelCompare<Arc>());
-  Compose(inserter, *ofst, &tfst);
-  Invert(&inserter);  // `inserter` is now a deleter.
-  ArcSort(&inserter, ILabelCompare<Arc>());
-  Compose(tfst, inserter, ofst);
+  CDRewriteCompile(*tau, *lambda, *rho, *sigma_star, ofst, cd, cm,
+                   FLAGS_left_boundary_index, FLAGS_right_boundary_index);
   // Reassigns symbol table to output.
   ofst->SetInputSymbols(syms.get());
   ofst->SetOutputSymbols(syms.get());

@@ -16,9 +16,9 @@
 # pynini.opengrm.org.
 
 
-from setuptools import Extension
-from setuptools import setup
-
+from io import open
+from os import path
+from setuptools import Extension, setup
 
 COMPILE_ARGS = ["-std=c++11",
                 "-Wno-unused-function",
@@ -54,25 +54,33 @@ pynini = Extension(name="pynini", language="c++",
                             "src/pynini.cc",
                             "src/pathsscript.cc",
                             "src/optimizescript.cc",
-                            "src/mergescript.cc",
-                            "src/merge.cc",
+                            "src/mergesymbolsscript.cc",
+                            "src/mergesymbols.cc",
                             "src/lenientlycomposescript.cc",
                             "src/gtl.cc",
                             "src/getters.cc",
                             "src/crossproductscript.cc"])
 
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, "README.md"), encoding="utf8") as source:
+  long_description = source.read()
+
 setup(
     name="pynini",
-    version="1.9.1",
+    version="2.0.4",
     description="Finite-state grammar compilation library",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author="Kyle Gorman",
     author_email="kbg@google.com",
-    url="http://pynini.opengrm.org/",
+    url="http://pynini.opengrm.org",
     keywords=[
         "natural language processing", "speech recognition", "machine learning"
     ],
     classifiers=[
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Development Status :: 5 - Production/Stable",
         "Environment :: Other Environment", "Environment :: Console",
         "Intended Audience :: Developers",

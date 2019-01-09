@@ -16,31 +16,29 @@
                         `Y8P"
 
 IO:
-
     f = Fst.read(...)
     f.write(...)
     f = string_file(...)
 
-Compilation:
 
-    a("Do you have Camembert?", ...)
-    t("Do you have Camembert?", "No.", ...)
+Compilation:
+    acceptor("Do you have Camembert?", ...)
+    transducer("Do you have Camembert?", "No.", ...)
     string_map(((f, g), (h, i), ...))
-    cdrewrite(t("s", "z"), "", "[EOS]", sigma_star)
-    replace("[DT] [NP] and [DT] [NP]", DT=u("the", "a"),
-            NP=u("dog", "cat", "mouse"))
+    cdrewrite(transducer("s", "z"), "", "[EOS]", sigma_star)
+    replace("[DT] [NP] and [DT] [NP]", 
+            (("DT", union("the", "a")),
+            ("NP", union("dog", "cat", "mouse"))))
 
 Sample operations:
-
-    closure(f, ...)                      f.closure(...)
-    compose(f, g, ...)      f * g
-    concat(f, g)            f + g        f.concat(g)
-    difference(f, g, ...)   f - g
-    invert(f)                            f.invert()
-    optimize(f)                          f.optimize()
-    project(f, ...)                      f.project(...)
-                                         f.paths(...)
-    shortestpath(f, ...)                 f.shortestpath(...)
-                                         f.stringify(...)
-    u(f, f, ...)            f | g        f.union(g)
-
+    closure(f, ...)				f.closure(...)
+    compose(f, g, ...)		f @ g
+    concat(f, g, ...)		f + g		f.concat(g)
+    difference(f, g, ...)	f - g
+    invert(f)					f.invert()
+    optimize(f)					f.optimize()
+    project(f, ...)				f.project(...)
+ 						f.paths(...)
+    shortestpath(f, ...)			f.shortestpath(...)
+						f.stringify(...)
+    union(f, g, ...)		f | g		f.union(g)

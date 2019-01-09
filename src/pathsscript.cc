@@ -22,21 +22,23 @@
 namespace fst {
 namespace script {
 
-StringPathsClass::StringPathsClass(const FstClass &fst, StringTokenType itype,
-                                   StringTokenType otype,
-                                   const SymbolTable *isyms,
-                                   const SymbolTable *osyms, bool rm_epsilon)
+StringPathIteratorClass::StringPathIteratorClass(const FstClass &fst,
+                                                 StringTokenType itype,
+                                                 StringTokenType otype,
+                                                 const SymbolTable *isyms,
+                                                 const SymbolTable *osyms)
     : impl_(nullptr) {
-  InitStringPathsClassArgs args(fst, itype, otype, isyms, osyms, rm_epsilon,
-                                this);
-  Apply<Operation<InitStringPathsClassArgs>>("InitStringPathsClass",
-                                             fst.ArcType(), &args);
+  InitStringPathIteratorClassArgs args(fst, itype, otype, isyms, osyms, this);
+  Apply<Operation<InitStringPathIteratorClassArgs>>(
+      "InitStringPathIteratorClass", fst.ArcType(), &args);
 }
 
-REGISTER_FST_OPERATION(InitStringPathsClass, StdArc, InitStringPathsClassArgs);
-REGISTER_FST_OPERATION(InitStringPathsClass, LogArc, InitStringPathsClassArgs);
-REGISTER_FST_OPERATION(InitStringPathsClass, Log64Arc,
-                       InitStringPathsClassArgs);
+REGISTER_FST_OPERATION(InitStringPathIteratorClass, StdArc,
+                       InitStringPathIteratorClassArgs);
+REGISTER_FST_OPERATION(InitStringPathIteratorClass, LogArc,
+                       InitStringPathIteratorClassArgs);
+REGISTER_FST_OPERATION(InitStringPathIteratorClass, Log64Arc,
+                       InitStringPathIteratorClassArgs);
 
 }  // namespace script
 }  // namespace fst

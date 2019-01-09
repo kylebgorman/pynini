@@ -23,9 +23,6 @@ DEFINE_string(left_boundary_symbol, "BOS", "Beginning-of-string symbol");
 DEFINE_int32(right_boundary_index, 0x10fffd,
              "Index for the end-of-string symbol");
 DEFINE_string(right_boundary_symbol, "EOS", "End-of-string symbol");
-DEFINE_bool(cdrewrite_verify, true,
-            "Verify sanity of inputs to context-dependent rewrite rule "
-            "compilation");
 
 namespace fst {
 namespace script {

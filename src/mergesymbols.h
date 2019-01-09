@@ -15,8 +15,8 @@
 // For general information on the Pynini grammar compilation library, see
 // pynini.opengrm.org.
 
-#ifndef PYNINI_MERGE_H_
-#define PYNINI_MERGE_H_
+#ifndef PYNINI_MERGESYMBOLS_H_
+#define PYNINI_MERGESYMBOLS_H_
 
 #include <memory>
 
@@ -45,8 +45,8 @@ SymbolTable *MergeSymbols(const SymbolTable *syms1, const SymbolTable *syms2,
 template <class Arc>
 void MergeInputSymbols(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2) {
   bool relabel = false;
-  std::unique_ptr<SymbolTable> new_syms(MergeSymbols(
-      fst1->InputSymbols(), fst2->InputSymbols(), &relabel));
+  std::unique_ptr<SymbolTable> new_syms(
+      MergeSymbols(fst1->InputSymbols(), fst2->InputSymbols(), &relabel));
   if (!new_syms) return;  // No mutation necessary.
   if (relabel) Relabel(fst2, new_syms.get(), nullptr);
   fst1->SetInputSymbols(new_syms.get());
@@ -78,7 +78,7 @@ void MergeLeftOutputAndRightInputSymbols(MutableFst<Arc> *fst1,
 
 }  // namespace internal
 
-// These are encoded so that they be ORed together.
+// These are encoded so that they can be ORed together.
 enum MergeSymbolsType {
   // "Do nothing".
   MERGE_NOOP = 0,
@@ -92,7 +92,6 @@ enum MergeSymbolsType {
 
 // This is the most generic merging function, and it is the one most clients
 // should use. If the tables have symbol conflicts, the left FST is relabeled.
-
 template <class Arc>
 void MergeSymbols(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2,
                   MergeSymbolsType mst) {
@@ -110,5 +109,5 @@ void MergeSymbols(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2,
 
 }  // namespace fst
 
-#endif  // PYNINI_MERGE_H_
+#endif  // PYNINI_MERGESYMBOLS_H_
 

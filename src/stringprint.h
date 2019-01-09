@@ -71,7 +71,7 @@ template <class Label>
 bool PrintSymbol(Label label, const SymbolTable &syms, std::ostream &ostrm) {
   const auto &symbol = syms.Find(label);
   if (symbol.empty()) {
-    LOG(ERROR) << "PrintSymbol: Label " << label << "is not mapped to any "
+    LOG(ERROR) << "PrintSymbol: Label " << label << " is not mapped to any "
                << "textual symbol in symbol table " << syms.Name();
     return false;
   }
@@ -84,17 +84,16 @@ bool PrintSymbol(Label label, const SymbolTable &syms, std::ostream &ostrm) {
 // but takes a lower-level input (a vector of labels) and avoids some redundant
 // checks.
 template <class Label>
-bool LabelsToString(const std::vector<Label> &labels, StringTokenType ttype,
-                    string *result, const SymbolTable *syms = nullptr) {
-  result->clear();
+bool LabelsToString(const std::vector<Label> &labels, string *str,
+                    StringTokenType ttype = BYTE,
+                    const SymbolTable *syms = nullptr) {
+  str->clear();
   switch (ttype) {
     case BYTE: {
-      result->reserve(labels.size());
-      for (const auto &label : labels) result->push_back(label);
-      return true;
+      return LabelsToByteString(labels, str);
     }
     case UTF8: {
-      return LabelsToUTF8String(labels, result);
+      return LabelsToUTF8String(labels, str);
     }
     case SYMBOL: {
       std::stringstream sstrm;
@@ -109,37 +108,24 @@ bool LabelsToString(const std::vector<Label> &labels, StringTokenType ttype,
         sstrm << kSymbolSeparator;
         if (!PrintSymbol(*it, *syms, sstrm)) return false;
       }
-      *result = sstrm.str();
+      *str = sstrm.str();
       return true;
     }
   }
   return false;
 }
 
-// Removes epsilon labels (those which do not evaluate to true when cast to
-// bool, so normally 0) from a vector of labels.
-template <class Label>
-void RemoveEpsilonLabels(std::vector<Label> *labels) {
-  std::vector<Label> epsilon_free_labels;
-  std::copy_if(labels->begin(), labels->end(),
-               std::back_inserter(epsilon_free_labels),
-               [](const Label i) { return i; });
-  *labels = epsilon_free_labels;
-}
-
 }  // namespace internal
 
 template <class Arc>
-bool PrintString(const Fst<Arc> &fst, StringTokenType ttype, string *str,
-                 const SymbolTable *syms = nullptr, bool rm_epsilon = true) {
+bool PrintString(const Fst<Arc> &fst, string *str, StringTokenType ttype = BYTE,
+                 const SymbolTable *syms = nullptr) {
   using Label = typename Arc::Label;
   // Collects labels.
   std::vector<Label> labels;
   if (!internal::FstToOutputLabels(fst, &labels)) return false;
-  // Optionally removes epsilon labels.
-  if (rm_epsilon) internal::RemoveEpsilonLabels(&labels);
   // Writes labels or symbols to string.
-  if (!internal::LabelsToString(labels, ttype, str, syms)) return false;
+  if (!internal::LabelsToString(labels, str, ttype, syms)) return false;
   return true;
 }
 

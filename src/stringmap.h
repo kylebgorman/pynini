@@ -29,7 +29,6 @@ using std::string;
 
 #include <iostream>
 #include <fst/fstlib.h>
-#include "optimize.h"
 #include "stringcompile.h"
 #include "stringfile.h"
 #include "prefix_tree.h"
@@ -44,26 +43,24 @@ class StringMapCompiler {
   using Label = typename Arc::Label;
   using Weight = typename Arc::Weight;
 
-  StringMapCompiler(StringTokenType itype,
-                    StringTokenType otype,
-                    const SymbolTable *isyms,
-                    const SymbolTable *osyms) :
-     itype_(itype),
-     otype_(otype),
-     isyms_(GetSymbolTable(itype_, isyms)),
-     osyms_(GetSymbolTable(otype_, osyms)) {}
+  explicit StringMapCompiler(StringTokenType itype = BYTE,
+                             StringTokenType otype = BYTE,
+                             const SymbolTable *isyms = nullptr,
+                             const SymbolTable *osyms = nullptr)
+      : itype_(itype),
+        otype_(otype),
+        isyms_(GetSymbolTable(itype_, isyms)),
+        osyms_(GetSymbolTable(otype_, osyms)) {}
 
   bool Add(const string &istring, const string &ostring,
            const Weight &weight = Weight::One()) {
-    if (!StringToLabels<Label>(istring, itype_, &ilabels_, isyms_.get())) {
+    if (!StringToLabels<Label>(istring, &ilabels_, itype_, isyms_.get())) {
       return false;
     }
-    if (!StringToLabels<Label>(ostring, otype_, &olabels_, osyms_.get())) {
+    if (!StringToLabels<Label>(ostring, &olabels_, otype_, osyms_.get())) {
       return false;
     }
-    ptree_.Add(ilabels_.begin(), ilabels_.end(),
-               olabels_.begin(), olabels_.end(),
-               weight);
+    ptree_.Add(ilabels_, olabels_, weight);
     return true;
   }
 
@@ -84,8 +81,7 @@ class StringMapCompiler {
                bool attach_input_symbols = true,
                bool attach_output_symbols = true) const {
     ptree_.ToFst(fst);
-    OptimizeStringCrossProducts(fst);
-    // Optionally symbol tables.
+    // Optionally attaches symbol tables.
     if (attach_input_symbols) fst->SetInputSymbols(isyms_.get());
     if (attach_output_symbols) fst->SetOutputSymbols(osyms_.get());
   }
@@ -107,10 +103,13 @@ class StringMapCompiler {
 // Compiles deterministic FST representing the union of the cross-product of
 // pairs of weighted string cross-products from a TSV file of string triples.
 template <class Arc>
-bool CompileStringFile(const string &fname,
-    StringTokenType itype, StringTokenType otype, MutableFst<Arc> *fst,
-    const SymbolTable *isyms = nullptr, const SymbolTable *osyms = nullptr,
-    bool attach_input_symbols = true, bool attach_output_symbols = true) {
+bool CompileStringFile(const string &fname, MutableFst<Arc> *fst,
+                       StringTokenType itype = BYTE,
+                       StringTokenType otype = BYTE,
+                       const SymbolTable *isyms = nullptr,
+                       const SymbolTable *osyms = nullptr,
+                       bool attach_input_symbols = true,
+                       bool attach_output_symbols = true) {
   internal::StringMapCompiler<Arc> compiler(itype, otype, isyms, osyms);
   internal::ColumnStringFile csf(fname);
   if (csf.Done()) return false;  // File opening failed.
@@ -141,18 +140,20 @@ bool CompileStringFile(const string &fname,
       }
     }
   }
-  compiler.Compile(fst);
+  compiler.Compile(fst, attach_input_symbols, attach_output_symbols);
   return true;
 }
 
 // Compiles deterministic FST representing the union of the cross-product of
 // pairs of weighted string cross-products from a vector of vector of strings.
 template <class Arc>
-bool CompileStringMap(
-    const std::vector<std::vector<string>> &lines,
-    StringTokenType itype, StringTokenType otype, MutableFst<Arc> *fst,
-    const SymbolTable *isyms = nullptr, const SymbolTable *osyms = nullptr,
-    bool attach_input_symbols = true, bool attach_output_symbols = true) {
+bool CompileStringMap(const std::vector<std::vector<string>> &lines,
+                      MutableFst<Arc> *fst, StringTokenType itype = BYTE,
+                      StringTokenType otype = BYTE,
+                      const SymbolTable *isyms = nullptr,
+                      const SymbolTable *osyms = nullptr,
+                      bool attach_input_symbols = true,
+                      bool attach_output_symbols = true) {
   internal::StringMapCompiler<Arc> compiler(itype, otype, isyms, osyms);
   for (const auto &line : lines) {
     switch (line.size()) {
@@ -169,12 +170,12 @@ bool CompileStringMap(
         break;
       }
       default: {
-        LOG(ERROR) << "CompileStringMap: Illformed line";
+        LOG(ERROR) << "CompileStringMap: Ill-formed line";
         return false;
       }
     }
   }
-  compiler.Compile(fst);
+  compiler.Compile(fst, attach_input_symbols, attach_output_symbols);
   return true;
 }
 

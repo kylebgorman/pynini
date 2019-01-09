@@ -21,12 +21,11 @@
 namespace fst {
 namespace script {
 
-bool StringFile(const string &fname, StringTokenType itype,
-                StringTokenType otype, MutableFstClass *fst,
+bool StringFile(const string &fname, MutableFstClass *fst,
+                StringTokenType itype, StringTokenType otype,
                 const SymbolTable *isyms, const SymbolTable *osyms,
-                bool attach_input_symbols,
-                bool attach_output_symbols) {
-  StringFileInnerArgs iargs(fname, itype, otype, fst, isyms, osyms,
+                bool attach_input_symbols, bool attach_output_symbols) {
+  StringFileInnerArgs iargs(fname, fst, itype, otype, isyms, osyms,
                             attach_input_symbols, attach_output_symbols);
   StringFileArgs args(iargs);
   Apply<Operation<StringFileArgs>>("StringFile", fst->ArcType(), &args);
@@ -38,11 +37,11 @@ REGISTER_FST_OPERATION(StringFile, LogArc, StringFileArgs);
 REGISTER_FST_OPERATION(StringFile, Log64Arc, StringFileArgs);
 
 bool StringMap(const std::vector<std::vector<string>> &lines,
-               StringTokenType itype, StringTokenType otype,
-               MutableFstClass *fst, const SymbolTable *isyms,
+               MutableFstClass *fst, StringTokenType itype,
+               StringTokenType otype, const SymbolTable *isyms,
                const SymbolTable *osyms, bool attach_input_symbols,
                bool attach_output_symbols) {
-  StringMapInnerArgs iargs(lines, itype, otype, fst, isyms, osyms,
+  StringMapInnerArgs iargs(lines, fst, itype, otype, isyms, osyms,
                            attach_input_symbols, attach_output_symbols);
   StringMapArgs args(iargs);
   Apply<Operation<StringMapArgs>>("StringMap", fst->ArcType(), &args);

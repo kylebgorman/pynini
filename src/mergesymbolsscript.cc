@@ -15,9 +15,9 @@
 // For general information on the Pynini grammar compilation library, see
 // pynini.opengrm.org.
 
-#include "mergescript.h"
 #include <fst/script/fst-class.h>
 #include <fst/script/script-impl.h>
+#include "mergesymbolsscript.h"
 
 namespace fst {
 namespace script {

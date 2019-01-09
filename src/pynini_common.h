@@ -21,7 +21,7 @@
 // This header defines internal namespace utility functions.
 
 #include <fst/fstlib.h>
-#include "merge.h"
+#include "mergesymbols.h"
 
 namespace fst {
 namespace internal {
@@ -34,10 +34,8 @@ namespace internal {
 template <class Arc>
 SymbolTable *PrepareInputSymbols(SymbolTable *syms, MutableFst<Arc> *fst) {
   bool relabel = false;
-  auto *new_syms = MergeSymbols(syms, fst->InputSymbols(), &relabel);
-  if (!new_syms) {
-    return syms ? syms->Copy() : nullptr;
-  }
+  auto *const new_syms = MergeSymbols(syms, fst->InputSymbols(), &relabel);
+  if (!new_syms) return syms ? syms->Copy() : nullptr;
   if (relabel) Relabel(fst, new_syms, nullptr);
   return new_syms;
 }
@@ -47,10 +45,8 @@ SymbolTable *PrepareInputSymbols(SymbolTable *syms, MutableFst<Arc> *fst) {
 template <class Arc>
 SymbolTable *PrepareOutputSymbols(SymbolTable *syms, MutableFst<Arc> *fst) {
   bool relabel = false;
-  auto *new_syms = MergeSymbols(syms, fst->OutputSymbols(), &relabel);
-  if (!new_syms) {
-    return syms ? syms->Copy() : nullptr;
-  }
+  auto *const new_syms = MergeSymbols(syms, fst->OutputSymbols(), &relabel);
+  if (!new_syms) return syms ? syms->Copy() : nullptr;
   if (relabel) Relabel(fst, nullptr, new_syms);
   return new_syms;
 }

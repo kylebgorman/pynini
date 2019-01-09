@@ -24,8 +24,33 @@
 #include <fst/fstlib.h>
 
 namespace fst {
+namespace internal {
 
-// This function is a generalization of FST closure and Perl's curly brace
+// Marks the start state final.
+template <class Arc>
+void SetStartFinal(MutableFst<Arc> *fst) {
+  fst->SetFinal(fst->Start(), Arc::Weight::One());
+}
+
+// Marks the start state final and then concatenates a copy, repeatedly.
+template <class Arc>
+void SetStartFinalAndConcat(const MutableFst<Arc> &copy, MutableFst<Arc> *fst,
+                            int32 count) {
+  for (; count > 0; --count) {
+    SetStartFinal(fst);
+    Concat(copy, fst);
+  }
+}
+
+// Concatenates, repeatedly.
+template <class Arc>
+void Concat(const MutableFst<Arc> &copy, MutableFst<Arc> *fst, int32 count) {
+  for (; count > 0; --count) Concat(copy, fst);
+}
+
+}  // namespace internal
+
+// This function is a generalization of FST closure and PCRE's curly brace
 // quantifiers. It destructively computes the concatenative closure of an input
 // FST as follows. If A transduces strings x to y with weight w, then
 // Repeat(A, 0, 0) is equivalent to Closure(A, CLOSURE_STAR) which mutates A so
@@ -38,13 +63,13 @@ namespace fst {
 // through the original FST one is permitted to take in the modified FST. So,
 // Repeat(A, 0, 1) is mutates A so it transduces between empty strings with
 // weight One and // transduces strings x to y with weight w, similar to the ?
-// quantifier in Perl. And, Repeat(A, 2, 5) mutates A so that it behaves like
+// quantifier in PCRE. And, Repeat(A, 2, 5) mutates A so that it behaves like
 // the concatenation of between 2 and 5 A's.
 //
 // When the third argument is zero, it is interpreted to indicate an infinite
 // upper bound. Thus, Repeat(A, 1, 0) is equivalent to Closure(A, CLOSURE_PLUS).
 //
-// The following provide equvialents to the Perl operators:
+// The following provide equvialents to the PCRE operators:
 //
 //     /x*/        Repeat(x, 0, 0)
 //     /x+/        Repeat(x, 1, 0)
@@ -53,26 +78,25 @@ namespace fst {
 //     /x{M,N}/    Repeat(x, M, N)
 //     /x{N,}/     Repeat(x, N, 0)
 //     /x{,N}/     Repeat(x, 0, N)
-
 template <class Arc>
 void Repeat(MutableFst<Arc> *fst, int32 lower = 0, int32 upper = 0) {
-  using Weight = typename Arc::Weight;
   if (fst->Start() == kNoStateId) return;
   const std::unique_ptr<const MutableFst<Arc>> copy(fst->Copy());
   if (upper == 0) {
     // Infinite upper bound.
-    // The last element in the concatenation is star-closed; any remainder
-    // concatenations are normal copies.
+    // The last element in the concatenation is star-closed; remaining
+    // concatenations are copies of the input.
     Closure(fst, CLOSURE_STAR);
-    for (int32 i = 0; i < lower; ++i) Concat(*copy, fst);
+    internal::Concat(*copy, fst, lower);
+  } else if (lower == 0) {
+    // Finite upper bound, lower bound includes zero.
+    internal::SetStartFinal(fst);
+    internal::SetStartFinalAndConcat(*copy, fst, upper - 1);
+    internal::SetStartFinal(fst);
   } else {
-    // Finite upper bound.
-    fst->SetFinal(fst->Start(), Weight::One());
-    for (int32 i = lower; i < upper - 1; ++i) {
-      Concat(*copy, fst);
-      fst->SetFinal(fst->Start(), Weight::One());
-    }
-    for (int32 i = 0; i < lower; ++i) Concat(*copy, fst);
+    // Finite upper bound, lower bound does not include zero.
+    internal::SetStartFinalAndConcat(*copy, fst, upper - lower);
+    internal::Concat(*copy, fst, lower - 1);
   }
 }
 

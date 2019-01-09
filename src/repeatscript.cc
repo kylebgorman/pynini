@@ -16,7 +16,6 @@
 // pynini.opengrm.org.
 
 #include "repeatscript.h"
-#include <fst/script/fst-class.h>
 #include <fst/script/script-impl.h>
 
 namespace fst {

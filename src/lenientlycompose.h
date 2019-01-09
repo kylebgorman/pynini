@@ -47,7 +47,6 @@ namespace internal {
 //   input = Determinize[RmEpsilon[Project[Q, 'input']]];
 //   return Q | ((sigma_star - input) @ R);
 // }
-
 template <class Arc>
 void PriorityUnion(MutableFst<Arc> *fst1, const Fst<Arc> &fst2,
                    const Fst<Arc> &sigma_star) {
@@ -78,7 +77,6 @@ void PriorityUnion(MutableFst<Arc> *fst1, const Fst<Arc> &fst2,
 // func LenientlyCompose[X, Y, sigma_star] {
 //   return PriorityUnion[X @ Y, X, sigma_star];
 // }
-
 template <class Arc>
 void LenientlyCompose(const Fst<Arc> &ifst1, const Fst<Arc> &ifst2,
                       const Fst<Arc> &sigma_star, MutableFst<Arc> *ofst,

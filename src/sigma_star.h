@@ -20,11 +20,10 @@
 
 #include <fst/fstlib.h>
 
-// Checks that a "sigma_star" FST is an unweighted cyclic acceptor.
-
 namespace fst {
 namespace internal {
 
+// Checks that a "sigma_star" FST is an unweighted cyclic acceptor.
 template <class Arc>
 bool CheckSigmaStarProperties(const Fst<Arc> &sigma_star,
                               const string &op_name) {

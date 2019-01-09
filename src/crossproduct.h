@@ -19,7 +19,6 @@
 #define PYNINI_CROSSPRODUCT_H_
 
 #include <fst/fstlib.h>
-#include "optimize.h"
 
 namespace fst {
 
@@ -35,36 +34,24 @@ void CrossProduct(
     const Fst<Arc> &ifst1, const Fst<Arc> &ifst2, MutableFst<Arc> *ofst,
     const typename Arc::Weight &final_weight = Arc::Weight::One()) {
   using Weight = typename Arc::Weight;
-  // Initializes output FST using upper language.
-  *ofst = ifst1;
-  // Replaces output arcs on the upper language with epsilon, using the output
-  // FST for temporary storage.
-  OutputEpsilonMapper<Arc> oe_mapper;
-  ArcMap(ofst, oe_mapper);
-  // Replaces input arcs on the lower language with epsilon, using a temporary
-  // mutable FST to store the mapped lower language.
-  VectorFst<Arc> tfst(ifst2);
-  InputEpsilonMapper<Arc> ie_mapper;
-  ArcMap(&tfst, ie_mapper);
-  // If a specific final weight is requested, apply it to all final states in
-  // the lower language.
+  // Composes the mapped lower language into the output FST.
+  static const ComposeOptions opts(/*connect=*/true,
+                                   /*filter_type=*/MATCH_FILTER);
+  Compose(ArcMapFst<Arc, Arc, OutputEpsilonMapper<Arc>>(
+              ifst1, OutputEpsilonMapper<Arc>()),
+          ArcMapFst<Arc, Arc, InputEpsilonMapper<Arc>>(
+              ifst2, InputEpsilonMapper<Arc>()),
+          ofst, opts);
+  // If a specific final weight is requested, apply it to all final states.
   if (final_weight != Weight::One()) {
-    for (StateIterator<VectorFst<Arc>> siter(tfst); !siter.Done();
+    for (StateIterator<MutableFst<Arc>> siter(*ofst); !siter.Done();
          siter.Next()) {
       const auto state = siter.Value();
-      const auto &old_final_weight = tfst.Final(state);
+      const auto &old_final_weight = ofst->Final(state);
       if (old_final_weight != Weight::Zero()) {
-        tfst.SetFinal(state, Times(old_final_weight, final_weight));
+        ofst->SetFinal(state, Times(old_final_weight, final_weight));
       }
     }
-  }
-  // Concatenates the mapped lower language into the output FST.
-  Concat(ofst, tfst);
-  static constexpr auto props = kAcceptor | kString;
-  // Optimizes output, if both inputs are string FSAs.
-  if (ifst1.Properties(props, true) == props &&
-      ifst2.Properties(props, true) == props) {
-    OptimizeStringCrossProducts(ofst);
   }
   // Copies symbol tables (if present).
   ofst->SetInputSymbols(ifst1.InputSymbols());
