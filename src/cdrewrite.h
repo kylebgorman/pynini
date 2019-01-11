@@ -195,7 +195,7 @@ void CDRewriteRule<Arc>::MakeMarker(
                  aiter.Next()) {
               fst->AddArc(i, aiter.Value());
             }
-            fst->SetFinal(i, Weight::Zero());
+            fst->SetFinal(s, Weight::Zero());
             fst->DeleteArcs(s);
             for (const auto &marker : markers) {
               fst->AddArc(
@@ -226,9 +226,8 @@ void CDRewriteRule<Arc>::MakeMarker(
       // Type 3: Check that each marker is not preceded by a match.
       if (num_states == 0) {
         *fst = sigma;
-        for (StateIterator<VectorFst<StdArc>> siter(*fst); !siter.Done();
-             siter.Next()) {
-          const auto s = siter.Value();
+        num_states = fst->NumStates();
+        for (StateId s = 0; s < num_states; ++s) {
           if (fst->Final(s) != Weight::Zero()) {
             for (const auto &marker : markers) {
               fst->AddArc(
@@ -237,9 +236,7 @@ void CDRewriteRule<Arc>::MakeMarker(
           }
         }
       } else {
-        for (StateIterator<VectorFst<StdArc>> siter(*fst); !siter.Done();
-             siter.Next()) {
-          const auto s = siter.Value();
+        for (StateId s = 0; s < num_states; ++s) {
           if (fst->Final(s) == Weight::Zero()) {
             fst->SetFinal(s, Weight::One());
             for (const auto &marker : markers) {
