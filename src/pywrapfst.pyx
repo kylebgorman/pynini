@@ -142,7 +142,7 @@ class FstOpError(FstError, RuntimeError):
 ## General helpers.
 
 
-cdef string tostring(data, encoding="utf8") except *:
+cdef string tostring(data) except *:
   """Converts strings to bytestrings.
 
   This function converts Python bytestrings and Unicode strings to bytestrings
@@ -151,7 +151,6 @@ cdef string tostring(data, encoding="utf8") except *:
 
   Args:
     data: A Unicode string or bytestring.
-    encoding: The desired encoding, defaulting to UTF-8.
 
   Returns:
     A bytestring.
@@ -166,11 +165,11 @@ cdef string tostring(data, encoding="utf8") except *:
   if isinstance(data, bytes):
     return data
   elif isinstance(data, unicode):
-    return data.encode(encoding)
+    return data.encode("utf8")
   raise FstArgError("Cannot encode as string: {!r}".format(data))
 
 
-cdef string weight_tostring(data, encoding="utf8") except *:
+cdef string weight_tostring(data) except *:
   """Converts strings or numerics to bytestrings.
 
   This function converts Python bytestrings, Unicode strings, and numerics
@@ -197,9 +196,9 @@ cdef string weight_tostring(data, encoding="utf8") except *:
   if isinstance(data, bytes):
     return data
   elif isinstance(data, unicode):
-    return data.encode(encoding)
+    return data.encode("utf8")
   elif isinstance(data, numbers.Number):
-    return str(data).encode(encoding)
+    return str(data).encode("utf8")
   raise FstArgError("Cannot encode as string: {!r}".format(data))
 
 

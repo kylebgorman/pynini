@@ -132,6 +132,27 @@ class PyniniClosureTest(unittest.TestCase):
     self.assertEqual(compose(ac, cheese * (n + 1)).num_states(), 0)
 
 
+class PyniniDefaultsTest(unittest.TestCase):
+
+  def setUp(self):
+    super(PyniniDefaultsTest, self).setUp()
+    defaults.arc_type = "standard"
+
+  def tearDown(self):
+    super(PyniniDefaultsTest, self).tearDown()
+    defaults.arc_type = "standard"
+
+  def testDefaultNonexistentSlotRaisesAttributeError(self):
+    with self.assertRaises(AttributeError):
+      defaults.nonexistent = "nonexistent"
+
+  def testNonDefaults(self):
+    defaults.arc_type = "log"
+    cheese = u"Pont l'Evêque"
+    f = acceptor(cheese)
+    self.assertEqual(f.arc_type(), defaults.arc_type)
+
+
 class PyniniDifferenceTest(unittest.TestCase):
 
   def testDifferenceWithUnion(self):
@@ -167,7 +188,7 @@ class PyniniEpsilonMachineTest(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
     cls.final_weight = 1.5
-    cls.f = epsilon_machine("log64", cls.final_weight)
+    cls.f = epsilon_machine(cls.final_weight)
 
   def testLog64EpsilonMachineHasRightTopology(self):
     self.assertEqual(self.f.num_states(), 1)

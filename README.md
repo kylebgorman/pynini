@@ -28,7 +28,7 @@ Pynini depends on:
     master` from the `re2` directory to sync to this tag) and headers
 -   [Python 2.7 or 3.6+](https://www.python.org) and headers
 
-It is tested with: Debian Linux 4.18.10 on x86\_64, GCC 7.3.0, Cython 0.29 and
+It is tested with: Debian Linux 4.18.10 on x86\_64, GCC 7.3.0, Cython 0.29.2 and
 Python 2.7.13 and Python 3.7.1.
 
 Installation instructions

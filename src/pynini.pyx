@@ -147,10 +147,9 @@ from pywrapfst import FstOpError
 import pywrapfst
 
 
-# Constants
+# Constants.
 
 
-cdef uint64 kAcceptorAndString = kAcceptor | kString
 cdef uint64 kDifferenceRhs = kAcceptor | kUnweighted
 
 
@@ -353,6 +352,32 @@ cdef void _maybe_arcsort(MutableFstClass *ifst1, MutableFstClass *ifst2):
     ArcSort(ifst2, ILABEL_SORT)
 
 
+# Singleton class for storing defaults for string compilation.
+
+cdef class _Defaults(object):
+
+  """Default options for string compilation."""
+
+  cdef string _arc_type
+
+  def __cinit__(self):
+    self._arc_type = b"standard"
+
+  def __repr__(self):
+    return "{}(arc_type={!r})".format(self.__class__.__name__, self._arc_type)
+
+  property arc_type:
+
+    def __get__(self):
+      return self._arc_type
+
+    def __set__(self, arc_type):
+       self._arc_type = tostring(arc_type)
+
+  cpdef _get_arc_type(self, arc_type):
+    return arc_type if arc_type is not None else self._arc_type
+
+
 # Class for FSTs created from within Pynini. It overrides instance methods of
 # the superclass which take an FST argument so that it can string-compile said
 # argument if it is not yet an FST. It also overloads binary == (equals),
@@ -362,7 +387,7 @@ cdef void _maybe_arcsort(MutableFstClass *ifst1, MutableFstClass *ifst2):
 cdef class Fst(_MutableFst):
 
   """
-  Fst(arc_type="standard")
+  Fst(arc_type=None)
 
   This class wraps a mutable FST and exposes all destructive methods.
 
@@ -381,9 +406,9 @@ cdef class Fst(_MutableFst):
     self._fst.reset(tfst)
     self._mfst = static_pointer_cast[MutableFstClass, FstClass](self._fst)
 
-  def __init__(self, arc_type=b"standard"):
+  def __init__(self, arc_type=None):
     cdef unique_ptr[VectorFstClass] tfst
-    tfst.reset(new VectorFstClass(tostring(arc_type)))
+    tfst.reset(new VectorFstClass(tostring(defaults._get_arc_type(arc_type))))
     if tfst.get().Properties(kError, True) == kError:
        raise FstArgError("Unknown arc type: {!r}".format(arc_type))
     self._from_MutableFstClass(tfst.release())
@@ -521,8 +546,6 @@ cdef class Fst(_MutableFst):
       syms = (<SymbolTable_ptr> (<_SymbolTable> token_type)._table)
     else:
       ttype = _get_token_type(tostring(token_type))
-      if ttype == SYMBOL:
-        raise FstArgError("Invalid token type")
     cdef string result
     if not PrintString(deref(self._fst), addr(result), ttype, syms):
       raise FstArgError("FST is not a string")
@@ -767,7 +790,6 @@ cdef class Fst(_MutableFst):
   def __sub__(self, other):
     return difference(self, other)
 
-
   # x * y: deprecated in favor of '@'.
 
   def __mul__(self, other):
@@ -793,9 +815,9 @@ cdef class Fst(_MutableFst):
 # it into an acceptor.
 
 
-cdef Fst _compile_or_copy_Fst(arg, arc_type=b"standard"):
+cdef Fst _compile_or_copy_Fst(arg, arc_type=None):
   if not isinstance(arg, Fst):
-    return acceptor(arg, arc_type=arc_type)
+    return acceptor(arg, arc_type=defaults._get_arc_type(arc_type))
   else:
     return arg.copy()
 
@@ -853,11 +875,11 @@ cpdef Fst _read_from_string(state):
 
 cpdef Fst acceptor(astring,
                    weight=None,
-                   arc_type=b"standard",
+                   arc_type=None,
                    token_type=b"byte",
                    bool attach_symbols=True):
   """
-  acceptor(astring, weight=None, arc_type="standard", token_type="byte",
+  acceptor(astring, weight=None, arc_type=None, token_type="byte",
            attach_symbols=True)
 
   Creates an acceptor from a string.
@@ -888,7 +910,7 @@ cpdef Fst acceptor(astring,
       FstOpError: Operation failed.
       FstStringCompilationError: String compilation failed.
   """
-  cdef Fst result = Fst(tostring(arc_type))
+  cdef Fst result = Fst(arc_type)
   cdef WeightClass wc = _get_WeightClass_or_One(result.weight_type(), weight)
   cdef StringTokenType ttype
   cdef SymbolTable_ptr syms = NULL
@@ -897,8 +919,13 @@ cpdef Fst acceptor(astring,
     syms = (<SymbolTable_ptr> (<_SymbolTable> token_type)._table)
   else:
     ttype = _get_token_type(tostring(token_type))
-  cdef bool success = CompileString(tostring(astring), result._mfst.get(), 
-                                    ttype, syms, wc, attach_symbols)
+  cdef bool success = CompileString(
+      tostring(astring),
+      result._mfst.get(),
+      ttype,
+      syms,
+      wc,
+      attach_symbols)
   # First we check whether there were problems with arc or weight type, then
   # for string compilation issues.
   result._check_mutating_imethod()
@@ -910,13 +937,13 @@ cpdef Fst acceptor(astring,
 cpdef Fst transducer(istring,
                      ostring,
                      weight=None,
-                     arc_type=b"standard",
+                     arc_type=None,
                      input_token_type=b"byte",
                      output_token_type=b"byte",
                      bool attach_input_symbols=True,
                      bool attach_output_symbols=True):
   """
-  transducer(istring, ostring, weight=None, arc_type="standard",
+  transducer(istring, ostring, weight=None, arc_type=None,
              input_token_type="byte", output_token_type="byte",
              attach_input_symbols=True, attach_output_symbols=True)
 
@@ -964,21 +991,28 @@ cpdef Fst transducer(istring,
   """
   cdef Fst lower
   cdef Fst upper
-  cdef Fst result = Fst(arc_type)
+  cdef Fst result = Fst(defaults._get_arc_type(arc_type))
   # Sets up upper language.
   if not isinstance(istring, Fst):
-    upper = acceptor(istring, arc_type=arc_type, token_type=input_token_type,
-                     attach_symbols=attach_input_symbols)
+    upper = acceptor(istring, None,
+                     result.arc_type(),
+                     input_token_type,
+                     attach_input_symbols)
   else:
     upper = istring
   # Sets up lower language, and passes weight.
   if not isinstance(ostring, Fst):
-    lower = acceptor(ostring, arc_type=arc_type, token_type=output_token_type,
-                     attach_symbols=attach_output_symbols)
+    lower = acceptor(ostring,
+                     None,
+                     result.arc_type(),
+                     output_token_type,
+                     attach_output_symbols)
   else:
     lower = ostring
   # Actually computes cross-product.
-  CrossProduct(deref(upper._fst), deref(lower._fst), result._mfst.get(),
+  CrossProduct(deref(upper._fst),
+               deref(lower._fst),
+               result._mfst.get(),
                _get_WeightClass_or_One(result.weight_type(), weight))
   result._check_mutating_imethod()
   return result
@@ -1031,16 +1065,18 @@ cpdef Fst cdrewrite(tau,
   cdef Fst rho_compiled = _compile_or_copy_Fst(rho, arc_type)
   cdef Fst sigma_star_compiled = _compile_or_copy_Fst(sigma_star, arc_type)
   cdef Fst result = Fst(arc_type)
-  PyniniCDRewrite(deref(tau_compiled._fst), deref(lambda_compiled._fst),
-                  deref(rho_compiled._fst), deref(sigma_star_compiled._fst),
+  PyniniCDRewrite(deref(tau_compiled._fst),
+                  deref(lambda_compiled._fst),
+                  deref(rho_compiled._fst),
+                  deref(sigma_star_compiled._fst),
                   result._mfst.get(), cd, cm)
   result._check_mutating_imethod()
   return result
 
 
-cpdef Fst epsilon_machine(arc_type=b"standard", weight=None):
+cpdef Fst epsilon_machine(weight=None, arc_type=None):
   """
-  epsilon_machine(arc_type="standard")
+  epsilon_machine(weight=None, arc_type=None)
 
   Constructs a single-state, no-arc FST accepting epsilon.
 
@@ -1048,9 +1084,9 @@ cpdef Fst epsilon_machine(arc_type=b"standard", weight=None):
   initial and final.
 
   Args:
-    arc_type: An optional string indicating the arc type for the compiled FST.
     weight: A Weight or weight string indicating the desired path weight. If
         omitted or null, the path weight is set to semiring One.
+    arc_type: An optional string indicating the arc type for the compiled FST.
 
   Returns:
     An FST.
@@ -1058,8 +1094,8 @@ cpdef Fst epsilon_machine(arc_type=b"standard", weight=None):
   Raises:
     FstArgError: Unknown arc type.
   """
-  cdef Fst result = Fst(arc_type)
-  cdef int64 state = result._mfst.get().AddState()
+  cdef Fst result = Fst(defaults._get_arc_type(arc_type))
+  cdef int64 state = result._mfst.get().AddState()   # 0.
   result._mfst.get().SetStart(state)
   result._mfst.get().SetFinal(state,
       _get_WeightClass_or_One(result.weight_type(), weight))
@@ -1097,13 +1133,15 @@ cpdef Fst leniently_compose(ifst1, ifst2, sigma_star, compose_filter=b"auto",
   cdef Fst ifst2_compiled
   (ifst1_compiled, ifst2_compiled) = _compile_or_copy_two_Fsts(ifst1, ifst2)
   cdef string arc_type = ifst1_compiled.arc_type()
-  sigma_star_compiled = _compile_or_copy_Fst(sigma_star, arc_type)
+  cdef Fst sigma_star_compiled = _compile_or_copy_Fst(sigma_star, arc_type)
   cdef unique_ptr[ComposeOptions] opts
   opts.reset(new ComposeOptions(connect,
-      _get_compose_filter(tostring(compose_filter))))
+                                _get_compose_filter(tostring(compose_filter))))
   cdef Fst result = Fst(arc_type)
-  LenientlyCompose(deref(ifst1_compiled._fst), deref(ifst2_compiled._fst),
-                   deref(sigma_star_compiled._fst), result._mfst.get(),
+  LenientlyCompose(deref(ifst1_compiled._fst),
+                   deref(ifst2_compiled._fst),
+                   deref(sigma_star_compiled._fst),
+                   result._mfst.get(),
                    deref(opts))
   result._check_mutating_imethod()
   return result
@@ -1136,14 +1174,15 @@ cpdef bool matches(ifst1, ifst2, compose_filter=b"auto"):
 
 
 cpdef Fst string_file(filename,
-                      arc_type=b"standard",
+                      arc_type=None,
                       input_token_type=b"byte",
                       output_token_type=b"byte",
                       bool attach_input_symbols=True,
                       bool attach_output_symbols=True):
   """
-  string_file(filename, arc_type="standard", input_token_type="byte",
-              output_token_type="byte")
+  string_file(filename, arc_type=None,
+              input_token_type="byte", output_token_type="byte",
+              attach_input_symbols=True, attach_output_symbols=True)
 
   Creates a transducer that maps between elements of mappings read from
   a tab-delimited file.
@@ -1200,25 +1239,29 @@ cpdef Fst string_file(filename,
     otype = SYMBOL
   else:
     otype = _get_token_type(tostring(output_token_type))
-  cdef Fst result = Fst(arc_type)
-  if not StringFile(tostring(filename), result._mfst.get(),
-                    itype, otype, isyms, osyms, attach_input_symbols,
+  cdef Fst result = Fst(defaults._get_arc_type(arc_type))
+  if not StringFile(tostring(filename),
+                    result._mfst.get(),
+                    itype,
+                    otype,
+                    isyms,
+                    osyms,
+                    attach_input_symbols,
                     attach_output_symbols):
     raise FstIOError("Read failed")
   return result
 
 
 cpdef Fst string_map(lines,
-                     arc_type=b"standard",
+                     arc_type=None,
                      input_token_type=b"byte",
                      output_token_type=b"byte",
                      bool attach_input_symbols=True,
                      bool attach_output_symbols=True):
   """
-  string_map(lines, arc_type="standard",
+  string_map(lines, arc_type=None,
              input_token_type="byte", output_token_type="byte",
-             attach_input_symbols=True,
-             attach_output_symbols=True)
+             attach_input_symbols=True, attach_output_symbols=True)
 
   Creates a transducer that maps between elements of mappings read from
   an iterable.
@@ -1272,7 +1315,7 @@ cpdef Fst string_map(lines,
     osyms = (<SymbolTable_ptr> (<_SymbolTable> output_token_type)._table)
   else:
     otype = _get_token_type(tostring(output_token_type))
-  cdef Fst result = Fst(arc_type)
+  cdef Fst result = Fst(defaults._get_arc_type(arc_type))
   # Allows this to work with dictionary-like objects by extracting 
   # key-value pairs form it.
   if hasattr(lines, "items"):
@@ -1287,8 +1330,14 @@ cpdef Fst string_map(lines,
       string_line.push_back(tostring(line))
     string_lines.push_back(string_line)
     string_line.clear()
-  if not StringMap(string_lines, result._mfst.get(), itype, otype, isyms, osyms,
-                   attach_input_symbols, attach_output_symbols):
+  if not StringMap(string_lines,
+                    result._mfst.get(),
+                    itype,
+                    otype,
+                    isyms,
+                    osyms,
+                    attach_input_symbols,
+                    attach_output_symbols):
     raise FstArgError("String map compilation failed")
   return result
 
@@ -1495,8 +1544,8 @@ def replace(root,
   # This has the pleasant effect of preventing Python from garbage-collecting
   # these FSTs until we're ready.
   # TODO(kbg): Is there a better way?
-  replacements = [(nt, _compile_or_copy_Fst(rep, arc_type)) for
-                  (nt, rep) in replacements]
+  replacements = [(nt, _compile_or_copy_Fst(rep, arc_type))
+                  for (nt, rep) in replacements]
   cdef string nonterm
   cdef Fst replacement
   cdef vector[StringFstClassPair] pairs
@@ -1796,7 +1845,9 @@ def pdt_replace(root, replacements, pdt_parser_type=b"left"):
     pairs.push_back(StringFstClassPair(nonterm, replacement._fst.get()))
   cdef Fst result = Fst(arc_type)
   cdef PdtParentheses parens = PdtParentheses()
-  PyniniPdtReplace(deref(root_fst._fst), pairs, result._mfst.get(),
+  PyniniPdtReplace(deref(root_fst._fst),
+                   pairs,
+                   result._mfst.get(),
                    addr(parens._parens),
                    _get_pdt_parser_type(tostring(pdt_parser_type)))
   result._check_mutating_imethod()
@@ -2103,7 +2154,7 @@ def mpdt_reverse(impdt, MPdtParentheses parens):
 cdef class StringPathIterator(object):
 
   """
-  StringPathIterator(fst, input_token_type="byte", output_token_type="byte)
+  StringPathIterator(fst, input_token_type="byte", output_token_type="byte")
 
   Iterator for string paths in acyclic FST.
 
@@ -2325,7 +2376,7 @@ cdef class StringPathIterator(object):
 cdef class Far(object):
 
   """
-  Far(filename, mode="r", arc_type="standard", far_type="default")
+  Far(filename, mode="r", arc_type=None, far_type="default")
 
   Pynini FAR ("Fst ARchive") object.
 
@@ -2347,14 +2398,14 @@ cdef class Far(object):
 
   # Instances holds either a FarReader or a FarWriter.
 
-  def __init__(self, filename, mode=b"r", arc_type=b"standard",
-               far_type=b"default"):
+  def __init__(self, filename, mode=b"r", arc_type=None, far_type=b"default"):
     self._name = tostring(filename)
     self._mode = tostring(mode)[0]
     if self._mode == b"r":
       self._reader = FarReader.open(self._name)
     elif self._mode == b"w":
-      self._writer = FarWriter.create(self._name, arc_type=arc_type,
+      self._writer = FarWriter.create(self._name,
+                                      arc_type=defaults._get_arc_type(arc_type),
                                       far_type=far_type)
     else:
       raise FstArgError("Unknown mode: {!r}".format(mode))
@@ -2397,9 +2448,12 @@ cdef class Far(object):
 
     Returns a string indicating the arc type.
     """
-    self._check_not_mode(b"c")
-    return (self._reader.arc_type() if self._mode == b"r" else
-            self._writer.arc_type())
+    if self._mode == b"r":
+      return self._reader.arc_type()
+    elif self._mode == b"w":
+      return self._writer.arc_type()
+    else:
+      return b"closed"
 
   cpdef bool closed(self):
     """
@@ -2584,6 +2638,12 @@ cdef class Far(object):
       self._mode = b"c"
 
 
+
+# Creates a single Pythonic instance of the defaults singleton.
+
+defaults = _Defaults()
+
+
 ## PYTHON IMPORTS.
 
 
@@ -2617,6 +2677,7 @@ from pywrapfst import NO_SYMBOL
 
 
 # FST properties.
+
 
 from pywrapfst import ACCEPTOR
 from pywrapfst import ACCESSIBLE

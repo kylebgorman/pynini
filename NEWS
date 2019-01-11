@@ -1,3 +1,9 @@
+v. 2.0.5 (compatible with OpenFst 1.7.0)
+========================================
+
+* Single `defaults` for default arc type when coercing strings to FSTs
+* Style fixes to CDRewrite implementation
+
 v. 2.0.4 (compatible with OpenFst 1.7.0)
 ========================================
 
