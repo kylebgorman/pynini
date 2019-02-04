@@ -23,7 +23,7 @@
 #include <fst/types.h>
 #include <fst/fst.h>
 #include <fst/string.h>
-#include <re2/stringpiece.h>
+#include "third_party/absl/strings/string_view.h"
 
 namespace fst {
 
@@ -39,7 +39,7 @@ class ByteViewer {
   using StateId = typename Arc::StateId;
   using Weight = typename Arc::Weight;
 
-  Arc operator()(re2::StringPiece view, StateId byte_offset) const {
+  Arc operator()(absl::string_view view, StateId byte_offset) const {
     const Label ch = static_cast<unsigned char>(view[byte_offset]);
     return Arc(ch, ch, Weight::One(), byte_offset + 1);
   }
@@ -62,7 +62,7 @@ class UTF8Viewer {
   static_assert(sizeof(Label) >= 2,
                 "UTF8Viewer requires at least 16 bits of label precision");
 
-  Arc operator()(re2::StringPiece view, StateId byte_offset) const {
+  Arc operator()(absl::string_view view, StateId byte_offset) const {
     const auto label_size = UTF8Viewer<Arc>::GetLabelAndSize(view, byte_offset);
     return Arc(label_size.first, label_size.first, Weight::One(),
                byte_offset + label_size.second);
@@ -71,7 +71,7 @@ class UTF8Viewer {
   static constexpr StringTokenType TokenType() { return StringTokenType::UTF8; }
 
  private:
-  static std::pair<Label, StateId> GetLabelAndSize(re2::StringPiece view,
+  static std::pair<Label, StateId> GetLabelAndSize(absl::string_view view,
                                                    StateId byte_offset) {
     const int c = view[byte_offset++] & 0xff;
     if ((c & 0x80) == 0) return {c, 1};
@@ -145,7 +145,7 @@ class StringViewFstImpl : public FstImpl<A> {
   using FstImpl<Arc>::SetProperties;
   using FstImpl<Arc>::Properties;
 
-  explicit StringViewFstImpl(re2::StringPiece view) : view_(view) {
+  explicit StringViewFstImpl(absl::string_view view) : view_(view) {
     SetType("StringViewFst");
     SetProperties(kStaticProperties);
   }
@@ -170,7 +170,7 @@ class StringViewFstImpl : public FstImpl<A> {
   }
 
   // Returns the string view itself; used by pseudo-friend classes.
-  re2::StringPiece view() const { return view_; }
+  absl::string_view view() const { return view_; }
 
  private:
   static constexpr uint64 kStaticProperties = kAcceptor | kExpanded |
@@ -180,7 +180,7 @@ class StringViewFstImpl : public FstImpl<A> {
 
   bool IsFinal(StateId s) const { return s == view_.size(); }
 
-  re2::StringPiece view_;
+  absl::string_view view_;
   Viewer viewer_;  // Stateless.
 };
 
@@ -220,7 +220,7 @@ class StringViewFst
   template <class F, class G>
   friend void Cast(const F &, G *);
 
-  explicit StringViewFst(re2::StringPiece view)
+  explicit StringViewFst(absl::string_view view)
       : ImplToExpandedFst<Impl>(std::make_shared<Impl>(view)) {}
 
   StringViewFst(const StringViewFst<Arc, Viewer> &fst, bool safe = false)

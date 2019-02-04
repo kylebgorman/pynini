@@ -85,7 +85,7 @@ bool RewriteLattice(
 
 // Given an epsilon-free lattice of output strings (such as produced by
 // RewriteLattice), attempts to determinize it, pruning non-optimal paths if
-// `optimal_only` is true. This is valid only in a semiring with the path
+// `optimal_only` is true. This is only valid in a semiring with the path
 // property.
 //
 // To prevent unexpected blowup during determinization, a state threshold is
@@ -112,10 +112,10 @@ void LatticeToDfa(MutableFst<Arc> *lattice, bool optimal_only,
 }
 
 // Given an epsilon-free lattice of output strings (such as produced by
-// RewriteLattice), extracts n-shortest unique strings. This is valid only in
-// a semiring with the path property.
+// RewriteLattice), extracts n-shortest unique strings. This is only valid in a
+// semiring with the path property.
 template <class Arc>
-void LatticeToShortest(MutableFst<Arc> *lattice, int32 nshortest) {
+void LatticeToShortest(MutableFst<Arc> *lattice, int32 nshortest = 1) {
   VectorFst<Arc> shortest;
   // By requesting unique solutions we request on-the-fly determinization.
   ShortestPath(*lattice, &shortest, nshortest, /*unique=*/true);
@@ -123,8 +123,8 @@ void LatticeToShortest(MutableFst<Arc> *lattice, int32 nshortest) {
 }
 
 // Given an epsilon-free lattice of output strings (such as produced by
-// RewriteLattice), extracts a single top string. This is only valid in a path
-// semiring.
+// RewriteLattice), extracts a single top string. This is only valid in a
+// semiring with the path property.
 template <class Arc>
 bool LatticeToTopString(const Fst<Arc> &lattice, string *output,
                         StringTokenType ttype = BYTE,
@@ -135,41 +135,57 @@ bool LatticeToTopString(const Fst<Arc> &lattice, string *output,
 }
 
 // Attempts to extract a single top rewrite from a optimized DFA, logging a
-// warning and returning false if there's a tie. This is valid only
+// warning and returning false if there's a tie. This is only valid in a
+// semiring with the path property.
 template <class Arc>
-bool LatticeToOneTopString(const Fst<Arc> &dfa_lattice, string *output,
+bool LatticeToOneTopString(const Fst<Arc> &lattice, string *output,
                            StringTokenType ttype = BYTE,
                            const SymbolTable *syms = nullptr) {
-  StringPathIterator<Arc> paths(dfa_lattice, ttype, syms,
-                                /*check_acyclic=*/false);
-  DCHECK(!paths.Error());
-  DCHECK(!paths.Done());
+  StringPathIterator<Arc> paths(lattice, ttype, syms, /*check_acyclic=*/false);
+  if (paths.Error() || paths.Done()) return false;
   *output = paths.OString();
+  // Checks for uniqueness.
   paths.Next();
   if (!paths.Done()) {
     LOG(ERROR) << "Multiple top rewrites found: '" << *output << "' and '"
                << paths.OString() << "' (weight: " << paths.Weight() << ")";
     return false;
   }
-  return !paths.Error();
+  return true;
+}
+
+// Clears vector and writes lattice labels to it.
+template <class Arc>
+bool LatticeToLabels(const Fst<Arc> &lattice,
+                     std::vector<std::vector<typename Arc::Label>> *output) {
+  output->clear();
+  PathIterator<Arc> paths(lattice);
+  if (paths.Error()) return false;
+  for (; !paths.Done(); paths.Next()) output->emplace_back(paths.OLabels());
+  return true;
 }
 
 // Clears vector and writes lattice strings to it.
 template <class Arc>
-bool LatticeToStrings(const Fst<Arc> &lattice, std::vector<string> *outputs,
+bool LatticeToStrings(const Fst<Arc> &lattice, std::vector<string> *output,
                       StringTokenType ttype = BYTE,
                       const SymbolTable *syms = nullptr) {
-  outputs->clear();
+  output->clear();
+  // We have to do this check manually since StringPathIterator's check is
+  // potentially fatal.
   if (lattice.Properties(kAcyclic, true) != kAcyclic) {
     LOG(ERROR) << "Lattice is unexpectedly cyclic";
     return false;
   }
-  // Input token type and symbol table will be ignored; the lattice is
-  // assumed to be acyclic.
+  // Input token type and symbol table will be ignored.
   StringPathIterator<Arc> paths(lattice, ttype, syms, /*check_acyclic=*/false);
-  DCHECK(!paths.Error());
-  for (; !paths.Done(); paths.Next()) outputs->emplace_back(paths.OString());
-  return !paths.Error();
+  if (paths.Error()) return false;
+  for (; !paths.Done(); paths.Next()) {
+    // Constructs these in-place.
+    output->emplace_back();
+    paths.OString(&output->back());
+  }
+  return true;
 }
 
 // Top rewrite.
@@ -197,38 +213,38 @@ bool OneTopRewrite(const Fst<Arc> &input, const Fst<Arc> &rule, string *output,
 // All rewrites.
 template <class Arc>
 bool Rewrites(const Fst<Arc> &input, const Fst<Arc> &rule,
-              std::vector<string> *outputs, StringTokenType ttype = BYTE,
+              std::vector<string> *output, StringTokenType ttype = BYTE,
               const SymbolTable *syms = nullptr,
               typename Arc::StateId state_multiplier = 4) {
   VectorFst<Arc> lattice;
   if (!RewriteLattice(input, rule, &lattice)) return false;
   LatticeToDfa(&lattice, /*optimal_only=*/false, state_multiplier);
-  return LatticeToStrings(lattice, outputs, ttype, syms);
+  return LatticeToStrings(lattice, output, ttype, syms);
 }
 
 // The same, but with repeated string fields.
 // All optimal rewrites.
 template <class Arc>
 bool TopRewrites(const Fst<Arc> &input, const Fst<Arc> &rule,
-                 std::vector<string> *outputs, StringTokenType ttype = BYTE,
+                 std::vector<string> *output, StringTokenType ttype = BYTE,
                  const SymbolTable *syms = nullptr,
                  typename Arc::StateId state_multiplier = 4) {
   VectorFst<Arc> lattice;
   if (!RewriteLattice(input, rule, &lattice)) return false;
   LatticeToDfa(&lattice, /*optimal_only=*/true, state_multiplier);
-  return LatticeToStrings(lattice, outputs, ttype, syms);
+  return LatticeToStrings(lattice, output, ttype, syms);
 }
 
 // The same, but with repeated string fields.
 // The top n rewrites.
 template <class Arc>
 bool TopRewrites(const Fst<Arc> &input, const Fst<Arc> &rule, int32 nshortest,
-                 std::vector<string> *outputs, StringTokenType ttype = BYTE,
+                 std::vector<string> *output, StringTokenType ttype = BYTE,
                  const SymbolTable *syms = nullptr) {
   VectorFst<Arc> lattice;
   if (!RewriteLattice(input, rule, &lattice)) return false;
   LatticeToShortest(&lattice, nshortest);
-  return LatticeToStrings(lattice, outputs, ttype, syms);
+  return LatticeToStrings(lattice, output, ttype, syms);
 }
 
 // The same, but with repeated string fields.

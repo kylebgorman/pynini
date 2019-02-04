@@ -37,10 +37,10 @@ void CrossProduct(
   // Composes the mapped lower language into the output FST.
   static const ComposeOptions opts(/*connect=*/true,
                                    /*filter_type=*/MATCH_FILTER);
-  Compose(ArcMapFst<Arc, Arc, OutputEpsilonMapper<Arc>>(
-              ifst1, OutputEpsilonMapper<Arc>()),
-          ArcMapFst<Arc, Arc, InputEpsilonMapper<Arc>>(
-              ifst2, InputEpsilonMapper<Arc>()),
+  Compose(RmEpsilonFst<Arc>(ArcMapFst<Arc, Arc, OutputEpsilonMapper<Arc>>(
+              ifst1, OutputEpsilonMapper<Arc>())),
+          RmEpsilonFst<Arc>(ArcMapFst<Arc, Arc, InputEpsilonMapper<Arc>>(
+              ifst2, InputEpsilonMapper<Arc>())),
           ofst, opts);
   // If a specific final weight is requested, apply it to all final states.
   if (final_weight != Weight::One()) {

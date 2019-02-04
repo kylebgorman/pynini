@@ -67,9 +67,7 @@ inline void StripTrailingAsciiWhitespace(string *full) {
 
 string Join(const std::vector<string> &elements, const string &delim);
 
-std::vector<string> Split(const string &full, const char *delim);
-
-std::vector<string> Split(const string &full, const string &delim);
+std::vector<string> Split(const string &full, char delim);
 
 inline string StringReplace(const string &full, const string &before,
                             const string &after, bool /* ignored */) {

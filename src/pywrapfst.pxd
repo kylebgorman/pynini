@@ -77,6 +77,8 @@ cdef class Weight(object):
 
   cpdef string type(self)
 
+  cpdef bool member(self)
+
 
 cdef Weight _Zero(weight_type)
 

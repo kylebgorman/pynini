@@ -14,6 +14,8 @@ would appreciate if you cite the following paper:
 > In *Proc. ACL Workshop on Statistical NLP and Weighted Automata*,
 > 75-80.
 
+(Note that some of the code samples in the paper are now out of date.)
+
 Dependencies
 ============
 
@@ -23,9 +25,6 @@ Pynini depends on:
 -   The most recent version of [OpenFst](http://openfst.org) (at the time of
     writing, 1.7.0) built with the `far`, `pdt`, `mpdt`, and `script` extensions
     (i.e., built with `./configure --enable-grm`) and headers
--   A recent version of [re2](http://github.com/google/re2) (at the time of
-    writing, tag `2019-01-01`; issue `git checkout 2019-01-01; git pull origin
-    master` from the `re2` directory to sync to this tag) and headers
 -   [Python 2.7 or 3.6+](https://www.python.org) and headers
 
 It is tested with: Debian Linux 4.18.10 on x86\_64, GCC 7.3.0, Cython 0.29.2 and

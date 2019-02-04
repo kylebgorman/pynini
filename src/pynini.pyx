@@ -494,15 +494,17 @@ cdef class Fst(_MutableFst):
       input_token_type: A string indicating how the input strings are to be
           constructed from arc labels---one of: "byte" (interprets arc labels
           as raw bytes), "utf8" (interprets arc labels as Unicode code points),
-          or "symbol" (interprets arc labels using the input symbol table).
+          "symbol" (interprets arc labels using the input symbol table), or a
+          SymbolTable.
       output_token_type: A string indicating how the output strings are to be
           constructed from arc labels---one of: "byte" (interprets arc labels
           as raw bytes), "utf8" (interprets arc labels as Unicode code points),
-          or "symbol" (interprets arc labels using the input symbol table).
+          "symbol" (interprets arc labels using the input symbol table), or a
+          SymbolTable.
 
     Raises:
       FstArgError: Unknown token type.
-      FstArgError: FST is not acyclic.
+      FstOpError: Operation failed.
 
     See also: `StringPathIterator`.
     """
@@ -536,8 +538,8 @@ cdef class Fst(_MutableFst):
       The string corresponding to (an output projection) of the FST.
 
     Raises:
-      FstArgError: FST is not a string.
       FstArgError: Unknown token type.
+      FstOpError: Operation failed.
     """
     cdef StringTokenType ttype
     cdef SymbolTable_ptr syms = NULL
@@ -548,7 +550,7 @@ cdef class Fst(_MutableFst):
       ttype = _get_token_type(tostring(token_type))
     cdef string result
     if not PrintString(deref(self._fst), addr(result), ttype, syms):
-      raise FstArgError("FST is not a string")
+      raise FstOpError("Operation failed")
     return result
 
   # The following all override their definition in _MutableFst.
@@ -2179,7 +2181,7 @@ cdef class StringPathIterator(object):
 
   Raises:
     FstArgError: Unknown token type.
-    FstArgError: FST is not acyclic.
+    FstOpError: Operation failed.
   """
 
   cdef unique_ptr[StringPathIteratorClass] _paths
@@ -2208,7 +2210,7 @@ cdef class StringPathIterator(object):
     self._paths.reset(new StringPathIteratorClass(deref(ifst_compiled._fst),
                                                   itype, otype, isyms, osyms))
     if self._paths.get().Error():
-      raise FstArgError("FST is not acyclic")
+      raise FstOpError("Operation failed")
 
   cpdef bool done(self):
     """
@@ -2664,7 +2666,6 @@ from pywrapfst import Weight
 
 
 from pywrapfst import FstBadWeightError
-from pywrapfst import FstDeletedConstructorError
 from pywrapfst import FstIndexError
 
 

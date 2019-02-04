@@ -646,8 +646,8 @@ class PyniniStringTest(unittest.TestCase):
         ac.stringify(ac.output_symbols()),
         "P o n t <SPACE> l ' E v <0xea> q u e")
 
-  def testStringifyOnNonkStringFstRaisesFstArgError(self):
-    with self.assertRaises(FstArgError):
+  def testStringifyOnNonkStringFstRaisesFstOpError(self):
+    with self.assertRaises(FstOpError):
       unused_ac = union(self.cheese, self.imported_cheese).stringify()
 
   def testCompositionOfStringAndLogArcWorks(self):

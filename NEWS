@@ -1,3 +1,10 @@
+v. 2.0.6 (compatible with OpenFst 1.7.1)
+========================================
+
+* Eliminates dependency on re2
+* Improved generalizability of `Weight.member`
+* String printing methods now respect "symbol" as a token type
+
 v. 2.0.5 (compatible with OpenFst 1.7.0)
 ========================================
 

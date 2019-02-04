@@ -50,7 +50,7 @@ string Join(const std::vector<string> &elements, const string &delim) {
 
 // Splits a string according to delimiter, skipping over consecutive
 // delimiters.
-std::vector<string> Split(const string &full, const char *delim) {
+std::vector<string> Split(const string &full, char delim) {
   size_t prev = 0;
   size_t found = full.find_first_of(delim);
   size_t size = found - prev;

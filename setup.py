@@ -22,7 +22,7 @@ from setuptools import Extension, setup
 
 COMPILE_ARGS = ["-std=c++11",
                 "-Wno-unused-function",
-                "-Wno-unused-local-typedef",
+                "-Wno-unused-local-typedefs",
                 "-funsigned-char"]
 
 pywrapfst = Extension(name="pywrapfst", language="c++",
@@ -31,35 +31,24 @@ pywrapfst = Extension(name="pywrapfst", language="c++",
                                  "fst", "m", "dl"],
                       sources=["src/pywrapfst.cc"])
 
-pynini = Extension(name="pynini", language="c++",
-                   extra_compile_args=COMPILE_ARGS,
-                   libraries=["re2",
-                              "fstfarscript",
-                              "fstpdtscript",
-                              "fstmpdtscript",
-                              "fstscript",
-                              "fstfar",
-                              "fst",
-                              "m",
-                              "dl"],
-                   sources=["src/stringtokentype.cc",
-                            "src/stringprintscript.cc",
-                            "src/stringmapscript.cc",
-                            "src/stringfile.cc",
-                            "src/stringcompilescript.cc",
-                            "src/stringcompile.cc",
-                            "src/repeatscript.cc",
-                            "src/pynini_replace.cc",
-                            "src/pynini_cdrewrite.cc",
-                            "src/pynini.cc",
-                            "src/pathsscript.cc",
-                            "src/optimizescript.cc",
-                            "src/mergesymbolsscript.cc",
-                            "src/mergesymbols.cc",
-                            "src/lenientlycomposescript.cc",
-                            "src/gtl.cc",
-                            "src/getters.cc",
-                            "src/crossproductscript.cc"])
+pynini = Extension(
+    name="pynini",
+    language="c++",
+    extra_compile_args=COMPILE_ARGS,
+    libraries=[
+        "fstfarscript", "fstpdtscript", "fstmpdtscript", "fstscript", "fstfar",
+        "fst", "m", "dl"
+    ],
+    sources=[
+        "src/stringtokentype.cc", "src/stringprintscript.cc",
+        "src/stringmapscript.cc", "src/stringfile.cc",
+        "src/stringcompilescript.cc", "src/stringcompile.cc",
+        "src/repeatscript.cc", "src/pynini_replace.cc",
+        "src/pynini_cdrewrite.cc", "src/pynini.cc", "src/pathsscript.cc",
+        "src/optimizescript.cc", "src/mergesymbolsscript.cc",
+        "src/mergesymbols.cc", "src/lenientlycomposescript.cc", "src/gtl.cc",
+        "src/getters.cc", "src/crossproductscript.cc"
+    ])
 
 this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, "README.md"), encoding="utf8") as source:
@@ -67,7 +56,7 @@ with open(path.join(this_directory, "README.md"), encoding="utf8") as source:
 
 setup(
     name="pynini",
-    version="2.0.5",
+    version="2.0.6",
     description="Finite-state grammar compilation library",
     long_description=long_description,
     long_description_content_type="text/markdown",

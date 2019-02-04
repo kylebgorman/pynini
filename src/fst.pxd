@@ -304,6 +304,8 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
     string ToString()
 
+    bool Member()
+
     @staticmethod
     const WeightClass &Zero(const string &)
 

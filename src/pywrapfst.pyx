@@ -371,7 +371,7 @@ cdef class Weight(object):
   cdef void _check_weight(self) except *:
     if self.type() == b"none":
       raise FstArgError("Weight type not found")
-    if self.to_string() == b"BadNumber":
+    if not self.member():
       raise FstBadWeightError("Invalid weight")
 
   cpdef Weight copy(self):
@@ -429,6 +429,9 @@ cdef class Weight(object):
     Returns a string indicating the weight type.
     """
     return self._weight.get().Type()
+
+  cpdef bool member(self):
+    return self._weight.get().Member()
 
 
 cdef Weight _plus(Weight lhs, Weight rhs):
@@ -581,7 +584,7 @@ cdef fst.WeightClass _get_WeightClass_or_Zero(const string &weight_type,
     result = deref(<fst.WeightClass *> (<Weight> weight)._weight.get())
   else:
     result = fst.WeightClass(weight_type, weight_tostring(weight))
-    if result.ToString() == b"BadNumber":
+    if not result.Member():
       raise FstBadWeightError(weight_tostring(weight))
   return result
 
@@ -610,7 +613,7 @@ cdef fst.WeightClass _get_WeightClass_or_One(const string &weight_type,
     result = deref(<fst.WeightClass *> (<Weight> weight)._weight.get())
   else:
     result = fst.WeightClass(weight_type, weight_tostring(weight))
-    if result.ToString() == b"BadNumber":
+    if not result.Member():
       raise FstBadWeightError(weight_tostring(weight))
   return result
 
@@ -1552,7 +1555,7 @@ cdef class _Fst(object):
     """
     cdef Weight weight = Weight.__new__(Weight)
     weight._weight.reset(new fst.WeightClass(self._fst.get().Final(state)))
-    if weight.to_string() == b"BadNumber":
+    if not weight.member():
       raise FstIndexError("State index out of range")
     return weight
 

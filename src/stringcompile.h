@@ -18,18 +18,17 @@
 #ifndef PYNINI_STRINGCOMPILE_H_
 #define PYNINI_STRINGCOMPILE_H_
 
-#include <limits>
+#include <algorithm>
 #include <memory>
 #include <string>
 using std::string;
+#include <utility>
 
 #include <fst/types.h>
-#include <cstdlib>
 #include <fst/fst-decl.h>
+#include <fst/icu.h>
 #include <fst/string.h>
 #include "gtl.h"
-#include <re2/stringpiece.h>
-#include <re2/re2.h>
 
 // The user-facing functions in this class behave similar to the StringCompiler
 // class, but add several additional functionalities.
@@ -63,33 +62,21 @@ DECLARE_int32(generated_label_index_start);
 
 namespace fst {
 
+// Symbol table support.
+
 SymbolTable *GetByteSymbolTable();
 
 SymbolTable *GetUTF8SymbolTable();
 
 namespace internal {
 
-// "Special" byte-range symbols.
-
-constexpr char kTokenSeparator[] = " ";
 constexpr char kDummySymbol[] = "PiningForTheFjords";
-
-// Symbol table names.
-
-// Properties bits for a newly-compiled string FST.
 
 constexpr uint64 kCompiledStringProps = kAcceptor | kIDeterministic |
     kODeterministic | kILabelSorted | kOLabelSorted | kUnweighted | kAcyclic |
     kInitialAcyclic | kTopSorted | kAccessible | kCoAccessible | kString |
     kUnweightedCycles;
 
-constexpr char kPieces[] = R"(((?:(?:\\[\[\]])|(?:[^\[\]]))+)|)"
-                           R"((?:\[((?:(?:\\[\[\]])|(?:[^\[\]]))+)\])|)"
-                           R"((.+))";
-constexpr char kEscapedLeftBracket[] = R"(\\\[)";
-constexpr char kEscapedRightBracket[] = R"(\\\])";
-
-// Helpers for creating a symbol table.
 class SymbolTableFactory {
  public:
   explicit SymbolTableFactory(const string &name);
@@ -108,71 +95,50 @@ class SymbolTableFactory {
 
 SymbolTable *GetSymbolTable(StringTokenType ttype, const SymbolTable *syms);
 
-// Adds an integer to the symbol table.
-void AddIntegerToSymbolTable(int64 ch, SymbolTable *syms);
-
 // Adds a Unicode codepoint to the symbol table. Returns kNoLabel to indicate
 // that the input cannot be parsed as a Unicode codepoint.
 int32 AddUnicodeCodepointToSymbolTable(int32 ch, SymbolTable *syms);
 
-// Adds a generated label to the table.
-inline int64 AddGeneratedToSymbolTable(const string &str, SymbolTable *syms) {
-  return syms->AddSymbol(str);
-}
+// String compilation helpers.
 
 // Populates a string FST using a vector of labels.
 template <class Arc>
-void CompileStringFromLabels(
+void CompileFstFromLabels(
     const std::vector<typename Arc::Label> &labels, MutableFst<Arc> *fst,
     const typename Arc::Weight &weight = Arc::Weight::One()) {
   using StateId = typename Arc::StateId;
   using Weight = typename Arc::Weight;
   fst->DeleteStates();
-  const StateId size = labels.size();
-  fst->ReserveStates(size);
-  for (StateId i = 0; i < size; ++i) {
-    fst->AddState();
-    fst->AddArc(i, Arc(labels[i], labels[i], Weight::One(), i + 1));
+  fst->ReserveStates(labels.size());
+  auto s = fst->AddState();
+  fst->SetStart(s);
+  for (const auto label : labels) {
+    const auto nextstate = fst->AddState();
+    fst->AddArc(s, Arc(label, label, Weight::One(), nextstate));
+    s = nextstate;
   }
-  fst->SetStart(0);
-  fst->SetFinal(fst->AddState(), weight);
+  fst->SetFinal(s, weight);
   fst->SetProperties(kCompiledStringProps, kCompiledStringProps);
 }
 
-// Removes backslashes acting as bracket escape characters (e.g. "\[").
-void RemoveBracketEscapes(string *str);
+// Parses a bracketed span.
+int64 BracketedStringToLabel(const string &token, SymbolTable *syms);
 
-// Processes the labels within a bracketed span.
+// Processes the contents of a bracketed span.
 template <class Label>
-bool ProcessBracketedSpan(string *str, std::vector<Label> *labels,
+bool ProcessBracketedSpan(const string &str, std::vector<Label> *labels,
                           SymbolTable *syms) {
-  RemoveBracketEscapes(str);
-  // Splits string on the token separator.
-  const std::vector<string> tokens = strings::Split(*str, kTokenSeparator);
-  // The span may not be empty, so that is not considered here.
-  if (tokens.size() == 1) {
-    const auto cpptoken = tokens[0];
-    // Has the same lifetime as cpptoken, so long as we don't mutate cpptoken.
-    const auto *ctoken = cpptoken.c_str();
-    // A bracketed span that does not contain the token-separator is processed
-    // either as a numeric label (e.g., [32]), or if that fails, as a single
-    // generated label.
-    char *p;
-    int64 label = strtol(ctoken, &p, 0);
-    if (p < ctoken + strlen(ctoken)) {
-      // Could not parse the entire string as a number, so it is treated as a
-      // generated label.
-      label = AddGeneratedToSymbolTable(cpptoken, syms);
-    } else {
-      AddIntegerToSymbolTable(label, syms);
-    }
-    labels->push_back(static_cast<Label>(label));
-  } else {  // tokens.size() > 1.
-    // A bracketed span with multiple token-separator-delimited intervals is
-    // processed as a sequence of generated labels.
+  const std::vector<string> tokens = strings::Split(str, ' ');
+  if (tokens.empty()) {
+    LOG(ERROR) << "ProcessBracketedSpan: Empty span";
+    return false;
+  } else if (tokens.size() == 1) {
+    // We perform strtoll-style parsing if there is only one generated label.
+    labels->emplace_back(BracketedStringToLabel(tokens[0], syms));
+  } else {
+    // Otherwise they are just treated as strings.
     for (const auto token : tokens) {
-      labels->push_back(static_cast<Label>(AddGeneratedToSymbolTable(token,
-                                                                     syms)));
+      labels->emplace_back(syms->AddSymbol(token));
     }
   }
   return true;
@@ -180,68 +146,83 @@ bool ProcessBracketedSpan(string *str, std::vector<Label> *labels,
 
 // Creates a vector of labels from a bracketed bytestring, updating the symbol
 // table as it goes.
-template <class Label>
-bool BracketedByteStringToLabels(const string &strp,
-                                 std::vector<Label> *labels,
-                                 SymbolTable *syms) {
-  static const RE2 pieces(kPieces);
-  re2::StringPiece view(strp);
-  string unbracketed;
-  string bracketed;
-  string error;
-  while (RE2::Consume(&view, pieces, &unbracketed, &bracketed, &error)) {
-    if (!error.empty()) {
-      LOG(ERROR) << "BracketedByteStringToLabels: Unbalanced brackets";
-      return false;
-    } else if (!unbracketed.empty()) {
-      RemoveBracketEscapes(&unbracketed);
-      for (const char label : unbracketed) {
-        labels->push_back(static_cast<unsigned char>(label));
+template <class Label, class Processor>
+bool BracketedStringToLabels(const string &str, std::vector<Label> *labels,
+                             SymbolTable *syms, const Processor &processor) {
+  bool inside_brackets = false;
+  // TODO(kbg): Consider using std::stringstream instead.
+  string chunk = "";
+  for (auto it = str.begin(); it != str.end(); ++it) {
+    if (*it == '[') {
+      if (inside_brackets) {
+        LOG(ERROR) << "BracketedStringToLabels: Unmatched [";
+        return false;
       }
-    } else if (!ProcessBracketedSpan<Label>(&bracketed, labels, syms)) {
-      // A non-empty bracketed span.
-      return false;
+      if (!processor(chunk, labels, syms)) return false;
+      chunk.clear();
+      inside_brackets = true;
+    } else if (*it == ']') {
+      if (!inside_brackets) {
+        LOG(ERROR) << "BracketedStringToLabels: Unmatched ]";
+        return false;
+      }
+      if (!ProcessBracketedSpan(chunk, labels, syms)) return false;
+      chunk.clear();
+      inside_brackets = false;
+    } else {
+      if (*it == '\\') {
+        if (++it == str.end()) {
+          LOG(ERROR) << "BracketedStringToLabels: Unterminated escape";
+          return false;
+        }
+      }
+      chunk += *it;
     }
   }
-  return true;
+  if (inside_brackets) {
+    LOG(ERROR) << "Unmatched [";
+    return false;
+  }
+  return processor(chunk, labels, syms);
 }
 
-// Creates a vector of labels from a bracketed UTF-8 string, updating the
-// symbol table as it goes.
+// Specializations of the above.
+
 template <class Label>
-bool BracketedUTF8StringToLabels(const string &strp, std::vector<Label> *labels,
+bool BracketedByteStringToLabels(const string &str, std::vector<Label> *labels,
                                  SymbolTable *syms) {
-  static const RE2 pieces(kPieces);
-  re2::StringPiece view(strp);
-  string unbracketed;
-  string bracketed;
-  string error;
-  while (RE2::Consume(&view, pieces, &unbracketed, &bracketed, &error)) {
-    if (!error.empty()) {
-      LOG(ERROR) << "BracketedUTF8StringToLabels: Unbalanced brackets";
-      return false;
-    } else if (!unbracketed.empty()) {
-      RemoveBracketEscapes(&unbracketed);
-      // Adds only the new unbracketed labels.
-      auto i = labels->size();
-      if (!UTF8StringToLabels(unbracketed, labels)) return false;
-      for (; i < labels->size(); ++i) {
-        AddUnicodeCodepointToSymbolTable(static_cast<Label>((*labels)[i]),
-                                         syms);
-      }
-    } else if (!ProcessBracketedSpan<Label>(&bracketed, labels, syms)) {
-      // A non-empty bracketed span.
-      return false;
-    }
-  }
-  return true;
+  static const auto processor = [](const string &str,
+                                   std::vector<Label> *labels, SymbolTable *) {
+    return ByteStringToLabels(str, labels);
+  };
+  return BracketedStringToLabels(str, labels, syms, processor);
+}
+
+template <class Label>
+bool BracketedUTF8StringToLabels(const string &str, std::vector<Label> *labels,
+                                 SymbolTable *syms) {
+  static const auto processor =
+      [](const string &str, std::vector<Label> *labels, SymbolTable *syms) {
+        if (!UTF8StringToLabels(str, labels)) return false;
+        // Also check whether we need to add new Unicode symbols to the symbol
+        // table.
+        for (const auto label : *labels) {
+          if (label > 255) {
+            if (AddUnicodeCodepointToSymbolTable(label, syms) == kNoLabel) {
+              return false;
+            }
+          }
+        }
+        return true;
+      };
+  return BracketedStringToLabels(str, labels, syms, processor);
 }
 
 // Creates a vector of labels from a bracketed string using a symbol table.
 template <class Label>
-bool SymbolStringToLabels(const string &strp, const SymbolTable &syms,
+bool SymbolStringToLabels(const string &str, const SymbolTable &syms,
                           std::vector<Label> *labels) {
-  for (const auto token : strings::Split(strp, kTokenSeparator)) {
+  for (const auto token : strings::Split(str, ' ')) {
     const auto label = static_cast<Label>(syms.Find(string(token)));
     if (label == kNoSymbol) {
       LOG(ERROR) << "SymbolStringToLabels: Symbol \"" << token << "\" "
@@ -263,18 +244,18 @@ inline void AssignSymbolsToFst(const SymbolTable &syms, MutableFst<Arc> *fst) {
 
 }  // namespace internal
 
-// Compiles bytestring into string FST.
+// Public API for string compilation.
+
+// Compiles bytestring into string FST without bracket handling.
 template <class Arc>
-bool CompileByteString(const string &strp, MutableFst<Arc> *fst,
+bool CompileByteString(const string &str, MutableFst<Arc> *fst,
                        const typename Arc::Weight &weight = Arc::Weight::One(),
                        bool attach_symbols = true) {
   using Label = typename Arc::Label;
   std::vector<Label> labels;
-  labels.reserve(strp.size());
-  for (const char ch : strp) {
-    labels.push_back(static_cast<unsigned char>(ch));
-  }
-  internal::CompileStringFromLabels<Arc>(labels, fst, weight);
+  labels.reserve(str.size());
+  ByteStringToLabels(str, &labels);
+  internal::CompileFstFromLabels<Arc>(labels, fst, weight);
   if (attach_symbols) {
     std::unique_ptr<SymbolTable> syms(GetByteSymbolTable());
     internal::AssignSymbolsToFst(*syms, fst);
@@ -282,17 +263,18 @@ bool CompileByteString(const string &strp, MutableFst<Arc> *fst,
   return true;
 }
 
-// Compiles UTF-8 string into string FST.
+// Compiles UTF-8 string into string FST without bracket handling.
 template <class Arc>
-bool CompileUTF8String(const string &strp, MutableFst<Arc> *fst,
+bool CompileUTF8String(const string &str, MutableFst<Arc> *fst,
                        const typename Arc::Weight &weight = Arc::Weight::One(),
                        bool attach_symbols = true) {
   using Label = typename Arc::Label;
   std::vector<Label> labels;
-  if (!UTF8StringToLabels(strp, &labels)) return false;
-  internal::CompileStringFromLabels<Arc>(labels, fst, weight);
+  if (!UTF8StringToLabels(str, &labels)) return false;
+  internal::CompileFstFromLabels(labels, fst, weight);
   if (attach_symbols) {
     std::unique_ptr<SymbolTable> syms(GetUTF8SymbolTable());
+    // Adds any non-ASCII bytes to the symbol table.
     for (const auto label : labels) {
       internal::AddUnicodeCodepointToSymbolTable(label, syms.get());
     }
@@ -301,86 +283,85 @@ bool CompileUTF8String(const string &strp, MutableFst<Arc> *fst,
   return true;
 }
 
-// Compiles string into string FST using SymbolTable.
+// Compiles symbol string into string FST using SymbolTable.
 template <class Arc>
 bool CompileSymbolString(
-    const string &strp, const SymbolTable &syms, MutableFst<Arc> *fst,
+    const string &str, const SymbolTable &syms, MutableFst<Arc> *fst,
     const typename Arc::Weight &weight = Arc::Weight::One(),
     bool attach_symbols = true) {
   using Label = typename Arc::Label;
   std::vector<Label> labels;
-  if (!internal::SymbolStringToLabels<Label>(strp, syms, &labels)) return false;
-  internal::CompileStringFromLabels<Arc>(labels, fst, weight);
+  if (!internal::SymbolStringToLabels(str, syms, &labels)) return false;
+  internal::CompileFstFromLabels(labels, fst, weight);
   if (attach_symbols) internal::AssignSymbolsToFst(syms, fst);
   return true;
 }
 
-// Compiles (possibly) bracketed bytestring into string FST.
+// Compiles bytestring into string FST with bracket handling.
 template <class Arc>
 bool CompileBracketedByteString(
-    const string &strp, MutableFst<Arc> *fst,
+    const string &str, MutableFst<Arc> *fst,
     const typename Arc::Weight &weight = Arc::Weight::One(),
     bool attach_symbols = true) {
   using Label = typename Arc::Label;
   std::vector<Label> labels;
   std::unique_ptr<SymbolTable> syms(GetByteSymbolTable());
-  if (!internal::BracketedByteStringToLabels<Label>(strp, &labels,
-                                                    syms.get())) {
+  if (!internal::BracketedByteStringToLabels<Label>(str, &labels, syms.get())) {
     return false;
   }
-  internal::CompileStringFromLabels<Arc>(labels, fst, weight);
-  if (attach_symbols) internal::AssignSymbolsToFst<Arc>(*syms, fst);
+  internal::CompileFstFromLabels(labels, fst, weight);
+  if (attach_symbols) internal::AssignSymbolsToFst(*syms, fst);
   return true;
 }
 
-// Compiles (possibly) bracketed UTF-8 string into string FST.
+// Compiles UTF-8 string into string FST with bracket handling.
 template <class Arc>
 bool CompileBracketedUTF8String(
-    const string &strp, MutableFst<Arc> *fst,
+    const string &str, MutableFst<Arc> *fst,
     const typename Arc::Weight &weight = Arc::Weight::One(),
     bool attach_symbols = true) {
   using Label = typename Arc::Label;
   std::vector<Label> labels;
   std::unique_ptr<SymbolTable> syms(GetUTF8SymbolTable());
-  if (!internal::BracketedUTF8StringToLabels<Label>(strp, &labels,
-                                                    syms.get())) {
+  if (!internal::BracketedUTF8StringToLabels(str, &labels, syms.get())) {
     return false;
   }
-  internal::CompileStringFromLabels<Arc>(labels, fst, weight);
-  if (attach_symbols) internal::AssignSymbolsToFst<Arc>(*syms, fst);
+  internal::CompileFstFromLabels(labels, fst, weight);
+  if (attach_symbols) internal::AssignSymbolsToFst(*syms, fst);
   return true;
 }
 
+// Parses string into labels.
 template <class Label>
-bool StringToLabels(const string &strp, std::vector<Label> *labels,
+bool StringToLabels(const string &str, std::vector<Label> *labels,
                     StringTokenType ttype = BYTE, SymbolTable *syms = nullptr) {
   labels->clear();
   switch (ttype) {
     case BYTE:
-      return internal::BracketedByteStringToLabels<Label>(strp, labels, syms);
+      return internal::BracketedByteStringToLabels(str, labels, syms);
     case UTF8:
-      return internal::BracketedUTF8StringToLabels<Label>(strp, labels, syms);
+      return internal::BracketedUTF8StringToLabels(str, labels, syms);
     case SYMBOL:
-      return internal::SymbolStringToLabels<Label>(strp, *syms, labels);
+      return internal::SymbolStringToLabels(str, *syms, labels);
   }
-  return true;
+  return false;  // Unreachable.
 }
 
 template <class Arc>
-bool CompileString(const string &strp, MutableFst<Arc> *fst,
+bool CompileString(const string &str, MutableFst<Arc> *fst,
                    StringTokenType ttype = BYTE,
                    const SymbolTable *syms = nullptr,
                    const typename Arc::Weight &weight = Arc::Weight::One(),
                    bool attach_symbols = true) {
   switch (ttype) {
     case BYTE:
-      return CompileBracketedByteString(strp, fst, weight, attach_symbols);
+      return CompileBracketedByteString(str, fst, weight, attach_symbols);
     case UTF8:
-      return CompileBracketedUTF8String(strp, fst, weight, attach_symbols);
+      return CompileBracketedUTF8String(str, fst, weight, attach_symbols);
     case SYMBOL:
-      return CompileSymbolString(strp, *syms, fst, weight, attach_symbols);
+      return CompileSymbolString(str, *syms, fst, weight, attach_symbols);
   }
-  return true;
+  return false;  // Unreachable.
 }
 
 }  // namespace fst

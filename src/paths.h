@@ -28,7 +28,6 @@
 // properties (e.g., to make sure that it is acyclic).
 
 #include <memory>
-#include <sstream>
 #include <string>
 using std::string;
 #include <vector>
@@ -85,8 +84,7 @@ class PathIterator {
   }
 
  protected:
-  // If initialization failed.
-  bool error_;
+  void SetError();
 
  private:
   // Inserts labels and weights from an arc.
@@ -94,6 +92,8 @@ class PathIterator {
 
   void MaybePopLabels();
 
+  // If initialization failed.
+  bool error_;
   // Copy of FST being iterated over.
   std::unique_ptr<const Fst<Arc>> fst_;
   // Vector of states visited on this path.
@@ -118,7 +118,7 @@ template <class Arc>
 PathIterator<Arc>::PathIterator(const Fst<Arc> &fst, bool check_acyclic)
     : error_(false), fst_(fst.Copy()), pop_labels_(false) {
   if (check_acyclic && !fst.Properties(kAcyclic, true)) {
-    error_ = true;
+    SetError();
     FSTERROR() << "PathIterator: Cyclic FSTs have an infinite number of paths";
     return;
   }
@@ -215,6 +215,11 @@ void PathIterator<Arc>::Next() {
 }
 
 template <class Arc>
+void PathIterator<Arc>::SetError() {
+  error_ = true;
+}
+
+template <class Arc>
 void PathIterator<Arc>::VisitArc(const Arc &arc) {
   path_ilabels_.push_back(arc.ilabel);
   path_olabels_.push_back(arc.olabel);
@@ -226,8 +231,9 @@ void PathIterator<Arc>::MaybePopLabels() {
   if (pop_labels_) {
     path_ilabels_.pop_back();
     path_olabels_.pop_back();
+  } else {
+    pop_labels_ = true;
   }
-  pop_labels_ = true;
 }
 
 // StringPathIterator is a wrapper for PathIterator that handles symbol tables
@@ -250,6 +256,7 @@ class StringPathIterator : public PathIterator<Arc> {
   using PathIterator<Arc>::Next;
   using PathIterator<Arc>::OLabels;
   using PathIterator<Arc>::Reset;
+  using PathIterator<Arc>::SetError;
 
   explicit StringPathIterator(const Fst<Arc> &fst, StringTokenType itype = BYTE,
                               StringTokenType otype = BYTE,
@@ -273,8 +280,6 @@ class StringPathIterator : public PathIterator<Arc> {
   string OString();
 
  private:
-  using PathIterator<Arc>::error_;
-
   StringTokenType itype_;
   StringTokenType otype_;
   const SymbolTable *isyms_;
@@ -296,17 +301,21 @@ StringPathIterator<Arc>::StringPathIterator(
       osyms_(osyms) {
   // If the FST has its own symbol tables and symbol table use is requested,
   // we use those unless isyms or osyms is specified.
-  if (itype == StringTokenType::SYMBOL && !isyms_ && fst.InputSymbols()) {
-    isyms_ = fst.InputSymbols();
+  if (itype == SYMBOL && !isyms_ && !(isyms_ = fst.InputSymbols())) {
+    SetError();
+    FSTERROR() << "StringPathIterator:: Input symbol table use requested but "
+                  "none found";
   }
-  if (otype == StringTokenType::SYMBOL && !osyms_ && fst.OutputSymbols()) {
-    osyms_ = fst.OutputSymbols();
+  if (otype == SYMBOL && !osyms_ && !(osyms_ = fst.OutputSymbols())) {
+    SetError();
+    FSTERROR() << "StringPathIterator:: Output symbol table use requested but "
+                  "none found";
   }
 }
 
 template <class Arc>
 void StringPathIterator<Arc>::IString(string *str) {
-  if (!internal::LabelsToString(ILabels(), str, itype_, isyms_)) error_ = true;
+  if (!internal::LabelsToString(ILabels(), str, itype_, isyms_)) SetError();
 }
 
 template <class Arc>
@@ -318,7 +327,7 @@ string StringPathIterator<Arc>::IString() {
 
 template <class Arc>
 void StringPathIterator<Arc>::OString(string *str) {
-  if (!internal::LabelsToString(OLabels(), str, otype_, osyms_)) error_ = true;
+  if (!internal::LabelsToString(OLabels(), str, otype_, osyms_)) SetError();
 }
 
 template <class Arc>

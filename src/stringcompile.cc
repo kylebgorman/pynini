@@ -17,6 +17,10 @@
 
 #include "stringcompile.h"
 
+#include <sstream>
+
+#include <cstdlib>
+
 // This file contains implementations of untemplated internal functions for
 // string compilation. Not all are declared in the corresponding header.
 
@@ -24,6 +28,8 @@ DEFINE_int32(generated_label_index_start, 0x100000,
              "The lowest index a generated label is assigned to");
 
 namespace fst {
+
+// Symbol table support.
 
 SymbolTable *GetByteSymbolTable() {
   static const auto *const kFactory =
@@ -74,13 +80,13 @@ SymbolTableFactory::SymbolTableFactory(const string &name) : syms_(name) {
   syms_.AddSymbol("<GS>", 0x1d);
   syms_.AddSymbol("<RS>", 0x1e);
   syms_.AddSymbol("<US>", 0x1f);
-  // Space doesn't print very nice.
+  // Space doesn't print very nicely.
   syms_.AddSymbol("<SPACE>", 32);
   // Printable ASCII.
   for (auto ch = 33; ch < 127; ++ch) syms_.AddSymbol(string(1, ch), ch);
   // One last control character.
   syms_.AddSymbol("<DEL>", 0x7f);
-  // Adds supra-ASCII characters as hexidecimal strings.
+  // Adds supra-ASCII bytes as hexadecimal strings.
   for (int ch = 128; ch < 256; ++ch) {
     std::stringstream sstrm;
     sstrm << "<0x" << std::hex << ch << ">";
@@ -104,16 +110,7 @@ SymbolTable *GetSymbolTable(StringTokenType ttype, const SymbolTable *syms) {
       return GetUTF8SymbolTable();
     }
   }
-  // Unreachable.
-  return nullptr;
-}
-
-// Adds an integer to the symbol table; using a byte symbol when in byte range.
-void AddIntegerToSymbolTable(int64 label, SymbolTable *syms) {
-  if (0 <= label && label <= 255) return;
-  std::stringstream sstrm;
-  sstrm << label;
-  syms->AddSymbol(sstrm.str(), label);
+  return nullptr;  // Unreachable.
 }
 
 // Replicates functionality in the ICU library for determining whether the
@@ -219,23 +216,32 @@ inline bool IsUnicodeSpaceOrControl(int32 label) {
 // Adds a Unicode codepoint to the symbol table. Returns kNoLabel to indicate
 // that the input cannot be parsed as a Unicode codepoint.
 int32 AddUnicodeCodepointToSymbolTable(int32 label, SymbolTable *syms) {
-  string label_string;
+  string str;
   // Creates a vector with just this label.
   std::vector<int32> labels = {label};
-  if (LabelsToUTF8String(labels, &label_string)) {
-    return static_cast<int32>(syms->AddSymbol(label_string, label));
+  if (LabelsToUTF8String(labels, &str)) {
+    return static_cast<int32>(syms->AddSymbol(str, label));
   } else {
     LOG(ERROR) << "Unable to parse Unicode codepoint";
     return kNoLabel;
   }
 }
 
-// Removes backslashes acting as bracket escape characters (e.g. "\[").
-void RemoveBracketEscapes(string *str) {
-  static const RE2 left_bracket_escape(kEscapedLeftBracket);
-  RE2::GlobalReplace(str, left_bracket_escape, R"([)");
-  static const RE2 right_bracket_escape(kEscapedRightBracket);
-  RE2::GlobalReplace(str, right_bracket_escape, R"(])");
+int64 BracketedStringToLabel(const string &token, SymbolTable *syms) {
+  const auto *ctoken = token.c_str();
+  char *p;
+  int64 label = strtol(ctoken, &p, 0);
+  // Could not parse the entire string as a number so it is assumed to be
+  // a generated label.
+  if (p < ctoken + token.size()) {
+    label = syms->AddSymbol(token);
+    // Label is outside of byte range so we have to add it.
+  } else if (label > 255) {
+    std::stringstream sstrm;
+    sstrm << label;
+    syms->AddSymbol(sstrm.str(), label);
+  }
+  return label;
 }
 
 }  // namespace internal

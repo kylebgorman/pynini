@@ -82,7 +82,7 @@ class ColumnStringFile {
   const string &Filename() const { return sf_.Filename(); }
 
  private:
-  void Parse() { row_ = strings::Split(sf_.GetString(), "\t"); }
+  void Parse() { row_ = strings::Split(sf_.GetString(), '\t'); }
 
   StringFile sf_;
   std::vector<string> row_;

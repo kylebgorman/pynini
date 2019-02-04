@@ -97,10 +97,6 @@ bool LabelsToString(const std::vector<Label> &labels, string *str,
     }
     case SYMBOL: {
       std::stringstream sstrm;
-      if (!syms) {
-        LOG(ERROR) << "LabelsToString: Symbol table requested but not provided";
-        return false;
-      }
       auto it = labels.begin();
       if (it == labels.end()) return true;
       if (!PrintSymbol(*it, *syms, sstrm)) return false;
@@ -124,6 +120,12 @@ bool PrintString(const Fst<Arc> &fst, string *str, StringTokenType ttype = BYTE,
   // Collects labels.
   std::vector<Label> labels;
   if (!internal::FstToOutputLabels(fst, &labels)) return false;
+  // If the FST has its own output symbol table and symbol table use is
+  // requested, we use it unless syms is specified.
+  if (ttype == SYMBOL && !syms && !(syms = fst.OutputSymbols())) {
+    LOG(ERROR) << "PrintString:: Symbol table use requested but none found";
+    return false;
+  }
   // Writes labels or symbols to string.
   if (!internal::LabelsToString(labels, str, ttype, syms)) return false;
   return true;
