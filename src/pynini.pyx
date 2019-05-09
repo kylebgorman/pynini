@@ -1122,7 +1122,8 @@ cpdef Fst leniently_compose(ifst1, ifst2, sigma_star, compose_filter=b"auto",
     sigma_star: A cyclic, unweighted acceptor representing the closure over the
         alphabet.
     compose_filter: A string matching a known composition filter; one of:
-        "alt_sequence", "auto", "match", "null", "sequence", "trivial".
+        "alt_sequence", "auto", "match", "no_match", "null", "sequence",
+        "trivial".
     connect: Should output be trimmed?
 
   Returns:
@@ -1165,7 +1166,8 @@ cpdef bool matches(ifst1, ifst2, compose_filter=b"auto"):
     ifst1: The first input FST.
     ifst2: The second input FST.
     compose_filter: A string matching a known composition filter; one of:
-        "alt_sequence", "auto", "match", "null", "sequence", "trivial".
+        "alt_sequence", "auto", "match", "no_match", "null", "sequence",
+        "trivial".
 
   Returns:
     True if the composition of ifst1 and ifst2 is non-null, else False.

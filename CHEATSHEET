@@ -39,6 +39,6 @@ Sample operations:
     optimize(f)					f.optimize()
     project(f, ...)				f.project(...)
  						f.paths(...)
-    shortestpath(f, ...)			f.shortestpath(...)
+    shortestpath(f, ...)
 						f.stringify(...)
     union(f, g, ...)		f | g		f.union(g)

@@ -41,8 +41,14 @@ namespace internal {
 template <class Arc>
 inline bool CheckNonEmptyAndCleanup(MutableFst<Arc> *lattice) {
   if (lattice->Start() == kNoStateId) return false;
-  Project(lattice, PROJECT_OUTPUT);
-  RmEpsilon(lattice);
+  // Project on the output side if not already known to be an acceptor.
+  if (!lattice->Properties(nlp_fst::kAcceptor, /*test*/ false)) {
+    Project(lattice, PROJECT_OUTPUT);
+  }
+  // RmEpsilon if not already known to be epsilon-free.
+  if (!lattice->Properties(nlp_fst::kNoEpsilons, /*test*/ false)) {
+    RmEpsilon(lattice);
+  }
   return true;
 }
 

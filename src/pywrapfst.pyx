@@ -212,7 +212,8 @@ cdef fst.ComposeFilter _get_compose_filter(
 
   Args:
     compose_filter: A string matching a known composition filter; one of:
-        "alt_sequence", "auto", "match", "null", "sequence", "trivial".
+        "alt_sequence", "auto", "match", "no_match", "null", "sequence",
+        "trivial".
 
   Returns:
     A ComposeFilter enum value.
@@ -3364,7 +3365,8 @@ cpdef _MutableFst compose(_Fst ifst1,
     ifst1: The first input FST.
     ifst2: The second input FST.
     compose_filter: A string matching a known composition filter; one of:
-        "alt_sequence", "auto", "match", "null", "sequence", "trivial".
+        "alt_sequence", "auto", "match", "no_match", "null", "sequence",
+        "trivial".
     connect: Should output be trimmed?
 
   Returns:
@@ -3485,7 +3487,8 @@ cpdef _MutableFst difference(_Fst ifst1,
     ifst1: The first input FST.
     ifst2: The second input FST.
     compose_filter: A string matching a known composition filter; one of:
-        "alt_sequence", "auto", "match", "null", "sequence", "trivial".
+        "alt_sequence", "auto", "match", "no_match", "null", "sequence",
+        "trivial".
     connect: Should the output FST be trimmed?
 
   Returns:
@@ -3636,7 +3639,8 @@ cpdef _MutableFst intersect(_Fst ifst1,
     ifst1: The first input FST.
     ifst2: The second input FST.
     compose_filter: A string matching a known composition filter; one of:
-        "alt_sequence", "auto", "match", "null", "sequence", "trivial".
+        "alt_sequence", "auto", "match", "no_match", "null", "sequence",
+        "trivial".
     connect: Should output be trimmed?
 
   Returns:

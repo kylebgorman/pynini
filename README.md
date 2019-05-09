@@ -23,7 +23,7 @@ Pynini depends on:
 
 -   A standards-compliant C++ 11 compiler (GCC &gt;= 4.8 or Clang &gt;= 700)
 -   The most recent version of [OpenFst](http://openfst.org) (at the time of
-    writing, 1.7.0) built with the `far`, `pdt`, `mpdt`, and `script` extensions
+    writing, 1.7.2) built with the `far`, `pdt`, `mpdt`, and `script` extensions
     (i.e., built with `./configure --enable-grm`) and headers
 -   [Python 2.7 or 3.6+](https://www.python.org) and headers
 

@@ -34,7 +34,7 @@ bool GetCDRewriteDirection(const string &str, CDRewriteDirection *rd) {
 }
 
 bool GetCDRewriteMode(const string &str, CDRewriteMode *rm) {
-  if (str == "obl")  {
+  if (str == "obl") {
     *rm = OBLIGATORY;
   } else if (str == "opt") {
     *rm = OPTIONAL;
