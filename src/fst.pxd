@@ -20,10 +20,10 @@ from libc.time cimport time_t
 from libc.time cimport time
 
 from libcpp cimport bool
+from libcpp.string cimport string
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 
-from libcpp.string cimport string
 from basictypes cimport int32
 from basictypes cimport int64
 from basictypes cimport uint32
@@ -390,6 +390,8 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
     bool AddArc(int64, const ArcClass &)
 
     int64 AddState()
+
+    void AddStates(size_t)
 
     bool DeleteArcs(int64, size_t)
 

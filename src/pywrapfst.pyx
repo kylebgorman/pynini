@@ -1861,6 +1861,18 @@ cdef class _MutableFst(_Fst):
     self._check_mutating_imethod()
     return result
 
+  cpdef void add_states(self, size_t n) except *:
+    """
+    add_states(self, n)
+
+    Adds n new states to the FST.
+
+    Args:
+      n: The number of states to add.
+    """
+    self._mfst.get().AddStates(n)
+    self._check_mutating_imethod()
+
   cdef void _arcsort(self, sort_type=b"ilabel") except *:
     cdef fst.ArcSortType sort_type_enum
     if not fst.GetArcSortType(tostring(sort_type), addr(sort_type_enum)):
@@ -4068,14 +4080,16 @@ cpdef _Fst statemap(_Fst ifst, map_type):
 
   Constructively applies a transform to all states.
 
-  This operation transforms each state according to the requested map type.
-  Note that currently, only one state-mapping operation is supported.
+  This operation transforms each state using one of the following:
+
+    * arc_sum: sums weights of identically-labeled multi-arcs.
+    * arc_unique: deletes non-unique identically-labeled multi-arcs.
+    * identity: maps to self.
 
   Args:
     ifst: The input FST.
-    map_type: A string matching a known mapping operation; one of: "arc_sum"
-        (sum weights of identically-labeled multi-arcs), "arc_unique" (deletes
-        non-unique identically-labeled multi-arcs).
+    map_type: A string matching a known mapping operation; one of: "arc_sum",
+        "arc_unique", "identity".
 
   Returns:
     An FST with states remapped.

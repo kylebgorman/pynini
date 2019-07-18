@@ -32,7 +32,7 @@ namespace fst {
 namespace script {
 
 using StringFileInnerArgs =
-    std::tuple<const string &, MutableFstClass *, StringTokenType,
+    std::tuple<const std::string &, MutableFstClass *, StringTokenType,
                StringTokenType, const SymbolTable *, const SymbolTable *, bool,
                bool>;
 
@@ -47,7 +47,7 @@ void StringFile(StringFileArgs *args) {
       std::get<6>(args->args), std::get<7>(args->args));
 }
 
-bool StringFile(const string &fname, MutableFstClass *fst,
+bool StringFile(const std::string &fname, MutableFstClass *fst,
                 StringTokenType itype = BYTE, StringTokenType otype = BYTE,
                 const SymbolTable *isyms = nullptr,
                 const SymbolTable *osyms = nullptr,
@@ -55,7 +55,7 @@ bool StringFile(const string &fname, MutableFstClass *fst,
                 bool attach_output_symbols = true);
 
 using StringMapInnerArgs =
-    std::tuple<const std::vector<std::vector<string>> &, MutableFstClass *,
+    std::tuple<const std::vector<std::vector<std::string>> &, MutableFstClass *,
                StringTokenType, StringTokenType, const SymbolTable *,
                const SymbolTable *, bool, bool>;
 
@@ -70,7 +70,7 @@ void StringMap(StringMapArgs *args) {
       std::get<6>(args->args), std::get<7>(args->args));
 }
 
-bool StringMap(const std::vector<std::vector<string>> &lines,
+bool StringMap(const std::vector<std::vector<std::string>> &lines,
                MutableFstClass *fst, StringTokenType itype = BYTE,
                StringTokenType otype = BYTE, const SymbolTable *isyms = nullptr,
                const SymbolTable *osyms = nullptr,

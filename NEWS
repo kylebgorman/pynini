@@ -1,7 +1,13 @@
+v. 2.0.8 (compatible with OpenFst 1.7.3)
+========================================
+
+* Simplifications to the range-concat backend
+* Simplifications to the string compilation backend
+
 v. 2.0.7 (compatible with OpenFst 1.7.2)
 ========================================
 
-* Simplifications to string printing backend
+* Simplifications to the string printing backend
 
 v. 2.0.6 (compatible with OpenFst 1.7.1)
 ========================================

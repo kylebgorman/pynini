@@ -174,7 +174,9 @@ void CDRewriteRule<Arc>::MakeMarker(
   using StateId = StdArc::StateId;
   using Weight = StdArc::Weight;
   if (!(fst->Properties(kAcceptor, true) & kAcceptor)) {
-    LOG(FATAL) << "Marker: input FST must be an acceptor";
+    FSTERROR() << "Marker: input FST must be an acceptor";
+    fst->SetProperties(kError, kError);
+    return;
   }
   auto num_states = fst->NumStates();
   // When num_states == 0, *fst is really Complement(sigma) and we build the
@@ -187,7 +189,7 @@ void CDRewriteRule<Arc>::MakeMarker(
       } else {
         for (StateId s = 0; s < num_states; ++s) {
           if (fst->Final(s) == Weight::Zero()) {
-            fst->SetFinal(s, Weight::One());
+            fst->SetFinal(s);
           } else {
             const auto i = fst->AddState();
             fst->SetFinal(i, fst->Final(s));
@@ -198,8 +200,7 @@ void CDRewriteRule<Arc>::MakeMarker(
             fst->SetFinal(s, Weight::Zero());
             fst->DeleteArcs(s);
             for (const auto &marker : markers) {
-              fst->AddArc(
-                  s, StdArc(marker.first, marker.second, Weight::One(), i));
+              fst->AddArc(s, StdArc(marker.first, marker.second, i));
             }
           }
         }
@@ -212,11 +213,10 @@ void CDRewriteRule<Arc>::MakeMarker(
       } else {
         for (StateId s = 0; s < num_states; ++s) {
           if (fst->Final(s) == Weight::Zero()) {
-            fst->SetFinal(s, Weight::One());
+            fst->SetFinal(s);
           } else {
             for (const auto &marker : markers) {
-              fst->AddArc(
-                  s, StdArc(marker.first, marker.second, Weight::One(), s));
+              fst->AddArc(s, StdArc(marker.first, marker.second, s));
             }
           }
         }
@@ -230,18 +230,16 @@ void CDRewriteRule<Arc>::MakeMarker(
         for (StateId s = 0; s < num_states; ++s) {
           if (fst->Final(s) != Weight::Zero()) {
             for (const auto &marker : markers) {
-              fst->AddArc(
-                  s, StdArc(marker.first, marker.second, Weight::One(), s));
+              fst->AddArc(s, StdArc(marker.first, marker.second, s));
             }
           }
         }
       } else {
         for (StateId s = 0; s < num_states; ++s) {
           if (fst->Final(s) == Weight::Zero()) {
-            fst->SetFinal(s, Weight::One());
+            fst->SetFinal(s);
             for (const auto &marker : markers) {
-              fst->AddArc(
-                  s, StdArc(marker.first, marker.second, Weight::One(), s));
+              fst->AddArc(s, StdArc(marker.first, marker.second, s));
             }
           }
         }
@@ -260,7 +258,7 @@ void CDRewriteRule<Arc>::IgnoreMarkers(
        siter.Next()) {
     const auto s = siter.Value();
     for (const auto &marker : markers) {
-      fst->AddArc(s, Arc(marker.first, marker.second, Arc::Weight::One(), s));
+      fst->AddArc(s, Arc(marker.first, marker.second, s));
     }
   }
 }
@@ -275,8 +273,7 @@ void CDRewriteRule<Arc>::AddMarkersToSigma(
     const auto s = siter.Value();
     if (sigma->Final(s) != Arc::Weight::Zero()) {
       for (const auto &marker : markers) {
-        sigma->AddArc(s, Arc(marker.first, marker.second, Arc::Weight::One(),
-                             sigma->Start()));
+        sigma->AddArc(s, Arc(marker.first, marker.second, sigma->Start()));
       }
     }
   }
@@ -301,10 +298,9 @@ void CDRewriteRule<Arc>::AppendMarkers(
   const auto start_state = temp_fst.AddState();
   const auto final_state = temp_fst.AddState();
   temp_fst.SetStart(start_state);
-  temp_fst.SetFinal(final_state, Weight::One());
+  temp_fst.SetFinal(final_state);
   for (const auto &marker : markers) {
-    temp_fst.AddArc(start_state, Arc(marker.first, marker.second, Weight::One(),
-                                     final_state));
+    temp_fst.AddArc(start_state, Arc(marker.first, marker.second, final_state));
   }
   Concat(fst, temp_fst);
 }
@@ -319,8 +315,7 @@ void CDRewriteRule<Arc>::PrependMarkers(
   const auto old_start = fst->Start();
   fst->SetStart(new_start);
   for (const auto &marker : markers) {
-    fst->AddArc(new_start, Arc(marker.first, marker.second, Arc::Weight::One(),
-                               old_start));
+    fst->AddArc(new_start, Arc(marker.first, marker.second, old_start));
   }
 }
 
@@ -437,8 +432,8 @@ void CDRewriteRule<Arc>::MakeReplace(MutableFst<Arc> *fst,
   // Creates new initial and final states.
   const auto start_state = fst->AddState();
   const auto final_state = fst->AddState();
-  fst->AddArc(start_state, Arc(initial_pair.first, initial_pair.second,
-                               Weight::One(), fst->Start()));
+  fst->AddArc(start_state,
+              Arc(initial_pair.first, initial_pair.second, fst->Start()));
   // Makes all final states non final with transition to new final state.
   for (StateIterator<MutableFst<Arc>> siter(*fst); !siter.Done();
        siter.Next()) {
@@ -448,8 +443,8 @@ void CDRewriteRule<Arc>::MakeReplace(MutableFst<Arc> *fst,
                        final_state));
     fst->SetFinal(s, Weight::Zero());
   }
-  fst->SetFinal(final_state, Weight::One());
-  fst->SetFinal(start_state, Weight::One());
+  fst->SetFinal(final_state);
+  fst->SetFinal(start_state);
   fst->SetStart(start_state);
   // Adds required loops at new initial state.
   VectorFst<Arc> sigma_m(sigma);
@@ -721,23 +716,21 @@ void CDRewriteRule<Arc>::HandleBoundaryMarkers(const Fst<Arc>& sigma,
   initial.SetStart(start);
   if (add_initial_boundary_marker) {
     const auto end = initial.AddState();
-    initial.SetFinal(end, Weight::One());
+    initial.SetFinal(end);
     initial.AddArc(start, Arc(del ? initial_boundary_marker_ : 0,
-                              del ? 0 : initial_boundary_marker_,
-                              Weight::One(), end));
+                              del ? 0 : initial_boundary_marker_, end));
   } else {
-    initial.SetFinal(start, Weight::One());
+    initial.SetFinal(start);
   }
   start = final_fst->AddState();
   final_fst->SetStart(start);
   if (add_final_boundary_marker) {
     const auto end = final_fst->AddState();
-    final_fst->SetFinal(end, Weight::One());
+    final_fst->SetFinal(end);
     final_fst->AddArc(start, Arc(del ? final_boundary_marker_ : 0,
-                                 del ? 0 : final_boundary_marker_,
-                                 Weight::One(), end));
+                                 del ? 0 : final_boundary_marker_, end));
   } else {
-    final_fst->SetFinal(start, Weight::One());
+    final_fst->SetFinal(start);
   }
   Concat(&initial, sigma);
   Concat(initial, final_fst);
@@ -782,7 +775,7 @@ void CDRewriteRule<Arc>::HandleBoundaryMarkers(const Fst<Arc>& sigma,
     } else {
       start = initial_del_sigma.AddState();
       initial_del_sigma.SetStart(start);
-      initial_del_sigma.SetFinal(start, Weight::One());
+      initial_del_sigma.SetFinal(start);
     }
     VectorFst<Arc> final_del_sigma;
     if (add_final_boundary_marker) {
@@ -790,7 +783,7 @@ void CDRewriteRule<Arc>::HandleBoundaryMarkers(const Fst<Arc>& sigma,
     } else {
       start = final_del_sigma.AddState();
       final_del_sigma.SetStart(start);
-      final_del_sigma.SetFinal(start, Weight::One());
+      final_del_sigma.SetFinal(start);
     }
     Concat(&initial_del_sigma, *final_fst);
     Concat(initial_del_sigma, &final_del_sigma);

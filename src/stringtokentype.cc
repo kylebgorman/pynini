@@ -20,7 +20,7 @@
 namespace fst {
 namespace script {
 
-bool GetStringTokenType(const string &str, StringTokenType *ttype) {
+bool GetStringTokenType(const std::string &str, StringTokenType *ttype) {
   if (str == "byte") {
     *ttype = BYTE;
   } else if (str == "utf8") {

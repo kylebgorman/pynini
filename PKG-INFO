@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: pynini
-Version: 2.0.7
+Version: 2.0.8
 Summary: Finite-state grammar compilation library
 Home-page: http://pynini.opengrm.org
 Author: Kyle Gorman
@@ -31,21 +31,26 @@ Description: Pynini is a Python extension module which allows the user to compil
         
         -   A standards-compliant C++ 11 compiler (GCC &gt;= 4.8 or Clang &gt;= 700)
         -   The most recent version of [OpenFst](http://openfst.org) (at the time of
-            writing, 1.7.2) built with the `far`, `pdt`, `mpdt`, and `script` extensions
+            writing, 1.7.3) built with the `far`, `pdt`, `mpdt`, and `script` extensions
             (i.e., built with `./configure --enable-grm`) and headers
         -   [Python 2.7 or 3.6+](https://www.python.org) and headers
         
-        It is tested with: Debian Linux 4.18.10 on x86\_64, GCC 7.3.0, Cython 0.29.2 and
-        Python 2.7.13 and Python 3.7.1.
+        It is tested with: Debian Linux 4.19.37 on x86\_64, GCC 7.3.0, Cython 0.29.12 and
+        Python 2.7.13 and Python 3.7.2.
         
         Installation instructions
         =========================
         
-        Execute `python setup.py install`. Depending on your environment, you
-        may need to be superuser while running this command for installation to
-        complete.
+        Execute `python setup.py install`. Depending on your environment, you may need
+        to be superuser while running this command for installation to complete. To
+        confirm successful installation, execute `python setup.py test`.
         
-        To confirm successful installation, execute `python setup.py test`.
+        Pynini is not currently available from [PyPi](https://pypi.org/) or `pip`
+        because there is another package squatting on the name `pynini`. However, we do
+        maintain a periodically updated
+        [read-only GitHub mirror](https://github.com/kylebgorman/pynini) which can be
+        used to install the current version of the library by executing `pip install -e
+        git+git@github.com:kylebgorman/pynini.git#egg=pynini`.
         
         Python 3 support
         ================

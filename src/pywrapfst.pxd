@@ -22,10 +22,10 @@ from libc.time cimport time_t
 from libcpp cimport bool
 from libcpp.memory cimport shared_ptr
 from libcpp.memory cimport unique_ptr
+from libcpp.string cimport string
 from libcpp.utility cimport pair
 from libcpp.vector cimport vector
 
-from libcpp.string cimport string
 from basictypes cimport int32
 from basictypes cimport int64
 from basictypes cimport uint32
@@ -285,6 +285,8 @@ cdef class _MutableFst(_Fst):
   cdef void _add_arc(self, int64 state, Arc arc) except *
 
   cpdef int64 add_state(self) except *
+
+  cpdef void add_states(self, size_t) except *
 
   cdef void _arcsort(self, sort_type=?) except *
 

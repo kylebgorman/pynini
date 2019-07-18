@@ -17,13 +17,6 @@
 
 #include "pynini_cdrewrite.h"
 
-DEFINE_int32(left_boundary_index, 0x10fffc,
-             "Index for the beginning-of-string symbol");
-DEFINE_string(left_boundary_symbol, "BOS", "Beginning-of-string symbol");
-DEFINE_int32(right_boundary_index, 0x10fffd,
-             "Index for the end-of-string symbol");
-DEFINE_string(right_boundary_symbol, "EOS", "End-of-string symbol");
-
 namespace fst {
 namespace script {
 

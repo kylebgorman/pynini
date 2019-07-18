@@ -23,7 +23,7 @@
 #include <fst/types.h>
 #include <fst/fst.h>
 #include <fst/string.h>
-#include "third_party/absl/strings/string_view.h"
+
 
 namespace fst {
 
@@ -41,7 +41,7 @@ class ByteViewer {
 
   Arc operator()(absl::string_view view, StateId byte_offset) const {
     const Label ch = static_cast<unsigned char>(view[byte_offset]);
-    return Arc(ch, ch, Weight::One(), byte_offset + 1);
+    return Arc(ch, ch, byte_offset + 1);
   }
 
   static constexpr StringTokenType TokenType() { return StringTokenType::BYTE; }
@@ -64,7 +64,7 @@ class UTF8Viewer {
 
   Arc operator()(absl::string_view view, StateId byte_offset) const {
     const auto label_size = UTF8Viewer<Arc>::GetLabelAndSize(view, byte_offset);
-    return Arc(label_size.first, label_size.first, Weight::One(),
+    return Arc(label_size.first, label_size.first,
                byte_offset + label_size.second);
   }
 

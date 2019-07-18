@@ -23,6 +23,7 @@
 // markers, in the style of Thrax. There are both arc-templated and
 // template-free functions.
 
+#include <fst/types.h>
 #include <fst/fstlib.h>
 #include <fst/script/arg-packs.h>
 #include <fst/script/fstscript.h>
@@ -30,13 +31,13 @@
 #include "sigma_star.h"
 #include "pynini_common.h"
 
-DECLARE_int32(left_boundary_index);
-DECLARE_string(left_boundary_symbol);
-DECLARE_int32(right_boundary_index);
-DECLARE_string(right_boundary_symbol);
-
 namespace fst {
 namespace internal {
+
+constexpr char kInitialBoundarySymbol[] = "BOS";
+constexpr int64 kInitialBoundaryLabel = 0x10fffc;
+constexpr char kFinalBoundarySymbol[] = "EOS";
+constexpr int64 kFinalBoundaryLabel = 0x10fffd;
 
 // The input FSTs are mutated during preparation. Outside of the internal
 // namespace, the four input arguments are all immutable const references,
@@ -60,8 +61,8 @@ void PyniniCDRewrite(MutableFst<Arc> *tau, MutableFst<Arc> *lambda,
   DeleteSymbols(sigma_star);
   // Gives a consistent labeling to boundary symbols in lambda and/or rho.
   if (syms) {
-    syms->AddSymbol(FLAGS_left_boundary_symbol, FLAGS_left_boundary_index);
-    syms->AddSymbol(FLAGS_right_boundary_symbol, FLAGS_right_boundary_index);
+    syms->AddSymbol(kInitialBoundarySymbol, kInitialBoundaryLabel);
+    syms->AddSymbol(kFinalBoundarySymbol, kFinalBoundaryLabel);
   }
   // Prepares remaining output.
   syms.reset(PrepareInputSymbols(syms.get(), tau));
@@ -75,7 +76,7 @@ void PyniniCDRewrite(MutableFst<Arc> *tau, MutableFst<Arc> *lambda,
   DeleteSymbols(rho);
   // Actually compiles the rewrite rule.
   CDRewriteCompile(*tau, *lambda, *rho, *sigma_star, ofst, cd, cm,
-                   FLAGS_left_boundary_index, FLAGS_right_boundary_index);
+                   kInitialBoundaryLabel, kFinalBoundaryLabel);
   // Reassigns symbol table to output.
   ofst->SetInputSymbols(syms.get());
   ofst->SetOutputSymbols(syms.get());

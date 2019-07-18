@@ -26,7 +26,7 @@ namespace fst {
 namespace script {
 
 using CompileStringInnerArgs =
-    std::tuple<const string &, MutableFstClass *, StringTokenType,
+    std::tuple<const std::string &, MutableFstClass *, StringTokenType,
                const SymbolTable *, const WeightClass &, bool>;
 
 using CompileStringArgs = WithReturnValue<bool, CompileStringInnerArgs>;
@@ -43,7 +43,7 @@ void CompileString(CompileStringArgs *args) {
 
 // As is sometimes the case, there are fewer default arguments for the scripting
 // API variant because we can't infer the underlying weight type.
-bool CompileString(const string &str, MutableFstClass *fst,
+bool CompileString(const std::string &str, MutableFstClass *fst,
                    StringTokenType ttype, const SymbolTable *syms,
                    const WeightClass &weight, bool attach_symbols = true);
 

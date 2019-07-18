@@ -26,7 +26,7 @@
 namespace fst {
 namespace script {
 
-using PrintStringInnerArgs = std::tuple<const FstClass &, string *,
+using PrintStringInnerArgs = std::tuple<const FstClass &, std::string *,
                                         StringTokenType, const SymbolTable *>;
 
 using PrintStringArgs = WithReturnValue<bool, PrintStringInnerArgs>;
@@ -38,7 +38,8 @@ void PrintString(PrintStringArgs *args) {
                              std::get<2>(args->args), std::get<3>(args->args));
 }
 
-bool PrintString(const FstClass &fst, string *str, StringTokenType ttype = BYTE,
+bool PrintString(const FstClass &fst, std::string *str,
+                 StringTokenType ttype = BYTE,
                  const SymbolTable *syms = nullptr);
 
 }  // namespace script

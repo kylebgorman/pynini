@@ -18,12 +18,15 @@
 #ifndef PYNINI_STRINGTOKENTYPE_H_
 #define PYNINI_STRINGTOKENTYPE_H_
 
+#include <string>
+using std::string;
+
 #include <fst/string.h>
 
 namespace fst {
 namespace script {
 
-bool GetStringTokenType(const string &str, StringTokenType *ttype);
+bool GetStringTokenType(const std::string &str, StringTokenType *ttype);
 
 }  // namespace script
 }  // namespace fst

@@ -29,9 +29,9 @@ using std::string;
 
 #include <iostream>
 #include <fst/fstlib.h>
+#include "prefix_tree.h"
 #include "stringcompile.h"
 #include "stringfile.h"
-#include "prefix_tree.h"
 
 namespace fst {
 namespace internal {
@@ -52,7 +52,7 @@ class StringMapCompiler {
         isyms_(GetSymbolTable(itype_, isyms)),
         osyms_(GetSymbolTable(otype_, osyms)) {}
 
-  bool Add(const string &istring, const string &ostring,
+  bool Add(const std::string &istring, const std::string &ostring,
            const Weight &weight = Weight::One()) {
     if (!StringToLabels<Label>(istring, &ilabels_, itype_, isyms_.get())) {
       return false;
@@ -65,8 +65,8 @@ class StringMapCompiler {
   }
 
   // Also parses a weight string.
-  bool Add(const string &istring, const string &ostring,
-           const string &weight) {
+  bool Add(const std::string &istring, const std::string &ostring,
+           const std::string &weight) {
     std::istringstream strm(weight);
     Weight w;
     strm >> w;
@@ -103,7 +103,7 @@ class StringMapCompiler {
 // Compiles deterministic FST representing the union of the cross-product of
 // pairs of weighted string cross-products from a TSV file of string triples.
 template <class Arc>
-bool CompileStringFile(const string &fname, MutableFst<Arc> *fst,
+bool CompileStringFile(const std::string &fname, MutableFst<Arc> *fst,
                        StringTokenType itype = BYTE,
                        StringTokenType otype = BYTE,
                        const SymbolTable *isyms = nullptr,
@@ -117,17 +117,18 @@ bool CompileStringFile(const string &fname, MutableFst<Arc> *fst,
     const auto &line = csf.Row();
     switch (line.size()) {
       case 1: {
-        const string iostring(line[0]);
+        const std::string iostring(line[0]);
         if (!compiler.Add(iostring, iostring)) return false;
         break;
       }
       case 2: {
-        if (!compiler.Add(string(line[0]), string(line[1]))) return false;
+        if (!compiler.Add(std::string(line[0]), std::string(line[1])))
+          return false;
         break;
       }
       case 3: {
-        if (!compiler.Add(string(line[0]), string(line[1]),
-                          string(line[2]))) {
+        if (!compiler.Add(std::string(line[0]), std::string(line[1]),
+                          std::string(line[2]))) {
           return false;
         }
         break;
@@ -147,7 +148,7 @@ bool CompileStringFile(const string &fname, MutableFst<Arc> *fst,
 // Compiles deterministic FST representing the union of the cross-product of
 // pairs of weighted string cross-products from a vector of vector of strings.
 template <class Arc>
-bool CompileStringMap(const std::vector<std::vector<string>> &lines,
+bool CompileStringMap(const std::vector<std::vector<std::string>> &lines,
                       MutableFst<Arc> *fst, StringTokenType itype = BYTE,
                       StringTokenType otype = BYTE,
                       const SymbolTable *isyms = nullptr,

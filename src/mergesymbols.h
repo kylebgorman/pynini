@@ -65,8 +65,7 @@ void MergeOutputSymbols(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2) {
 }
 
 template <class Arc>
-void MergeLeftOutputAndRightInputSymbols(MutableFst<Arc> *fst1,
-                                         MutableFst<Arc> *fst2) {
+void MergeInside(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2) {
   bool relabel = false;
   std::unique_ptr<SymbolTable> new_syms(
       MergeSymbols(fst1->OutputSymbols(), fst2->InputSymbols(), &relabel));
@@ -76,18 +75,34 @@ void MergeLeftOutputAndRightInputSymbols(MutableFst<Arc> *fst1,
   fst2->SetInputSymbols(new_syms.get());
 }
 
+template <class Arc>
+void MergeOutside(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2) {
+  bool relabel = false;
+  std::unique_ptr<SymbolTable> new_syms(
+      MergeSymbols(fst1->InputSymbols(), fst2->OutputSymbols(), &relabel));
+  if (!new_syms) return;  // No mutation necessary.
+  if (relabel) Relabel(fst2, new_syms.get(), nullptr);
+  fst1->SetInputSymbols(new_syms.get());
+  fst2->SetOutputSymbols(new_syms.get());
+}
+
 }  // namespace internal
 
 // These are encoded so that they can be ORed together.
 enum MergeSymbolsType {
   // "Do nothing".
   MERGE_NOOP = 0,
-  MERGE_INPUT_SYMBOLS = 1 << 0,
-  MERGE_OUTPUT_SYMBOLS = 1 << 1,
-  // = MERGE_INPUT_SYMBOLS | MERGE_OUTPUT_SYMBOLS; used for concat and union.
-  MERGE_INPUT_AND_OUTPUT_SYMBOLS = (1 << 0) | (1 << 1),
-  // Used for composition and intersection.
-  MERGE_LEFT_OUTPUT_AND_RIGHT_INPUT_SYMBOLS = (1 << 2),
+  MERGE_INPUT = 1 << 0,
+  MERGE_OUTPUT = 1 << 1,
+  // Merges both input and output; should be enabled for union and
+  // concatenation.
+  MERGE_INPUT_OUTPUT = MERGE_INPUT | MERGE_OUTPUT,
+  // Merges left output and right input tables; should be enabled for
+  // composition, intersection, and difference.
+  MERGE_INSIDE = 1 << 2,
+  // Merges left input and right output tables; should be enabled for
+  // cross-product.
+  MERGE_OUTSIDE = 1 << 3
 };
 
 // This is the most generic merging function, and it is the one most clients
@@ -95,15 +110,17 @@ enum MergeSymbolsType {
 template <class Arc>
 void MergeSymbols(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2,
                   MergeSymbolsType mst) {
-  if ((mst & MERGE_INPUT_SYMBOLS) == MERGE_INPUT_SYMBOLS) {
+  if ((mst & MERGE_INPUT) == MERGE_INPUT) {
     internal::MergeInputSymbols(fst1, fst2);
   }
-  if ((mst & MERGE_OUTPUT_SYMBOLS) == MERGE_OUTPUT_SYMBOLS) {
+  if ((mst & MERGE_OUTPUT) == MERGE_OUTPUT) {
     internal::MergeOutputSymbols(fst1, fst2);
   }
-  if ((mst & MERGE_LEFT_OUTPUT_AND_RIGHT_INPUT_SYMBOLS) ==
-      MERGE_LEFT_OUTPUT_AND_RIGHT_INPUT_SYMBOLS) {
-    internal::MergeLeftOutputAndRightInputSymbols(fst1, fst2);
+  if ((mst & MERGE_INSIDE) == MERGE_INSIDE) {
+    internal::MergeInside(fst1, fst2);
+  }
+  if ((mst & MERGE_OUTSIDE) == MERGE_OUTSIDE) {
+    internal::MergeOutside(fst1, fst2);
   }
 }
 

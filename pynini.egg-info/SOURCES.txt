@@ -6,7 +6,6 @@ MANIFEST.in
 NEWS
 README.md
 pynini_test.py
-setup.cfg
 setup.py
 pynini.egg-info/PKG-INFO
 pynini.egg-info/SOURCES.txt
@@ -14,6 +13,9 @@ pynini.egg-info/dependency_links.txt
 pynini.egg-info/top_level.txt
 src/basictypes.pxd
 src/cdrewrite.h
+src/concatrange.h
+src/concatrangescript.cc
+src/concatrangescript.h
 src/crossproduct.h
 src/crossproductscript.cc
 src/crossproductscript.h
@@ -49,9 +51,6 @@ src/pynini_replace.h
 src/pywrapfst.cc
 src/pywrapfst.pxd
 src/pywrapfst.pyx
-src/repeat.h
-src/repeatscript.cc
-src/repeatscript.h
 src/rewrite.h
 src/sigma_star.h
 src/string-view-fst.h

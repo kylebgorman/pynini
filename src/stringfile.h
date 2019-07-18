@@ -18,15 +18,13 @@
 #ifndef PYNINI_STRINGFILE_H_
 #define PYNINI_STRINGFILE_H_
 
-#include <istream>
 #include <string>
 using std::string;
-#include <utility>
 #include <vector>
 
 #include <iostream>
-#include <fst/fstlib.h>
-#include "stringcompile.h"
+
+#include "gtl.h"
 
 namespace fst {
 namespace internal {
@@ -36,9 +34,9 @@ namespace internal {
 class StringFile {
  public:
   // Opens a file input stream using the provided filename.
-  explicit StringFile(const string &fname)
+  explicit StringFile(const std::string &fname)
       : istrm_(fname), linenum_(0), fname_(fname) {
-     if (!!istrm_) Next();
+    if (!!istrm_) Next();
   }
 
   void Reset();
@@ -47,26 +45,23 @@ class StringFile {
 
   bool Done() const { return !istrm_ || istrm_.eof(); }
 
-  const string &GetString() const { return line_; }
+  const std::string &GetString() const { return line_; }
 
   size_t LineNumber() const { return linenum_; }
 
-  const string &Filename() const { return fname_; }
+  const std::string &Filename() const { return fname_; }
 
  private:
   std::ifstream istrm_;
-  string line_;
+  std::string line_;
   size_t linenum_;
-  const string fname_;
+  const std::string fname_;
 };
 
 // File iterator expecting multiple columns separated by tab.
 class ColumnStringFile {
  public:
-  explicit ColumnStringFile(const string &fname)
-      : sf_(fname) {
-    Parse();
-  }
+  explicit ColumnStringFile(const std::string &fname) : sf_(fname) { Parse(); }
 
   void Reset();
 
@@ -79,7 +74,7 @@ class ColumnStringFile {
 
   size_t LineNumber() const { return sf_.LineNumber(); }
 
-  const string &Filename() const { return sf_.Filename(); }
+  const std::string &Filename() const { return sf_.Filename(); }
 
  private:
   void Parse() { row_ = strings::Split(sf_.GetString(), '\t'); }
@@ -89,7 +84,6 @@ class ColumnStringFile {
 };
 
 }  // namespace internal
-
 }  // namespace fst
 
 #endif  // PYNINI_STRINGFILE_H_

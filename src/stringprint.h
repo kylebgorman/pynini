@@ -27,7 +27,8 @@ using std::string;
 namespace fst {
 
 template <class Arc>
-bool PrintString(const Fst<Arc> &fst, string *str, StringTokenType ttype = BYTE,
+bool PrintString(const Fst<Arc> &fst, std::string *str,
+                 StringTokenType ttype = BYTE,
                  const SymbolTable *syms = nullptr) {
   const StringPrinter<Arc> printer(ttype, syms);
   return printer(fst, str);

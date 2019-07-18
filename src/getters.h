@@ -26,9 +26,9 @@ using std::string;
 namespace fst {
 namespace script {
 
-bool GetCDRewriteDirection(const string &str, CDRewriteDirection *rd);
+bool GetCDRewriteDirection(const std::string &str, CDRewriteDirection *rd);
 
-bool GetCDRewriteMode(const string &str, CDRewriteMode *rm);
+bool GetCDRewriteMode(const std::string &str, CDRewriteMode *rm);
 
 }  // namespace script
 }  // namespace fst

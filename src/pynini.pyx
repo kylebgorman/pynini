@@ -29,13 +29,10 @@ from cython.operator cimport dereference as deref  # *foo
 from cython.operator cimport preincrement as inc   # ++foo
 
 from libcpp cimport bool
-from libcpp.cast cimport static_cast
-from libcpp.memory cimport shared_ptr
 from libcpp.memory cimport unique_ptr
 from libcpp.utility cimport pair
-from libcpp.vector cimport vector
-
 from libcpp.string cimport string
+from libcpp.vector cimport vector
 
 from basictypes cimport int32
 from basictypes cimport int64
@@ -89,6 +86,7 @@ from pywrapfst cimport tostring
 from pynini_includes cimport CDRewriteDirection
 from pynini_includes cimport CDRewriteMode
 from pynini_includes cimport CompileString
+from pynini_includes cimport ConcatRange
 from pynini_includes cimport CrossProduct
 from pynini_includes cimport EXPAND_FILTER
 from pynini_includes cimport GetByteSymbolTable
@@ -98,8 +96,9 @@ from pynini_includes cimport GetPdtComposeFilter
 from pynini_includes cimport GetPdtParserType
 from pynini_includes cimport GetStringTokenType
 from pynini_includes cimport LenientlyCompose
-from pynini_includes cimport MERGE_INPUT_AND_OUTPUT_SYMBOLS
-from pynini_includes cimport MERGE_LEFT_OUTPUT_AND_RIGHT_INPUT_SYMBOLS
+from pynini_includes cimport MERGE_INPUT_OUTPUT
+from pynini_includes cimport MERGE_INSIDE
+from pynini_includes cimport MERGE_OUTSIDE
 from pynini_includes cimport MergeSymbols
 from pynini_includes cimport MergeSymbolsType
 from pynini_includes cimport MPdtCompose
@@ -124,7 +123,6 @@ from pynini_includes cimport PyniniPdtReplace
 from pynini_includes cimport PyniniReplace
 from pynini_includes cimport ReadLabelPairs
 from pynini_includes cimport ReadLabelTriples
-from pynini_includes cimport Repeat
 from pynini_includes cimport StringFile
 from pynini_includes cimport StringFstClassPair
 from pynini_includes cimport StringMap
@@ -611,7 +609,7 @@ cdef class Fst(_MutableFst):
 
     See also `ques`, `star`, `plus`.
     """
-    Repeat(self._mfst.get(), lower, upper)
+    ConcatRange(self._mfst.get(), lower, upper)
     self._check_mutating_imethod()
     return self
 
@@ -645,7 +643,7 @@ cdef class Fst(_MutableFst):
     See also: `closure`.
     """
     cdef Fst result = self.copy()
-    Repeat(result._mfst.get(), 0, 1)
+    ConcatRange(result._mfst.get(), 0, 1)
     result._check_mutating_imethod()
     return result
 
@@ -687,8 +685,7 @@ cdef class Fst(_MutableFst):
       FstOpError: Operation failed.
     """
     cdef Fst rhs = _compile_or_copy_Fst(ifst, arc_type=self.arc_type())
-    MergeSymbols(self._mfst.get(), rhs._mfst.get(),
-                 MERGE_INPUT_AND_OUTPUT_SYMBOLS)
+    MergeSymbols(self._mfst.get(), rhs._mfst.get(), MERGE_INPUT_OUTPUT)
     self._concat(rhs)
     return self
 
@@ -761,8 +758,7 @@ cdef class Fst(_MutableFst):
     cdef Fst lhs
     cdef Fst rhs
     (lhs, rhs) = _compile_or_copy_two_Fsts(self, ifst)
-    MergeSymbols(self._mfst.get(), rhs._mfst.get(),
-                 MERGE_INPUT_AND_OUTPUT_SYMBOLS)
+    MergeSymbols(self._mfst.get(), rhs._mfst.get(), MERGE_INPUT_OUTPUT)
     self._union(rhs)
     return self
 
@@ -1011,6 +1007,7 @@ cpdef Fst transducer(istring,
                      attach_output_symbols)
   else:
     lower = ostring
+  # TODO(kbg): Call MergeSymbols to merge the "outside" tables here.
   # Actually computes cross-product.
   CrossProduct(deref(upper._fst),
                deref(lower._fst),
@@ -1118,7 +1115,8 @@ cpdef Fst leniently_compose(ifst1, ifst2, sigma_star, compose_filter=b"auto",
   argument's relations.
 
   Args:
-    ifst: The input FST.
+    ifst1: The first input FST.
+    ifst2: The second input FST.
     sigma_star: A cyclic, unweighted acceptor representing the closure over the
         alphabet.
     compose_filter: A string matching a known composition filter; one of:
@@ -1397,8 +1395,7 @@ def _compose_patch(fnc):
     cdef Fst lhs
     cdef Fst rhs
     (lhs, rhs) = _compile_or_copy_two_Fsts(arg1, arg2)
-    MergeSymbols(lhs._mfst.get(), rhs._mfst.get(),
-                 MERGE_LEFT_OUTPUT_AND_RIGHT_INPUT_SYMBOLS)
+    MergeSymbols(lhs._mfst.get(), rhs._mfst.get(), MERGE_INSIDE)
     _maybe_arcsort(lhs._mfst.get(), rhs._mfst.get())
     lhs = _init_Fst_from_MutableFst(fnc(lhs, rhs, *args, **kwargs))
     return lhs
@@ -1417,10 +1414,7 @@ def _difference_patch(fnc):
     (lhs, rhs) = _compile_or_copy_two_Fsts(arg1, arg2)
     if rhs._mfst.get().Properties(kDifferenceRhs, True) != kDifferenceRhs:
       raise FstOpError("2nd argument must be an unweighted acceptor")
-    MergeSymbols(lhs._mfst.get(), rhs._mfst.get(),
-                 MERGE_LEFT_OUTPUT_AND_RIGHT_INPUT_SYMBOLS)
-    MergeSymbols(lhs._mfst.get(), rhs._mfst.get(),
-                 MERGE_INPUT_AND_OUTPUT_SYMBOLS)
+    MergeSymbols(lhs._mfst.get(), rhs._mfst.get(), MERGE_INSIDE)
     # Makes RHS epsilon-free and deterministic.
     OptimizeDifferenceRhs(rhs._mfst.get(), True)
     return _init_Fst_from_MutableFst(fnc(lhs, rhs, *args, **kwargs))
@@ -1456,8 +1450,7 @@ def _comp_merge_patch(fnc):
     cdef Fst lhs
     cdef Fst rhs
     (lhs, rhs) = _compile_or_copy_two_Fsts(arg1, arg2)
-    MergeSymbols(lhs._mfst.get(), rhs._mfst.get(),
-                 MERGE_INPUT_AND_OUTPUT_SYMBOLS)
+    MergeSymbols(lhs._mfst.get(), rhs._mfst.get(), MERGE_INPUT_OUTPUT)
     return fnc(lhs, rhs, *args, **kwargs)
   return patch
 
@@ -1733,8 +1726,7 @@ def pdt_compose(ifst1,
   cdef Fst rhs
   (lhs, rhs) = _compile_or_copy_two_Fsts(ifst1, ifst2)
   _maybe_arcsort(lhs._mfst.get(), rhs._mfst.get())
-  MergeSymbols(lhs._mfst.get(), rhs._mfst.get(),
-               MERGE_LEFT_OUTPUT_AND_RIGHT_INPUT_SYMBOLS)
+  MergeSymbols(lhs._mfst.get(), rhs._mfst.get(), MERGE_INSIDE)
   cdef Fst result = Fst(lhs.arc_type())
   cdef PdtComposeFilter compose_filter_enum = _get_pdt_compose_filter(
       tostring(compose_filter))
@@ -2066,8 +2058,7 @@ cpdef Fst mpdt_compose(ifst1, ifst2, MPdtParentheses parens,
   cdef Fst rhs
   (lhs, rhs) = _compile_or_copy_two_Fsts(ifst1, ifst2)
   _maybe_arcsort(lhs._mfst.get(), rhs._mfst.get())
-  MergeSymbols(lhs._mfst.get(), rhs._mfst.get(),
-               MERGE_LEFT_OUTPUT_AND_RIGHT_INPUT_SYMBOLS)
+  MergeSymbols(lhs._mfst.get(), rhs._mfst.get(), MERGE_INSIDE)
   cdef Fst result = Fst(lhs.arc_type())
   cdef PdtComposeFilter compose_filter_enum = _get_pdt_compose_filter(
       tostring(compose_filter))

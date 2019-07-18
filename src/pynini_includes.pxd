@@ -17,10 +17,9 @@
 
 
 from libcpp cimport bool
+from libcpp.string cimport string
 from libcpp.utility cimport pair
 from libcpp.vector cimport vector
-
-from libcpp.string cimport string
 
 from basictypes cimport int32
 from basictypes cimport int64
@@ -152,13 +151,18 @@ cdef extern from "cdrewrite.h" \
     OPTIONAL
 
 
+cdef extern from "concatrangescript.h" \
+    namespace "fst::script" nogil:
+
+  void ConcatRange(MutableFstClass *, int32, int32)
+
+
 cdef extern from "getters.h" \
     namespace "fst::script" nogil:
 
   cdef bool GetCDRewriteDirection(const string &, CDRewriteDirection *)
 
   cdef bool GetCDRewriteMode(const string &, CDRewriteMode *)
-
 
 
 cdef extern from "crossproductscript.h" \
@@ -179,10 +183,11 @@ cdef extern from "lenientlycomposescript.h" \
 cdef extern from "mergesymbols.h" namespace "fst":
 
   enum MergeSymbolsType:
-    MERGE_INPUT_SYMBOLS
-    MERGE_OUTPUT_SYMBOLS
-    MERGE_INPUT_AND_OUTPUT_SYMBOLS
-    MERGE_LEFT_OUTPUT_AND_RIGHT_INPUT_SYMBOLS
+    MERGE_INPUT
+    MERGE_OUTPUT
+    MERGE_INPUT_OUTPUT
+    MERGE_INSIDE
+    MERGE_OUTSIDE
 
 
 cdef extern from "mergesymbolsscript.h" \
@@ -203,12 +208,6 @@ cdef extern from "optimizescript.h" \
   void OptimizeStringCrossProducts(MutableFstClass *, bool)
 
   void OptimizeDifferenceRhs(MutableFstClass *, bool)
-
-
-cdef extern from "repeatscript.h" \
-    namespace "fst::script" nogil:
-
-  void Repeat(MutableFstClass *, int32, int32)
 
 
 cdef extern from "pathsscript.h" \

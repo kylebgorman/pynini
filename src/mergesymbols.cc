@@ -25,8 +25,6 @@ namespace internal {
 SymbolTable *MergeSymbols(const SymbolTable *syms1, const SymbolTable *syms2,
                           bool *relabel) {
   *relabel = false;
-  // The flag overrides any work.
-  if (!FLAGS_fst_compat_symbols) return nullptr;
   // If either symbol table is null, there's no reason to merge or reassign.
   if (!syms1 || !syms2) return nullptr;
   // If their checksums match, there's no reason to merge or reassign.

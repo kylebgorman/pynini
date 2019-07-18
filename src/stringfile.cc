@@ -18,7 +18,6 @@
 #include "stringfile.h"
 
 #include "stripcomment.h"
-#include "gtl.h"
 
 namespace fst {
 namespace internal {

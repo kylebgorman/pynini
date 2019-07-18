@@ -271,13 +271,13 @@ class StringPathIterator : public PathIterator<Arc> {
                               bool check_acyclic = true)
       : StringPathIterator(fst, ttype, ttype, syms, syms, check_acyclic) {}
 
-  void IString(string *str);
+  void IString(std::string *str);
 
-  string IString();
+  std::string IString();
 
-  void OString(string *str);
+  void OString(std::string *str);
 
-  string OString();
+  std::string OString();
 
  private:
   StringTokenType itype_;
@@ -314,25 +314,25 @@ StringPathIterator<Arc>::StringPathIterator(
 }
 
 template <class Arc>
-void StringPathIterator<Arc>::IString(string *str) {
+void StringPathIterator<Arc>::IString(std::string *str) {
   if (!LabelsToString(ILabels(), str, itype_, isyms_)) SetError();
 }
 
 template <class Arc>
-string StringPathIterator<Arc>::IString() {
-  string result;
+std::string StringPathIterator<Arc>::IString() {
+  std::string result;
   IString(&result);
   return result;
 }
 
 template <class Arc>
-void StringPathIterator<Arc>::OString(string *str) {
+void StringPathIterator<Arc>::OString(std::string *str) {
   if (!LabelsToString(OLabels(), str, otype_, osyms_)) SetError();
 }
 
 template <class Arc>
-string StringPathIterator<Arc>::OString() {
-  string result;
+std::string StringPathIterator<Arc>::OString() {
+  std::string result;
   OString(&result);
   return result;
 }

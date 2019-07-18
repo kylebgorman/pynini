@@ -24,9 +24,6 @@
 // This file contains implementations of untemplated internal functions for
 // string compilation. Not all are declared in the corresponding header.
 
-DEFINE_int32(generated_label_index_start, 0x100000,
-             "The lowest index a generated label is assigned to");
-
 namespace fst {
 
 // Symbol table support.
@@ -95,7 +92,7 @@ SymbolTableFactory::SymbolTableFactory(const string &name) : syms_(name) {
   // This advances the next label for the one-argument form of AddSymbols
   // (used for user-generated symbols) to beyond the code points for the
   // Basic Multilingual Plane.
-  syms_.AddSymbol(kDummySymbol, FLAGS_generated_label_index_start);
+  syms_.AddSymbol(kDummySymbol, kDummyIndex);
 }
 
 SymbolTable *GetSymbolTable(StringTokenType ttype, const SymbolTable *syms) {

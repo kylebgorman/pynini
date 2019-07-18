@@ -21,7 +21,7 @@
 namespace fst {
 namespace script {
 
-bool CompileString(const string &str, MutableFstClass *fst,
+bool CompileString(const std::string &str, MutableFstClass *fst,
                    StringTokenType ttype, const SymbolTable *syms,
                    const WeightClass &weight, bool attach_symbols) {
   if (!fst->WeightTypesMatch(weight, "CompileSymbolString")) {

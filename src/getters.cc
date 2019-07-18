@@ -20,7 +20,7 @@
 namespace fst {
 namespace script {
 
-bool GetCDRewriteDirection(const string &str, CDRewriteDirection *rd) {
+bool GetCDRewriteDirection(const std::string &str, CDRewriteDirection *rd) {
   if (str == "ltr") {
     *rd = LEFT_TO_RIGHT;
   } else if (str == "rtl") {
@@ -33,7 +33,7 @@ bool GetCDRewriteDirection(const string &str, CDRewriteDirection *rd) {
   return true;
 }
 
-bool GetCDRewriteMode(const string &str, CDRewriteMode *rm) {
+bool GetCDRewriteMode(const std::string &str, CDRewriteMode *rm) {
   if (str == "obl") {
     *rm = OBLIGATORY;
   } else if (str == "opt") {

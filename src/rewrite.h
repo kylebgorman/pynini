@@ -132,7 +132,7 @@ void LatticeToShortest(MutableFst<Arc> *lattice, int32 nshortest = 1) {
 // RewriteLattice), extracts a single top string. This is only valid in a
 // semiring with the path property.
 template <class Arc>
-bool LatticeToTopString(const Fst<Arc> &lattice, string *output,
+bool LatticeToTopString(const Fst<Arc> &lattice, std::string *output,
                         StringTokenType ttype = BYTE,
                         const SymbolTable *syms = nullptr) {
   VectorFst<Arc> ofst;
@@ -144,7 +144,7 @@ bool LatticeToTopString(const Fst<Arc> &lattice, string *output,
 // warning and returning false if there's a tie. This is only valid in a
 // semiring with the path property.
 template <class Arc>
-bool LatticeToOneTopString(const Fst<Arc> &lattice, string *output,
+bool LatticeToOneTopString(const Fst<Arc> &lattice, std::string *output,
                            StringTokenType ttype = BYTE,
                            const SymbolTable *syms = nullptr) {
   StringPathIterator<Arc> paths(lattice, ttype, syms, /*check_acyclic=*/false);
@@ -173,7 +173,7 @@ bool LatticeToLabels(const Fst<Arc> &lattice,
 
 // Clears vector and writes lattice strings to it.
 template <class Arc>
-bool LatticeToStrings(const Fst<Arc> &lattice, std::vector<string> *output,
+bool LatticeToStrings(const Fst<Arc> &lattice, std::vector<std::string> *output,
                       StringTokenType ttype = BYTE,
                       const SymbolTable *syms = nullptr) {
   output->clear();
@@ -196,8 +196,8 @@ bool LatticeToStrings(const Fst<Arc> &lattice, std::vector<string> *output,
 
 // Top rewrite.
 template <class Arc>
-bool TopRewrite(const Fst<Arc> &input, const Fst<Arc> &rule, string *output,
-                StringTokenType ttype = BYTE,
+bool TopRewrite(const Fst<Arc> &input, const Fst<Arc> &rule,
+                std::string *output, StringTokenType ttype = BYTE,
                 const SymbolTable *syms = nullptr) {
   VectorFst<Arc> lattice;
   return RewriteLattice(input, rule, &lattice) &&
@@ -206,8 +206,8 @@ bool TopRewrite(const Fst<Arc> &input, const Fst<Arc> &rule, string *output,
 
 // Top rewrite, returning false and logging if there's a tie.
 template <class Arc>
-bool OneTopRewrite(const Fst<Arc> &input, const Fst<Arc> &rule, string *output,
-                   StringTokenType ttype = BYTE,
+bool OneTopRewrite(const Fst<Arc> &input, const Fst<Arc> &rule,
+                   std::string *output, StringTokenType ttype = BYTE,
                    const SymbolTable *syms = nullptr,
                    typename Arc::StateId state_multiplier = 4) {
   VectorFst<Arc> lattice;
@@ -219,7 +219,7 @@ bool OneTopRewrite(const Fst<Arc> &input, const Fst<Arc> &rule, string *output,
 // All rewrites.
 template <class Arc>
 bool Rewrites(const Fst<Arc> &input, const Fst<Arc> &rule,
-              std::vector<string> *output, StringTokenType ttype = BYTE,
+              std::vector<std::string> *output, StringTokenType ttype = BYTE,
               const SymbolTable *syms = nullptr,
               typename Arc::StateId state_multiplier = 4) {
   VectorFst<Arc> lattice;
@@ -232,7 +232,7 @@ bool Rewrites(const Fst<Arc> &input, const Fst<Arc> &rule,
 // All optimal rewrites.
 template <class Arc>
 bool TopRewrites(const Fst<Arc> &input, const Fst<Arc> &rule,
-                 std::vector<string> *output, StringTokenType ttype = BYTE,
+                 std::vector<std::string> *output, StringTokenType ttype = BYTE,
                  const SymbolTable *syms = nullptr,
                  typename Arc::StateId state_multiplier = 4) {
   VectorFst<Arc> lattice;
@@ -245,7 +245,7 @@ bool TopRewrites(const Fst<Arc> &input, const Fst<Arc> &rule,
 // The top n rewrites.
 template <class Arc>
 bool TopRewrites(const Fst<Arc> &input, const Fst<Arc> &rule, int32 nshortest,
-                 std::vector<string> *output, StringTokenType ttype = BYTE,
+                 std::vector<std::string> *output, StringTokenType ttype = BYTE,
                  const SymbolTable *syms = nullptr) {
   VectorFst<Arc> lattice;
   if (!RewriteLattice(input, rule, &lattice)) return false;

@@ -15,21 +15,28 @@
 // For general information on the Pynini grammar compilation library, see
 // pynini.opengrm.org.
 
-#include "repeatscript.h"
-#include <fst/script/script-impl.h>
+#ifndef PYNINI_CONCATRANGESCRIPT_H_
+#define PYNINI_CONCATRANGESCRIPT_H_
+
+#include <fst/script/arg-packs.h>
+#include <fst/script/fst-class.h>
+#include "concatrange.h"
 
 namespace fst {
 namespace script {
 
-void Repeat(MutableFstClass *fst, int32 lower, int32 upper) {
-  RepeatArgs args(fst, lower, upper);
-  Apply<Operation<RepeatArgs>>("Repeat", fst->ArcType(), &args);
+using ConcatRangeArgs = std::tuple<MutableFstClass *, int32, int32>;
+
+template <class Arc>
+void ConcatRange(ConcatRangeArgs *args) {
+  MutableFst<Arc> *fst = std::get<0>(*args)->GetMutableFst<Arc>();
+  ConcatRange(fst, std::get<1>(*args), std::get<2>(*args));
 }
 
-REGISTER_FST_OPERATION(Repeat, StdArc, RepeatArgs);
-REGISTER_FST_OPERATION(Repeat, LogArc, RepeatArgs);
-REGISTER_FST_OPERATION(Repeat, Log64Arc, RepeatArgs);
+void ConcatRange(MutableFstClass *fst, int32 lower = 0, int32 upper = 0);
 
 }  // namespace script
 }  // namespace fst
+
+#endif  // PYNINI_CONCATRANGESCRIPT_H_
 

@@ -20,8 +20,8 @@
 
 #include <map>
 #include <stack>
+#include <utility>
 
-#include <fst/compat.h>
 #include <fst/log.h>
 #include <fst/arc.h>
 #include <fst/vector-fst.h>
@@ -37,15 +37,11 @@ class PrefixTree {
   using StateId = typename Arc::StateId;
   using Weight = typename Arc::Weight;
 
-  struct INode;
-  struct ONode;
-
-  using ichild_map = std::map<Label, INode *>;
-  using ochild_map = std::map<Label, ONode *>;
+  struct ONode;  // Forward declaration.
 
   // Prefix tree node for the input labels of the FST.
   struct INode {
-    ichild_map children;
+    std::map<Label, INode *> children;
     ONode *output;
     StateId state;
 
@@ -54,7 +50,7 @@ class PrefixTree {
 
   // Prefix tree node for the output labels of the FST.
   struct ONode {
-    ochild_map children;
+    std::map<Label, ONode *> children;
     Weight weight;
     StateId state;
 
@@ -63,20 +59,15 @@ class PrefixTree {
 
   PrefixTree() : num_states_(0), root_(nullptr) {}
 
-  PrefixTree(const PrefixTree &) = delete;
-
-  PrefixTree &operator=(const PrefixTree &) = delete;
-
   ~PrefixTree() { Clear(); }
 
   StateId NumStates() const { return num_states_; }
 
   // Add an entry to the prefix tree, consisting of two label sequences and a
   // weight. Each label sequence must be provided as a pair of iterators.
-  template <class Iterator1, class Iterator2>
-  void Add(Iterator1 iter1, Iterator1 end1,
-           Iterator2 iter2, Iterator2 end2,
-           const Weight &weight = Weight::One()) {
+  template <class Iterator1, class Iterator2, class T>
+  void Add(Iterator1 iter1, Iterator1 end1, Iterator2 iter2, Iterator2 end2,
+           T &&weight) {
     if (!root_) {
       CHECK_EQ(0, num_states_);
       root_ = new INode();
@@ -98,13 +89,25 @@ class PrefixTree {
       o = LookupOrInsertNew(&o->children, *iter2);
       if (kNoStateId == o->state) o->state = num_states_++;
     }
-    o->weight = Plus(o->weight, weight);
+    o->weight = Plus(o->weight, std::forward<T>(weight));
   }
 
+  // Same but with semiring One.
+  template <class Iterator1, class Iterator2>
+  void Add(Iterator1 iter1, Iterator1 end1, Iterator2 iter2, Iterator2 end2) {
+    Add(iter1, end1, iter2, end2, Weight::One());
+  }
+
+  template <class Container1, class Container2, class T>
+  void Add(const Container1 &cont1, const Container2 &cont2, T &&weight) {
+    Add(cont1.begin(), cont1.end(), cont2.begin(), cont2.end(),
+        std::forward<T>(weight));
+  }
+
+  // Same but with semiring One.
   template <class Container1, class Container2>
-  void Add(const Container1 &cont1, const Container2 &cont2,
-           const Weight &weight = Weight::One()) {
-    Add(cont1.begin(), cont1.end(), cont2.begin(), cont2.end(), weight);
+  void Add(const Container1 &cont1, const Container2 &cont2) {
+    Add(cont1, cont2, Weight::One());
   }
 
   // Removes all elements from this prefix tree.
@@ -166,12 +169,11 @@ class PrefixTree {
       ONode *o = n->output;
       fst->ReserveArcs(q, (o ? 1 : 0) + n->children.size());
       if (o) {
-        fst->AddArc(q, Arc(0, 0, Arc::Weight::One(), o->state));
+        fst->AddArc(q, Arc(0, 0, o->state));
         oq.push(o);
       }
       for (auto iter = n->children.begin(); iter != n->children.end(); ++iter) {
-        fst->AddArc(q, Arc(iter->first, 0, Arc::Weight::One(),
-                           iter->second->state));
+        fst->AddArc(q, Arc(iter->first, 0, iter->second->state));
         iq.push(iter->second);
       }
     }
@@ -181,8 +183,7 @@ class PrefixTree {
       StateId q = o->state;
       CHECK_NE(kNoStateId, q);
       for (auto oter = o->children.begin(); oter != o->children.end(); ++oter) {
-        fst->AddArc(q, Arc(0, oter->first, Arc::Weight::One(),
-                           oter->second->state));
+        fst->AddArc(q, Arc(0, oter->first, oter->second->state));
         oq.push(oter->second);
       }
       fst->SetFinal(q, o->weight);
@@ -192,6 +193,9 @@ class PrefixTree {
  private:
   StateId num_states_;
   INode *root_;
+
+  PrefixTree(const PrefixTree &) = delete;
+  PrefixTree &operator=(const PrefixTree &) = delete;
 };
 
 }  // namespace fst
