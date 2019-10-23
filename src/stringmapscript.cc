@@ -16,41 +16,55 @@
 // pynini.opengrm.org.
 
 #include "stringmapscript.h"
+
 #include <fst/script/script-impl.h>
 
 namespace fst {
 namespace script {
 
-bool StringFile(const string &fname, MutableFstClass *fst,
-                StringTokenType itype, StringTokenType otype,
-                const SymbolTable *isyms, const SymbolTable *osyms,
-                bool attach_input_symbols, bool attach_output_symbols) {
-  StringFileInnerArgs iargs(fname, fst, itype, otype, isyms, osyms,
-                            attach_input_symbols, attach_output_symbols);
-  StringFileArgs args(iargs);
-  Apply<Operation<StringFileArgs>>("StringFile", fst->ArcType(), &args);
+bool StringFileCompile(const std::string &source, MutableFstClass *fst,
+                       StringTokenType itype, StringTokenType otype,
+                       const SymbolTable *isyms, const SymbolTable *osyms,
+                       bool attach_input_symbols, bool attach_output_symbols) {
+  StringFileCompileInnerArgs iargs(source, fst, itype, otype, isyms, osyms,
+                                   attach_input_symbols, attach_output_symbols);
+  StringFileCompileArgs args(iargs);
+  Apply<Operation<StringFileCompileArgs>>("StringFileCompile", fst->ArcType(),
+                                          &args);
   return args.retval;
 }
 
-REGISTER_FST_OPERATION(StringFile, StdArc, StringFileArgs);
-REGISTER_FST_OPERATION(StringFile, LogArc, StringFileArgs);
-REGISTER_FST_OPERATION(StringFile, Log64Arc, StringFileArgs);
+REGISTER_FST_OPERATION_3ARCS(StringFileCompile, StringFileCompileArgs);
 
-bool StringMap(const std::vector<std::vector<string>> &lines,
-               MutableFstClass *fst, StringTokenType itype,
-               StringTokenType otype, const SymbolTable *isyms,
-               const SymbolTable *osyms, bool attach_input_symbols,
-               bool attach_output_symbols) {
-  StringMapInnerArgs iargs(lines, fst, itype, otype, isyms, osyms,
-                           attach_input_symbols, attach_output_symbols);
-  StringMapArgs args(iargs);
-  Apply<Operation<StringMapArgs>>("StringMap", fst->ArcType(), &args);
+bool StringMapCompile(const std::vector<std::vector<std::string>> &lines,
+                      MutableFstClass *fst, StringTokenType itype,
+                      StringTokenType otype, const SymbolTable *isyms,
+                      const SymbolTable *osyms, bool attach_input_symbols,
+                      bool attach_output_symbols) {
+  StringMapCompileInnerArgs1 iargs(lines, fst, itype, otype, isyms, osyms,
+                                   attach_input_symbols, attach_output_symbols);
+  StringMapCompileArgs1 args(iargs);
+  Apply<Operation<StringMapCompileArgs1>>("StringMapCompile", fst->ArcType(),
+                                          &args);
   return args.retval;
 }
 
-REGISTER_FST_OPERATION(StringMap, StdArc, StringMapArgs);
-REGISTER_FST_OPERATION(StringMap, LogArc, StringMapArgs);
-REGISTER_FST_OPERATION(StringMap, Log64Arc, StringMapArgs);
+REGISTER_FST_OPERATION_3ARCS(StringMapCompile, StringMapCompileArgs1);
+
+bool StringMapCompile(
+    const std::vector<std::tuple<std::string, std::string, WeightClass>> &lines,
+    MutableFstClass *fst, StringTokenType itype, StringTokenType otype,
+    const SymbolTable *isyms, const SymbolTable *osyms,
+    bool attach_input_symbols, bool attach_output_symbols) {
+  StringMapCompileInnerArgs2 iargs(lines, fst, itype, otype, isyms, osyms,
+                                   attach_input_symbols, attach_output_symbols);
+  StringMapCompileArgs2 args(iargs);
+  Apply<Operation<StringMapCompileArgs2>>("StringMapCompile", fst->ArcType(),
+                                          &args);
+  return args.retval;
+}
+
+REGISTER_FST_OPERATION_3ARCS(StringMapCompile, StringMapCompileArgs2);
 
 }  // namespace script
 }  // namespace fst

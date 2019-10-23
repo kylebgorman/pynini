@@ -18,7 +18,8 @@
 #ifndef PYNINI_OPTIMIZESCRIPT_H_
 #define PYNINI_OPTIMIZESCRIPT_H_
 
-#include <fst/script/arg-packs.h>
+#include <utility>
+
 #include <fst/script/fst-class.h>
 #include "optimize.h"
 

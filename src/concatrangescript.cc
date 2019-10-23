@@ -27,9 +27,7 @@ void ConcatRange(MutableFstClass *fst, int32 lower, int32 upper) {
   Apply<Operation<ConcatRangeArgs>>("ConcatRange", fst->ArcType(), &args);
 }
 
-REGISTER_FST_OPERATION(ConcatRange, StdArc, ConcatRangeArgs);
-REGISTER_FST_OPERATION(ConcatRange, LogArc, ConcatRangeArgs);
-REGISTER_FST_OPERATION(ConcatRange, Log64Arc, ConcatRangeArgs);
+REGISTER_FST_OPERATION_3ARCS(ConcatRange, ConcatRangeArgs);
 
 }  // namespace script
 }  // namespace fst

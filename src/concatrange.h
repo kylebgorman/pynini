@@ -18,10 +18,17 @@
 #ifndef PYNINI_CONCATRANGE_H_
 #define PYNINI_CONCATRANGE_H_
 
+// Computes the range-based concatenative closure of an FST.
+
 #include <memory>
 
 #include <fst/types.h>
-#include <fst/fstlib.h>
+#include <fst/closure.h>
+#include <fst/concat.h>
+#include <fst/fst.h>
+#include <fst/mutable-fst.h>
+#include <fst/union.h>
+#include <fst/vector-fst.h>
 
 namespace fst {
 namespace internal {
@@ -80,12 +87,21 @@ void ConcatRange(MutableFst<Arc> *fst, int32 lower = 0, int32 upper = 0) {
   const std::unique_ptr<const MutableFst<Arc>> copy(fst->Copy());
   if (upper == 0) {
     // Infinite upper bound.
+    {
+      const auto size = fst->NumStates();
+      const auto reserved = size * lower + size + 1;
+      fst->ReserveStates(reserved);
+    }
     // The last element in the concatenation is star-closed; remaining
     // concatenations are copies of the input.
     Closure(fst, CLOSURE_STAR);
     for (; lower > 0; --lower) Concat(*copy, fst);
   } else if (lower == 0) {
     // Finite upper bound, lower bound includes zero.
+    {
+      const auto reserved = fst->NumStates() * upper + upper;
+      fst->ReserveStates(reserved);
+    }
     for (; upper > 1; --upper) {
       internal::SetStartFinal(fst);
       Concat(*copy, fst);
@@ -93,6 +109,11 @@ void ConcatRange(MutableFst<Arc> *fst, int32 lower = 0, int32 upper = 0) {
     internal::SetStartFinal(fst);
   } else {
     // Finite upper bound, lower bound does not include zero.
+    {
+      const auto size = fst->NumStates();
+      const auto reserved = size * upper + upper - lower;
+      fst->ReserveStates(reserved);
+    }
     for (; upper > lower; --upper) {
       internal::SetStartFinal(fst);
       Concat(*copy, fst);

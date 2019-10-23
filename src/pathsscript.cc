@@ -16,6 +16,7 @@
 // pynini.opengrm.org.
 
 #include "pathsscript.h"
+
 #include <fst/script/fst-class.h>
 #include <fst/script/script-impl.h>
 
@@ -33,12 +34,8 @@ StringPathIteratorClass::StringPathIteratorClass(const FstClass &fst,
       "InitStringPathIteratorClass", fst.ArcType(), &args);
 }
 
-REGISTER_FST_OPERATION(InitStringPathIteratorClass, StdArc,
-                       InitStringPathIteratorClassArgs);
-REGISTER_FST_OPERATION(InitStringPathIteratorClass, LogArc,
-                       InitStringPathIteratorClassArgs);
-REGISTER_FST_OPERATION(InitStringPathIteratorClass, Log64Arc,
-                       InitStringPathIteratorClassArgs);
+REGISTER_FST_OPERATION_3ARCS(InitStringPathIteratorClass,
+                             InitStringPathIteratorClassArgs);
 
 }  // namespace script
 }  // namespace fst

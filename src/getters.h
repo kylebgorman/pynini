@@ -19,9 +19,10 @@
 #define PYNINI_GETTERS_H_
 
 #include <string>
-using std::string;
 
+#include <fst/string.h>
 #include "cdrewrite.h"
+#include "mergesymbols.h"
 
 namespace fst {
 namespace script {
@@ -29,6 +30,10 @@ namespace script {
 bool GetCDRewriteDirection(const std::string &str, CDRewriteDirection *rd);
 
 bool GetCDRewriteMode(const std::string &str, CDRewriteMode *rm);
+
+bool GetMergeSymbolsType(const std::string &str, MergeSymbolsType *ms);
+
+bool GetStringTokenType(const std::string &str, StringTokenType *ttype);
 
 }  // namespace script
 }  // namespace fst

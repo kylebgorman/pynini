@@ -19,7 +19,6 @@
 #define PYNINI_STRINGPRINT_H_
 
 #include <string>
-using std::string;
 
 #include <fst/fst-decl.h>
 #include <fst/string.h>

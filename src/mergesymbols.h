@@ -18,16 +18,17 @@
 #ifndef PYNINI_MERGESYMBOLS_H_
 #define PYNINI_MERGESYMBOLS_H_
 
+// Merges FST symbol tables and resolves labeling conflicts. The lowest-level
+// function is MergeSymbols, which creates a merged table and signals when
+// relabeling is necessary due to labeling conflicts. The remaining functions
+// target pairs of FSTs rather than tables, assigning the merged tables back to
+// the argument FSTs when needed.
+
 #include <memory>
 
-#include <fst/fstlib.h>
-
-// This header contains operations for merging FST symbol tables and resolving
-// labeling conflicts (i.e. two tables assigning different indices to the
-// same symbol). The lowest-level function is MergeSymbols, which creates a
-// merged table and signals when relabeling is necessary due to labeling
-// conflicts. The remaining functions target pairs of FSTs rather than tables,
-// assigning the merged tables back to the argument FSTs when needed.
+#include <fst/mutable-fst.h>
+#include <fst/relabel.h>
+#include <fst/symbol-table.h>
 
 namespace fst {
 namespace internal {
@@ -43,25 +44,31 @@ SymbolTable *MergeSymbols(const SymbolTable *syms1, const SymbolTable *syms2,
 // Specific implementations, not intended for client use.
 
 template <class Arc>
-void MergeInputSymbols(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2) {
+void MergeInput(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2) {
   bool relabel = false;
   std::unique_ptr<SymbolTable> new_syms(
       MergeSymbols(fst1->InputSymbols(), fst2->InputSymbols(), &relabel));
-  if (!new_syms) return;  // No mutation necessary.
+  if (!new_syms) return;
   if (relabel) Relabel(fst2, new_syms.get(), nullptr);
   fst1->SetInputSymbols(new_syms.get());
   fst2->SetInputSymbols(new_syms.get());
 }
 
 template <class Arc>
-void MergeOutputSymbols(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2) {
+void MergeOutput(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2) {
   bool relabel = false;
   std::unique_ptr<SymbolTable> new_syms(
       MergeSymbols(fst1->OutputSymbols(), fst2->OutputSymbols(), &relabel));
-  if (!new_syms) return;  // No mutation necessary.
+  if (!new_syms) return;
   if (relabel) Relabel(fst2, nullptr, new_syms.get());
   fst1->SetOutputSymbols(new_syms.get());
   fst2->SetOutputSymbols(new_syms.get());
+}
+
+template <class Arc>
+void MergeInputOutput(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2) {
+  MergeInput(fst1, fst2);
+  MergeOutput(fst1, fst2);
 }
 
 template <class Arc>
@@ -69,7 +76,7 @@ void MergeInside(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2) {
   bool relabel = false;
   std::unique_ptr<SymbolTable> new_syms(
       MergeSymbols(fst1->OutputSymbols(), fst2->InputSymbols(), &relabel));
-  if (!new_syms) return;  // No mutation necessary.
+  if (!new_syms) return;
   if (relabel) Relabel(fst2, new_syms.get(), nullptr);
   fst1->SetOutputSymbols(new_syms.get());
   fst2->SetInputSymbols(new_syms.get());
@@ -80,29 +87,26 @@ void MergeOutside(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2) {
   bool relabel = false;
   std::unique_ptr<SymbolTable> new_syms(
       MergeSymbols(fst1->InputSymbols(), fst2->OutputSymbols(), &relabel));
-  if (!new_syms) return;  // No mutation necessary.
-  if (relabel) Relabel(fst2, new_syms.get(), nullptr);
+  if (!new_syms) return;
+  if (relabel) Relabel(fst2, nullptr, new_syms.get());
   fst1->SetInputSymbols(new_syms.get());
   fst2->SetOutputSymbols(new_syms.get());
 }
 
 }  // namespace internal
 
-// These are encoded so that they can be ORed together.
 enum MergeSymbolsType {
-  // "Do nothing".
-  MERGE_NOOP = 0,
-  MERGE_INPUT = 1 << 0,
-  MERGE_OUTPUT = 1 << 1,
+  MERGE_INPUT,
+  MERGE_OUTPUT,
   // Merges both input and output; should be enabled for union and
   // concatenation.
-  MERGE_INPUT_OUTPUT = MERGE_INPUT | MERGE_OUTPUT,
+  MERGE_INPUT_OUTPUT,
   // Merges left output and right input tables; should be enabled for
   // composition, intersection, and difference.
-  MERGE_INSIDE = 1 << 2,
+  MERGE_INSIDE,
   // Merges left input and right output tables; should be enabled for
   // cross-product.
-  MERGE_OUTSIDE = 1 << 3
+  MERGE_OUTSIDE
 };
 
 // This is the most generic merging function, and it is the one most clients
@@ -110,17 +114,22 @@ enum MergeSymbolsType {
 template <class Arc>
 void MergeSymbols(MutableFst<Arc> *fst1, MutableFst<Arc> *fst2,
                   MergeSymbolsType mst) {
-  if ((mst & MERGE_INPUT) == MERGE_INPUT) {
-    internal::MergeInputSymbols(fst1, fst2);
-  }
-  if ((mst & MERGE_OUTPUT) == MERGE_OUTPUT) {
-    internal::MergeOutputSymbols(fst1, fst2);
-  }
-  if ((mst & MERGE_INSIDE) == MERGE_INSIDE) {
-    internal::MergeInside(fst1, fst2);
-  }
-  if ((mst & MERGE_OUTSIDE) == MERGE_OUTSIDE) {
-    internal::MergeOutside(fst1, fst2);
+  switch (mst) {
+    case MERGE_INPUT:
+      internal::MergeInput(fst1, fst2);
+      return;
+    case MERGE_OUTPUT:
+      internal::MergeOutput(fst1, fst2);
+      return;
+    case MERGE_INPUT_OUTPUT:
+      internal::MergeInputOutput(fst1, fst2);
+      return;
+    case MERGE_INSIDE:
+      internal::MergeInside(fst1, fst2);
+      return;
+    case MERGE_OUTSIDE:
+      internal::MergeOutside(fst1, fst2);
+      return;
   }
 }
 

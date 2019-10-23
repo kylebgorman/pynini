@@ -18,8 +18,12 @@
 #ifndef PYNINI_REWRITE_H_
 #define PYNINI_REWRITE_H_
 
+// Functions for applying rewrite rules to strings or FSTs. Unlike the naive
+// approach, the lattices produced by composing the string and the FST rule
+// are optimized (e.g., with epsilon-removal and pruned determinization) so
+// that the output strings are unique.
+
 #include <string>
-using std::string;
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -28,9 +32,20 @@ using std::string;
 #include <fst/log.h>
 #include <fst/extensions/mpdt/compose.h>
 #include <fst/extensions/pdt/compose.h>
-#include <fst/fstlib.h>
+#include <fst/arcsort.h>
+#include <fst/compose.h>
+#include <fst/determinize.h>
+#include <fst/fst.h>
+#include <fst/intersect.h>
+#include <fst/minimize.h>
+#include <fst/mutable-fst.h>
+#include <fst/project.h>
+#include <fst/rmepsilon.h>
+#include <fst/shortest-path.h>
+#include <fst/vector-fst.h>
 #include "paths.h"
 #include "stringcompile.h"
+#include "stringprint.h"
 
 // Generic rewrite utilities for string inputs.
 

@@ -42,7 +42,7 @@ SymbolTable *GetUTF8SymbolTable() {
 
 namespace internal {
 
-SymbolTableFactory::SymbolTableFactory(const string &name) : syms_(name) {
+SymbolTableFactory::SymbolTableFactory(const std::string &name) : syms_(name) {
   // Label zero is reserved for epsilon.
   syms_.AddSymbol("<epsilon>", 0);
   // ASCII control characters.
@@ -80,7 +80,7 @@ SymbolTableFactory::SymbolTableFactory(const string &name) : syms_(name) {
   // Space doesn't print very nicely.
   syms_.AddSymbol("<SPACE>", 32);
   // Printable ASCII.
-  for (auto ch = 33; ch < 127; ++ch) syms_.AddSymbol(string(1, ch), ch);
+  for (auto ch = 33; ch < 127; ++ch) syms_.AddSymbol(std::string(1, ch), ch);
   // One last control character.
   syms_.AddSymbol("<DEL>", 0x7f);
   // Adds supra-ASCII bytes as hexadecimal strings.
@@ -110,112 +110,12 @@ SymbolTable *GetSymbolTable(StringTokenType ttype, const SymbolTable *syms) {
   return nullptr;  // Unreachable.
 }
 
-// Replicates functionality in the ICU library for determining whether the
-// character type is control or whitespace. Specifically:
-//
-// if (u_charType(c) == U_CONTROL_CHAR ||
-//     u_hasBinaryProperty(c, UCHAR_WHITE_SPACE) ||
-//     u_hasBinaryProperty(c, UCHAR_POSIX_BLANK))
-//
-// This was extracted from nlp/grm/language/walker/util/function/symbols.cc.
-inline bool IsUnicodeSpaceOrControl(int32 label) {
-  switch (label) {
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 9:
-    case 10:
-    case 11:
-    case 12:
-    case 13:
-    case 14:
-    case 15:
-    case 16:
-    case 17:
-    case 18:
-    case 19:
-    case 20:
-    case 21:
-    case 22:
-    case 23:
-    case 24:
-    case 25:
-    case 26:
-    case 27:
-    case 28:
-    case 29:
-    case 30:
-    case 31:
-    case 32:
-    case 127:
-    case 128:
-    case 129:
-    case 130:
-    case 131:
-    case 132:
-    case 133:
-    case 134:
-    case 135:
-    case 136:
-    case 137:
-    case 138:
-    case 139:
-    case 140:
-    case 141:
-    case 142:
-    case 143:
-    case 144:
-    case 145:
-    case 146:
-    case 147:
-    case 148:
-    case 149:
-    case 150:
-    case 151:
-    case 152:
-    case 153:
-    case 154:
-    case 155:
-    case 156:
-    case 157:
-    case 158:
-    case 159:
-    case 160:
-    case 5760:
-    case 6158:
-    case 8192:
-    case 8193:
-    case 8194:
-    case 8195:
-    case 8196:
-    case 8197:
-    case 8198:
-    case 8199:
-    case 8200:
-    case 8201:
-    case 8202:
-    case 8232:
-    case 8233:
-    case 8239:
-    case 8287:
-    case 12288:
-      return true;
-    default:
-      return false;
-  }
-}
-
 // Adds a Unicode codepoint to the symbol table. Returns kNoLabel to indicate
 // that the input cannot be parsed as a Unicode codepoint.
 int32 AddUnicodeCodepointToSymbolTable(int32 label, SymbolTable *syms) {
-  string str;
+  std::string str;
   // Creates a vector with just this label.
-  std::vector<int32> labels = {label};
+  std::vector<int32> labels{label};
   if (LabelsToUTF8String(labels, &str)) {
     return static_cast<int32>(syms->AddSymbol(str, label));
   } else {
@@ -224,7 +124,7 @@ int32 AddUnicodeCodepointToSymbolTable(int32 label, SymbolTable *syms) {
   }
 }
 
-int64 BracketedStringToLabel(const string &token, SymbolTable *syms) {
+int64 BracketedStringToLabel(const std::string &token, SymbolTable *syms) {
   const auto *ctoken = token.c_str();
   char *p;
   int64 label = strtol(ctoken, &p, 0);

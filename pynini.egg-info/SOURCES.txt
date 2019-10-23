@@ -13,6 +13,9 @@ pynini.egg-info/dependency_links.txt
 pynini.egg-info/top_level.txt
 src/basictypes.pxd
 src/cdrewrite.h
+src/cdrewritescript.cc
+src/cdrewritescript.h
+src/checkprops.h
 src/concatrange.h
 src/concatrangescript.cc
 src/concatrangescript.h
@@ -28,7 +31,6 @@ src/ios.pxd
 src/lenientlycompose.h
 src/lenientlycomposescript.cc
 src/lenientlycomposescript.h
-src/memory.pxd
 src/mergesymbols.cc
 src/mergesymbols.h
 src/mergesymbolsscript.cc
@@ -42,17 +44,11 @@ src/pathsscript.h
 src/prefix_tree.h
 src/pynini.cc
 src/pynini.pyx
-src/pynini_cdrewrite.cc
-src/pynini_cdrewrite.h
-src/pynini_common.h
 src/pynini_includes.pxd
-src/pynini_replace.cc
-src/pynini_replace.h
 src/pywrapfst.cc
 src/pywrapfst.pxd
 src/pywrapfst.pyx
 src/rewrite.h
-src/sigma_star.h
 src/string-view-fst.h
 src/stringcompile.cc
 src/stringcompile.h
@@ -66,7 +62,6 @@ src/stringmapscript.h
 src/stringprint.h
 src/stringprintscript.cc
 src/stringprintscript.h
-src/stringtokentype.cc
-src/stringtokentype.h
+src/stripcomment.cc
 src/stripcomment.h
 testdata/str.map

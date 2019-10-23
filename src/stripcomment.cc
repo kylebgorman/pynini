@@ -15,29 +15,36 @@
 // For general information on the Pynini grammar compilation library, see
 // pynini.opengrm.org.
 
-#ifndef PYNINI_SIGMA_STAR_H_
-#define PYNINI_SIGMA_STAR_H_
+#include "stripcomment.h"
 
-#include <fst/fstlib.h>
+
+#include "gtl.h"
 
 namespace fst {
-namespace internal {
+namespace {
 
-// Checks that a "sigma_star" FST is an unweighted cyclic acceptor.
-template <class Arc>
-bool CheckSigmaStarProperties(const Fst<Arc> &sigma_star,
-                              const std::string &op_name) {
-  static constexpr auto props = kAcceptor | kUnweighted;
-  if (sigma_star.Properties(props, true) != props) {
-    LOG(ERROR) << op_name << ": sigma_star must be a unweighted "
-               << "acceptor";
-    return false;
+std::string StripComment(const std::string &line) {
+  char prev_char = '\0';
+  for (size_t i = 0; i < line.size(); ++i) {
+    const char this_char = line[i];
+    if (this_char == '#' && prev_char != '\\') {
+      // Strips comment and any trailing whitespace.
+      return std::string(strings::StripTrailingAsciiWhitespace(line.substr(0, i)));
+    }
+    prev_char = this_char;
   }
-  return true;
+  return line;
 }
 
-}  // namespace internal
-}  // namespace fst
+std::string RemoveEscape(const std::string &line) {
+  return strings::StringReplace(StripComment(line), "\\#", "#", true);
+}
 
-#endif  // PYNINI_SIGMA_STAR_H_
+}  // namespace
+
+std::string StripCommentAndRemoveEscape(const std::string &line) {
+  return RemoveEscape(StripComment(line));
+}
+
+}  // namespace fst
 

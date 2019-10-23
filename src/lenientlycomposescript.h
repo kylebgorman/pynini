@@ -18,7 +18,8 @@
 #ifndef PYNINI_LENIENTLYCOMPOSESCRIPT_H_
 #define PYNINI_LENIENTLYCOMPOSESCRIPT_H_
 
-#include <fst/script/arg-packs.h>
+#include <utility>
+
 #include <fst/script/fst-class.h>
 #include "lenientlycompose.h"
 
@@ -33,13 +34,13 @@ template <class Arc>
 void LenientlyCompose(LenientlyComposeArgs *args) {
   const Fst<Arc> &ifst1 = *(std::get<0>(*args).GetFst<Arc>());
   const Fst<Arc> &ifst2 = *(std::get<1>(*args).GetFst<Arc>());
-  const Fst<Arc> &sigma_star = *(std::get<2>(*args).GetFst<Arc>());
+  const Fst<Arc> &sigma = *(std::get<2>(*args).GetFst<Arc>());
   MutableFst<Arc> *ofst = std::get<3>(*args)->GetMutableFst<Arc>();
-  LenientlyCompose(ifst1, ifst2, sigma_star, ofst, std::get<4>(*args));
+  LenientlyCompose(ifst1, ifst2, sigma, ofst, std::get<4>(*args));
 }
 
 void LenientlyCompose(const FstClass &ifst1, const FstClass &ifst2,
-                      const FstClass &sigma_star, MutableFstClass *ofst,
+                      const FstClass &sigma, MutableFstClass *ofst,
                       const ComposeOptions &opts = ComposeOptions());
 
 }  // namespace script

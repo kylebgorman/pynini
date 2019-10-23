@@ -19,63 +19,99 @@
 #define PYNINI_STRINGMAPSCRIPT_H_
 
 #include <string>
-using std::string;
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include <fst/fstlib.h>
 #include <fst/script/arg-packs.h>
 #include <fst/script/fstscript.h>
+#include <fst/script/weight-class.h>
 #include "stringmap.h"
 
 namespace fst {
 namespace script {
 
-using StringFileInnerArgs =
+using StringFileCompileInnerArgs =
     std::tuple<const std::string &, MutableFstClass *, StringTokenType,
                StringTokenType, const SymbolTable *, const SymbolTable *, bool,
                bool>;
 
-using StringFileArgs = WithReturnValue<bool, StringFileInnerArgs>;
+using StringFileCompileArgs = WithReturnValue<bool, StringFileCompileInnerArgs>;
 
 template <class Arc>
-void StringFile(StringFileArgs *args) {
+void StringFileCompile(StringFileCompileArgs *args) {
   MutableFst<Arc> *fst = std::get<1>(args->args)->GetMutableFst<Arc>();
-  args->retval = CompileStringFile(
+  args->retval = StringFileCompile(
       std::get<0>(args->args), fst, std::get<2>(args->args),
       std::get<3>(args->args), std::get<4>(args->args), std::get<5>(args->args),
       std::get<6>(args->args), std::get<7>(args->args));
 }
 
-bool StringFile(const std::string &fname, MutableFstClass *fst,
-                StringTokenType itype = BYTE, StringTokenType otype = BYTE,
-                const SymbolTable *isyms = nullptr,
-                const SymbolTable *osyms = nullptr,
-                bool attach_input_symbols = true,
-                bool attach_output_symbols = true);
+bool StringFileCompile(const std::string &source, MutableFstClass *fst,
+                       StringTokenType itype = BYTE,
+                       StringTokenType otype = BYTE,
+                       const SymbolTable *isyms = nullptr,
+                       const SymbolTable *osyms = nullptr,
+                       bool attach_input_symbols = true,
+                       bool attach_output_symbols = true);
 
-using StringMapInnerArgs =
+using StringMapCompileInnerArgs1 =
     std::tuple<const std::vector<std::vector<std::string>> &, MutableFstClass *,
                StringTokenType, StringTokenType, const SymbolTable *,
                const SymbolTable *, bool, bool>;
 
-using StringMapArgs = WithReturnValue<bool, StringMapInnerArgs>;
+using StringMapCompileArgs1 = WithReturnValue<bool, StringMapCompileInnerArgs1>;
 
 template <class Arc>
-void StringMap(StringMapArgs *args) {
+void StringMapCompile(StringMapCompileArgs1 *args) {
   MutableFst<Arc> *fst = std::get<1>(args->args)->GetMutableFst<Arc>();
-  args->retval = CompileStringMap(
+  args->retval = StringMapCompile(
       std::get<0>(args->args), fst, std::get<2>(args->args),
       std::get<3>(args->args), std::get<4>(args->args), std::get<5>(args->args),
       std::get<6>(args->args), std::get<7>(args->args));
 }
 
-bool StringMap(const std::vector<std::vector<std::string>> &lines,
-               MutableFstClass *fst, StringTokenType itype = BYTE,
-               StringTokenType otype = BYTE, const SymbolTable *isyms = nullptr,
-               const SymbolTable *osyms = nullptr,
-               bool attach_input_symbols = true,
-               bool attach_output_symbols = true);
+using StringMapCompileInnerArgs2 = std::tuple<
+    const std::vector<std::tuple<std::string, std::string, WeightClass>> &,
+    MutableFstClass *, StringTokenType, StringTokenType, const SymbolTable *,
+    const SymbolTable *, bool, bool>;
+
+using StringMapCompileArgs2 = WithReturnValue<bool, StringMapCompileInnerArgs2>;
+
+template <class Arc>
+void StringMapCompile(StringMapCompileArgs2 *args) {
+  std::vector<std::tuple<std::string, std::string, typename Arc::Weight>> lines;
+  for (const auto &line : std::get<0>(args->args)) {
+    const auto &istring = std::get<0>(line);
+    const auto &ostring = std::get<1>(line);
+    const auto &weight = *std::get<2>(line).GetWeight<typename Arc::Weight>();
+    // NOTE: For correctness, we *could* verify that the weight of every one of
+    // these arcs matches the weight used by fst, but this isn't strictly
+    // necessary.
+    lines.emplace_back(istring, ostring, weight);
+  }
+  MutableFst<Arc> *fst = std::get<1>(args->args)->GetMutableFst<Arc>();
+  args->retval = StringMapCompile(
+      lines, fst, std::get<2>(args->args), std::get<3>(args->args),
+      std::get<4>(args->args), std::get<5>(args->args), std::get<6>(args->args),
+      std::get<7>(args->args));
+}
+
+bool StringMapCompile(const std::vector<std::vector<std::string>> &lines,
+                      MutableFstClass *fst, StringTokenType itype = BYTE,
+                      StringTokenType otype = BYTE,
+                      const SymbolTable *isyms = nullptr,
+                      const SymbolTable *osyms = nullptr,
+                      bool attach_input_symbols = true,
+                      bool attach_output_symbols = true);
+
+bool StringMapCompile(
+    const std::vector<std::tuple<std::string, std::string, WeightClass>> &lines,
+    MutableFstClass *fst, StringTokenType itype = BYTE,
+    StringTokenType otype = BYTE, const SymbolTable *isyms = nullptr,
+    const SymbolTable *osyms = nullptr, bool attach_input_symbols = true,
+    bool attach_output_symbols = true);
 
 }  // namespace script
 }  // namespace fst

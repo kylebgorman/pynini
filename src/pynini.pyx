@@ -1,4 +1,4 @@
-#cython: nonecheck=True, c_string_type=unicode, c_string_encoding=utf8
+#cython: c_string_encoding=utf8, c_string_type=unicode, language_level=3, nonecheck=True
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -29,6 +29,7 @@ from cython.operator cimport dereference as deref  # *foo
 from cython.operator cimport preincrement as inc   # ++foo
 
 from libcpp cimport bool
+from libcpp.memory cimport static_pointer_cast
 from libcpp.memory cimport unique_ptr
 from libcpp.utility cimport pair
 from libcpp.string cimport string
@@ -44,27 +45,20 @@ from fst cimport CLOSURE_PLUS
 from fst cimport CLOSURE_STAR
 from fst cimport Compose
 from fst cimport ComposeOptions
-from fst cimport Equal
 from fst cimport FstClass
 from fst cimport ILABEL_SORT
-from fst cimport kAcceptor
 from fst cimport kDelta
 from fst cimport kError
-from fst cimport kIDeterministic
-from fst cimport kNoEpsilons
+from fst cimport kNoLabel
 from fst cimport kNoStateId
-from fst cimport kString
-from fst cimport kUnweighted
+from fst cimport kNoSymbol
 from fst cimport LabelFstClassPair
 from fst cimport MutableFstClass
 from fst cimport OLABEL_SORT
-from fst cimport ReplaceLabelType
-from fst cimport ReplaceOptions
 from fst cimport VectorFstClass
 from fst cimport WeightClass
 
-from memory cimport static_pointer_cast
-
+from pywrapfst cimport const_FstClass_ptr
 from pywrapfst cimport FarReader
 from pywrapfst cimport FarWriter
 from pywrapfst cimport SymbolTable_ptr
@@ -79,10 +73,13 @@ from pywrapfst cimport _get_queue_type
 from pywrapfst cimport _get_replace_label_type
 from pywrapfst cimport _init_MutableFst
 from pywrapfst cimport _init_SymbolTable
+from pywrapfst cimport equal
+from pywrapfst cimport replace as _replace
 from pywrapfst cimport tostring
 
 # C++ code for Pynini not from fst_util.
 
+from pynini_includes cimport CDRewriteCompile
 from pynini_includes cimport CDRewriteDirection
 from pynini_includes cimport CDRewriteMode
 from pynini_includes cimport CompileString
@@ -114,18 +111,15 @@ from pynini_includes cimport PdtComposeOptions
 from pynini_includes cimport PdtExpand
 from pynini_includes cimport PdtExpandOptions
 from pynini_includes cimport PdtParserType
+from pynini_includes cimport PdtReplace
 from pynini_includes cimport PdtReverse
 from pynini_includes cimport PdtShortestPath
 from pynini_includes cimport PdtShortestPathOptions
 from pynini_includes cimport PrintString
-from pynini_includes cimport PyniniCDRewrite
-from pynini_includes cimport PyniniPdtReplace
-from pynini_includes cimport PyniniReplace
 from pynini_includes cimport ReadLabelPairs
 from pynini_includes cimport ReadLabelTriples
-from pynini_includes cimport StringFile
-from pynini_includes cimport StringFstClassPair
-from pynini_includes cimport StringMap
+from pynini_includes cimport StringFileCompile
+from pynini_includes cimport StringMapCompile
 from pynini_includes cimport StringPathIteratorClass
 from pynini_includes cimport StringTokenType
 from pynini_includes cimport SYMBOL
@@ -145,19 +139,12 @@ from pywrapfst import FstOpError
 import pywrapfst
 
 
-# Constants.
-
-
-cdef uint64 kDifferenceRhs = kAcceptor | kUnweighted
-
-
 # Custom exceptions.
 
 
 class FstStringCompilationError(FstArgError, ValueError):
 
   pass
-
 
 
 # Helper functions.
@@ -333,21 +320,21 @@ cdef void _add_parentheses_symbols(MutableFstClass *fst,
           "Unable to resolve parentheses symbol table conflict")
 
 
-cdef void _maybe_arcsort(MutableFstClass *ifst1, MutableFstClass *ifst2):
+cdef void _maybe_arcsort(MutableFstClass *fst1, MutableFstClass *fst2):
   """Arc-sorts two FST arguments for composition, if necessary.
 
   Args:
-    ifst1: A pointer to the left-hand MutableFstClass.
-    ifst2: A pointer to the right-hand MutableFstClass.
+    fst1: A pointer to the left-hand MutableFstClass.
+    fst2: A pointer to the right-hand MutableFstClass.
 
   This function is not visible to Python users.
   """
   # It is probably much quicker to force recomputation of the property (if
   # necessary) to call the underlying sort on a vector of arcs.
-  if ifst1.Properties(O_LABEL_SORTED, True) != O_LABEL_SORTED:
-    ArcSort(ifst1, OLABEL_SORT)
-  if ifst2.Properties(I_LABEL_SORTED, True) != I_LABEL_SORTED:
-    ArcSort(ifst2, ILABEL_SORT)
+  if fst1.Properties(O_LABEL_SORTED, True) != O_LABEL_SORTED:
+    ArcSort(fst1, OLABEL_SORT)
+  if fst2.Properties(I_LABEL_SORTED, True) != I_LABEL_SORTED:
+    ArcSort(fst2, ILABEL_SORT)
 
 
 # Singleton class for storing defaults for string compilation.
@@ -379,7 +366,7 @@ cdef class _Defaults(object):
 # Class for FSTs created from within Pynini. It overrides instance methods of
 # the superclass which take an FST argument so that it can string-compile said
 # argument if it is not yet an FST. It also overloads binary == (equals),
-# * (composition), # + (concatenation), and | (union).
+# * and @ (composition), # + (concatenation), and | (union).
 
 
 cdef class Fst(_MutableFst):
@@ -412,9 +399,9 @@ cdef class Fst(_MutableFst):
     self._from_MutableFstClass(tfst.release())
 
   @classmethod
-  def from_pywrapfst(cls, _Fst ifst):
+  def from_pywrapfst(cls, _Fst fst):
     """
-    Fst.from_pywrapfst(ifst)
+    Fst.from_pywrapfst(fst)
 
     Constructs a Pynini FST from a pywrapfst._Fst.
 
@@ -426,12 +413,12 @@ cdef class Fst(_MutableFst):
     is still in scope will trigger a deep copy.
 
     Args:
-      ifst: Input FST of type pywrapfst._Fst.
+      fst: Input FST of type pywrapfst._Fst.
 
     Returns:
       An FST.
     """
-    return _from_pywrapfst(ifst)
+    return _from_pywrapfst(fst)
 
   @classmethod
   def read(cls, filename):
@@ -503,8 +490,6 @@ cdef class Fst(_MutableFst):
     Raises:
       FstArgError: Unknown token type.
       FstOpError: Operation failed.
-
-    See also: `StringPathIterator`.
     """
     return StringPathIterator(self, input_token_type, output_token_type)
 
@@ -606,8 +591,6 @@ cdef class Fst(_MutableFst):
 
     Returns:
       self.
-
-    See also `ques`, `star`, `plus`.
     """
     ConcatRange(self._mfst.get(), lower, upper)
     self._check_mutating_imethod()
@@ -621,9 +604,7 @@ cdef class Fst(_MutableFst):
     Constructively computes +-closure.
 
     Returns:
-      Closure-d copy.
-
-    See also: `closure`.
+      An FST copy.
     """
     cdef Fst result = self.copy()
     Closure(result._mfst.get(), CLOSURE_PLUS)
@@ -638,9 +619,7 @@ cdef class Fst(_MutableFst):
     Constructively computes ?-closure.
 
     Returns:
-      Closure-d copy.
-
-    See also: `closure`.
+      An FST copy.
     """
     cdef Fst result = self.copy()
     ConcatRange(result._mfst.get(), 0, 1)
@@ -655,18 +634,16 @@ cdef class Fst(_MutableFst):
     Constructively computes *-closure.
 
     Returns:
-      Closure-d copy.
-
-    See also: `closure`.
+      An FST copy.
     """
     cdef Fst result = self.copy()
     Closure(result._mfst.get(), CLOSURE_STAR)
     result._check_mutating_imethod()
     return result
 
-  def concat(self, ifst):
+  def concat(self, fst2):
     """
-    concat(self, ifst)
+    concat(self, fst2)
 
     Computes the concatenation (product) of two FSTs.
 
@@ -676,18 +653,14 @@ cdef class Fst(_MutableFst):
     a \otimes b.
 
     Args:
-      ifst: The second input FST.
+      fst2: The second input FST.
 
     Returns:
       self.
-
-    Raises:
-      FstOpError: Operation failed.
     """
-    cdef Fst rhs = _compile_or_copy_Fst(ifst, arc_type=self.arc_type())
-    MergeSymbols(self._mfst.get(), rhs._mfst.get(), MERGE_INPUT_OUTPUT)
-    self._concat(rhs)
-    return self
+    cdef Fst _fst2 = _compile_or_copy_Fst(fst2, self.arc_type())
+    MergeSymbols(self._mfst.get(), _fst2._mfst.get(), MERGE_INPUT_OUTPUT)
+    return super(Fst, self).concat(_fst2)
 
   cdef void _optimize(self, bool compute_props=False) except *:
     Optimize(self._mfst.get(), compute_props)
@@ -717,8 +690,6 @@ cdef class Fst(_MutableFst):
     * Decode the FST and combine identically-labeled multi-arcs and sum their
       weights, if the FST was previously encoded.
 
-    By default, FST properties are not computed if they are not already set.
-
     This optimization may result in a reduction of size (due to epsilon-removal,
     arc-sum mapping, and minimization) and possibly faster composition, but
     determinization (a prerequisite of minimization) may result in an
@@ -735,40 +706,25 @@ cdef class Fst(_MutableFst):
     self._optimize(compute_props)
     return self
 
-  def union(self, ifst):
-    """
-    union(self, ifst)
-
-    Computes the union (sum) of two FSTs.
-
-    This operation destructively computes the union (sum) of two FSTs. If A
-    transduces string x to y with weight a and B transduces string w to v with
-    weight b, then their union transduces x to y with weight a and w to v with
-    weight b.
-
-    Args:
-      ifst: The second input FST.
-
-    Returns:
-      self.
-
-    Raises:
-      FstOpError: Operation failed.
-    """
-    cdef Fst lhs
-    cdef Fst rhs
-    (lhs, rhs) = _compile_or_copy_two_Fsts(self, ifst)
-    MergeSymbols(self._mfst.get(), rhs._mfst.get(), MERGE_INPUT_OUTPUT)
-    self._union(rhs)
-    return self
+  def union(self, *fsts2):
+    cdef Fst _fst2
+    _fsts2 = []
+    for fst2 in fsts2:
+      _fst2 = _compile_or_copy_Fst(fst2, self.arc_type())
+      MergeSymbols(self._mfst.get(), _fst2._mfst.get(), MERGE_INPUT_OUTPUT)
+      # We only need the first FST's symbol tables after merging.
+      _fst2._mfst.get().SetInputSymbols(NULL)
+      _fst2._mfst.get().SetOutputSymbols(NULL)
+      _fsts2.append(_fst2)
+    return super(Fst, self).union(*_fsts2)
 
   # Operator overloads.
 
   def __eq__(self, other):
-    cdef Fst lhs
-    cdef Fst rhs
-    (lhs, rhs) = _compile_or_copy_two_Fsts(self, other)
-    return Equal(deref(lhs._fst), deref(rhs._fst), kDelta)
+    cdef Fst _fst1
+    cdef Fst _fst2
+    (_fst1, _fst2) = _compile_or_copy_two_Fsts(self, other)
+    return equal(_fst1, _fst2)
 
   def __ne__(self, other):
     return not self == other
@@ -776,14 +732,7 @@ cdef class Fst(_MutableFst):
   # x + y
 
   def __add__(self, other):
-    cdef string arc_type = tostring(self.arc_type()
-                                    if hasattr(self, "arc_type") else
-                                    other.arc_type())
-    cdef Fst lhs = _compile_or_copy_Fst(self, arc_type=arc_type)
-    lhs.concat(other)
-    return lhs
-
-  # x - y
+    return concat(self, other)
 
   def __sub__(self, other):
     return difference(self, other)
@@ -801,12 +750,7 @@ cdef class Fst(_MutableFst):
   # x | y
 
   def __or__(self, other):
-    cdef string arc_type = tostring(self.arc_type()
-                                    if hasattr(self, "arc_type") else
-                                    other.arc_type())
-    cdef Fst lhs = _compile_or_copy_Fst(self, arc_type=arc_type)
-    lhs.union(other)
-    return lhs
+    return union(self, other)
 
 
 # Makes a reference-counted copy, if it's already an FST; otherwise, compiles
@@ -824,38 +768,38 @@ cdef Fst _compile_or_copy_Fst(arg, arc_type=None):
 # then the arc type of the second, then using the default.
 
 
-cdef object _compile_or_copy_two_Fsts(arg1, arg2):
-  cdef Fst lhs
-  cdef Fst rhs
-  if isinstance(arg1, Fst):
-    lhs = arg1.copy()
-    rhs = _compile_or_copy_Fst(arg2, arc_type=arg1.arc_type())
-  elif isinstance(arg2, Fst):
-    rhs = arg2.copy()
-    lhs = acceptor(arg1, arc_type=arg2.arc_type())
+cdef object _compile_or_copy_two_Fsts(fst1, fst2):
+  cdef Fst _fst1
+  cdef Fst _fst2
+  if isinstance(fst1, Fst):
+    _fst1 = fst1.copy()
+    _fst2 = _compile_or_copy_Fst(fst2, _fst1.arc_type())
+  elif isinstance(fst2, Fst):
+    _fst2 = fst2.copy()
+    _fst1 = acceptor(fst1, arc_type=_fst2.arc_type())
   else:
-    lhs = acceptor(arg1)
-    rhs = acceptor(arg2)
-  return (lhs, rhs)
+    _fst1 = acceptor(fst1)
+    _fst2 = acceptor(fst2)
+  return (_fst1, _fst2)
 
 
-# Down-casts a _MutableFst to a Pynini Fst by taking ownership of the underlying
-# pointers of the former.
+# Down-casts a _MutableFst to a Pynini Fst by taking ownership of the
+# underlying pointers of the former.
 
 
-cdef Fst _init_Fst_from_MutableFst(_MutableFst rhs):
+cdef Fst _init_Fst_from_MutableFst(_MutableFst fst):
   cdef Fst result = Fst.__new__(Fst)
-  result._fst = rhs._fst
-  result._mfst = rhs._mfst
+  result._fst = fst._fst
+  result._mfst = fst._mfst
   return result
 
 
 # Calls pywrapfst class methods and then down-cast to a Pynini Fst.
 
 
-cpdef Fst _from_pywrapfst(_Fst ifst):
+cpdef Fst _from_pywrapfst(_Fst fst):
   cdef Fst result = Fst.__new__(Fst)
-  result._from_MutableFstClass(new VectorFstClass(deref(ifst._fst)))
+  result._from_MutableFstClass(new VectorFstClass(deref(fst._fst)))
   return result
 
 
@@ -900,7 +844,7 @@ cpdef Fst acceptor(astring,
         attached to the FST?
 
     Returns:
-      An FST acceptor.
+      An FST.
 
     Raises:
       FstArgError: Unknown arc type.
@@ -932,18 +876,15 @@ cpdef Fst acceptor(astring,
   return result
 
 
-cpdef Fst transducer(istring,
-                     ostring,
+cpdef Fst transducer(fst1,
+                     fst2,
                      weight=None,
                      arc_type=None,
-                     input_token_type=b"byte",
-                     output_token_type=b"byte",
-                     bool attach_input_symbols=True,
-                     bool attach_output_symbols=True):
+                     token_type=b"byte",
+                     bool attach_symbols=True):
   """
-  transducer(istring, ostring, weight=None, arc_type=None,
-             input_token_type="byte", output_token_type="byte",
-             attach_input_symbols=True, attach_output_symbols=True)
+  transducer(fst1, fst2, weight=None, arc_type=None,
+             token_type="byte", attach_symbols=True)
 
   Creates a transducer from a pair of strings or acceptor FSTs.
 
@@ -954,31 +895,27 @@ cpdef Fst transducer(istring,
   lower FSTs.
 
   Args:
-    istring: The input string, or an acceptor FST representing the upper
+    fst1: The input string, or an acceptor FST representing the upper
         language.
-    ostring: The output string, or an acceptor FST representing the upper
+    fst2: The output string, or an acceptor FST representing the upper
         language.
     weight: A Weight or weight string indicating the desired path weight. If
         omitted or null, the path weight is set to semiring One. This argument
-        is silently ignored if istring and/or ostring is already compiled.
+        is silently ignored if fst1 and fst2 are already FSTs.
     arc_type: An optional string indicating the arc type for the compiled FST.
-        This argument is silently ignored if istring and/or ostring is already
-        compiled.
-    input_token_type: Either a string indicating how the upper string is to be
-        encoded as arc labels---one of: utf8" (encodes the strings as UTF-8
-        encoded Unicode string), "byte" (encodes the string as raw bytes)---or
-        a SymbolTable to be used to encode the string.
-    output_token_type: Either a string indicating how the lower string is to be
-        encoded as arc labels---one of: utf8" (encodes the strings as UTF-8
-        encoded Unicode string), "byte" (encodes the string as raw bytes)---or
-        a SymbolTable to be used to encode the string.
-    attach_input_symbols: should the symbol table used to compile the
-        input-side acceptor (if applicable) be attached to the FST?
-    attach_output_symbols: should the symbol table used to compile the
-        output-side acceptor (if applicable) be attached to the FST?
+        This argument is silently ignored if fst1 and fst2 are already
+        FSTs.
+    token_type: Either a string indicating how the strings are to be encoded as
+        arc labels---one of: "utf8" (encodes the strings as UTF-8 encoded
+        Unicode string), "byte" (encodes the string as raw bytes)---or a
+        SymbolTable to be used to encode the string. This argument is silently
+        ignored if fst1 and fst2 are already FSTs.
+    attach_symbols: should the symbol table used to compile the FST be attached
+        to the FST? This argument is silently ignored if fst1 and fst2
+        are already FSTs.
 
   Returns:
-    An FST transducer.
+    An FST.
 
   Raises:
     FstArgError: Unknown arc type.
@@ -987,30 +924,28 @@ cpdef Fst transducer(istring,
     FstOpError: Operation failed.
     FstStringCompilationError: String compilation failed.
   """
-  cdef Fst lower
-  cdef Fst upper
-  cdef Fst result = Fst(defaults._get_arc_type(arc_type))
-  # Sets up upper language.
-  if not isinstance(istring, Fst):
-    upper = acceptor(istring, None,
-                     result.arc_type(),
-                     input_token_type,
-                     attach_input_symbols)
+  cdef Fst _fst1
+  cdef Fst _fst2
+  if isinstance(fst1, Fst):
+    _fst1 = fst1
+    arc_type = _fst1.arc_type()
+    if isinstance(fst2, Fst):
+      _fst2 = fst2
+    else:
+      _fst2 = acceptor(fst2, None, arc_type, token_type, attach_symbols)
+  elif isinstance(fst2, Fst):
+    _fst2 = fst2
+    arc_type = fst2.arc_type()
+    _fst1 = acceptor(fst1, None, arc_type, token_type, attach_symbols)
   else:
-    upper = istring
-  # Sets up lower language, and passes weight.
-  if not isinstance(ostring, Fst):
-    lower = acceptor(ostring,
-                     None,
-                     result.arc_type(),
-                     output_token_type,
-                     attach_output_symbols)
-  else:
-    lower = ostring
+    arc_type = defaults._get_arc_type(arc_type)
+    _fst1 = acceptor(fst1, None, arc_type, token_type, attach_symbols)
+    _fst2 = acceptor(fst2, None, arc_type, token_type, attach_symbols)
   # TODO(kbg): Call MergeSymbols to merge the "outside" tables here.
   # Actually computes cross-product.
-  CrossProduct(deref(upper._fst),
-               deref(lower._fst),
+  cdef Fst result = Fst(arc_type)
+  CrossProduct(deref(_fst1._fst),
+               deref(_fst2._fst),
                result._mfst.get(),
                _get_WeightClass_or_One(result.weight_type(), weight))
   result._check_mutating_imethod()
@@ -1020,11 +955,11 @@ cpdef Fst transducer(istring,
 cpdef Fst cdrewrite(tau,
                     lambda_,
                     rho,
-                    sigma_star,
+                    sigma,
                     direction=b"ltr",
                     mode=b"obl"):
   """
-  cdrewrite(tau, lambda, rho, sigma_star, direction="ltr", mode="obl")
+  cdrewrite(tau, lambda, rho, sigma, direction="ltr", mode="obl")
 
   Generates a transducer expressing a context-dependent rewrite rule.
 
@@ -1040,7 +975,7 @@ cpdef Fst cdrewrite(tau,
     tau: A (weighted) transducer representing phi -> psi.
     lambda: An unweighted acceptor representing the left context.
     rho: An unweighted acceptor representing the right context.
-    sigma_star: A cyclic, unweighted acceptor representing the closure over the
+    sigma: A cyclic, unweighted acceptor representing the closure over the
         alphabet.
     direction: A string specifying the direction of rule application; one of:
         "ltr" (left-to-right application), "rtl" (right-to-left application),
@@ -1049,62 +984,65 @@ cpdef Fst cdrewrite(tau,
         (obligatory application), "opt" (optional application).
 
   Returns:
-    A rewrite rule FST.
+    An FST.
 
   Raises:
     FstArgError: Unknown cdrewrite direction type.
     FstArgError: Unknown cdrewrite mode type.
     FstOpError: Operation failed.
   """
+  cdef Fst _sigma = _compile_or_copy_Fst(sigma)
+  cdef string arc_type = _sigma.arc_type()
+  cdef Fst _tau = _compile_or_copy_Fst(tau, arc_type)
+  MergeSymbols(_sigma._mfst.get(), _tau._mfst.get(), MERGE_INPUT_OUTPUT)
+  _tau._mfst.get().SetInputSymbols(NULL)
+  _tau._mfst.get().SetOutputSymbols(NULL)
+  # NB: "lambda_" with final underscore to avoid clash with Python keyword.
+  cdef Fst _lambda = _compile_or_copy_Fst(lambda_, arc_type)
+  MergeSymbols(_sigma._mfst.get(), _lambda._mfst.get(), MERGE_INPUT_OUTPUT)
+  _lambda._mfst.get().SetInputSymbols(NULL)
+  _lambda._mfst.get().SetOutputSymbols(NULL)
+  cdef Fst _rho = _compile_or_copy_Fst(rho, arc_type)
+  MergeSymbols(_sigma._mfst.get(), _rho._mfst.get(), MERGE_INPUT_OUTPUT)
+  _rho._mfst.get().SetInputSymbols(NULL)
+  _rho._mfst.get().SetOutputSymbols(NULL)
+  # Extracts the BOS and EOS symbols if they exist.
+  # TODO(kbg): This is pretty hackish and ought to be handled during string
+  # parsing instead.
+  cdef int64 bos = kNoSymbol
+  if _sigma._fst.get().OutputSymbols() != NULL:
+    bos = _sigma._fst.get().OutputSymbols().FindIndex(b"BOS")
+  cdef int64 eos = kNoSymbol
+  if _sigma._fst.get().OutputSymbols() != NULL:
+    eos = _sigma._fst.get().OutputSymbols().FindIndex(b"EOS")
+  # We have to save the symbols for later.
+  isymbols = _sigma.input_symbols().copy()
+  osymbols = _sigma.output_symbols().copy()
+  _sigma._mfst.get().SetInputSymbols(NULL)
+  _sigma._mfst.get().SetOutputSymbols(NULL)
+  assert _sigma.properties(ACCEPTOR, True), "Expected an acceptor"
+  cdef Fst result = Fst(arc_type)
   cdef CDRewriteDirection cd = _get_cdrewrite_direction(tostring(direction))
   cdef CDRewriteMode cm = _get_cdrewrite_mode(tostring(mode))
-  cdef Fst tau_compiled = _compile_or_copy_Fst(tau)
-  cdef string arc_type = tau_compiled.arc_type()
-  cdef Fst lambda_compiled = _compile_or_copy_Fst(lambda_, arc_type)
-  cdef Fst rho_compiled = _compile_or_copy_Fst(rho, arc_type)
-  cdef Fst sigma_star_compiled = _compile_or_copy_Fst(sigma_star, arc_type)
-  cdef Fst result = Fst(arc_type)
-  PyniniCDRewrite(deref(tau_compiled._fst),
-                  deref(lambda_compiled._fst),
-                  deref(rho_compiled._fst),
-                  deref(sigma_star_compiled._fst),
-                  result._mfst.get(), cd, cm)
+  CDRewriteCompile(deref(_tau._fst),
+                   deref(_lambda._fst),
+                   deref(_rho._fst),
+                   deref(_sigma._fst),
+                   result._mfst.get(),
+                   cd,
+                   cm,
+                   bos,
+                   eos)
   result._check_mutating_imethod()
+  result.set_input_symbols(isymbols)
+  result.set_output_symbols(osymbols)
   return result
 
 
-cpdef Fst epsilon_machine(weight=None, arc_type=None):
-  """
-  epsilon_machine(weight=None, arc_type=None)
-
-  Constructs a single-state, no-arc FST accepting epsilon.
-
-  This function creates an unweighted FST with a single state which is both
-  initial and final.
-
-  Args:
-    weight: A Weight or weight string indicating the desired path weight. If
-        omitted or null, the path weight is set to semiring One.
-    arc_type: An optional string indicating the arc type for the compiled FST.
-
-  Returns:
-    An FST.
-
-  Raises:
-    FstArgError: Unknown arc type.
-  """
-  cdef Fst result = Fst(defaults._get_arc_type(arc_type))
-  cdef int64 state = result._mfst.get().AddState()   # 0.
-  result._mfst.get().SetStart(state)
-  result._mfst.get().SetFinal(state,
-      _get_WeightClass_or_One(result.weight_type(), weight))
-  return result
-
-
-cpdef Fst leniently_compose(ifst1, ifst2, sigma_star, compose_filter=b"auto",
+cpdef Fst leniently_compose(fst1, fst2, sigma, compose_filter=b"auto",
                             bool connect=True):
   """
-  leniently_compose(ifst1, ifst2, compose_filter="auto", connect=True)
+  leniently_compose(fst1, fst2, compose_filter="auto", connect=True)
 
   Constructively leniently-composes two FSTs.
 
@@ -1115,9 +1053,9 @@ cpdef Fst leniently_compose(ifst1, ifst2, sigma_star, compose_filter=b"auto",
   argument's relations.
 
   Args:
-    ifst1: The first input FST.
-    ifst2: The second input FST.
-    sigma_star: A cyclic, unweighted acceptor representing the closure over the
+    fst1: The first input FST.
+    fst2: The second input FST.
+    sigma: A cyclic, unweighted acceptor representing the closure over the
         alphabet.
     compose_filter: A string matching a known composition filter; one of:
         "alt_sequence", "auto", "match", "no_match", "null", "sequence",
@@ -1125,32 +1063,32 @@ cpdef Fst leniently_compose(ifst1, ifst2, sigma_star, compose_filter=b"auto",
     connect: Should output be trimmed?
 
   Returns:
-    A leniently composed FST.
+    An FST.
 
   Raises:
     FstOpError: Operation failed.
   """
-  cdef Fst ifst1_compiled
-  cdef Fst ifst2_compiled
-  (ifst1_compiled, ifst2_compiled) = _compile_or_copy_two_Fsts(ifst1, ifst2)
-  cdef string arc_type = ifst1_compiled.arc_type()
-  cdef Fst sigma_star_compiled = _compile_or_copy_Fst(sigma_star, arc_type)
+  cdef Fst _fst1
+  cdef Fst _fst2
+  (_fst1, _fst2) = _compile_or_copy_two_Fsts(fst1, fst2)
+  cdef string arc_type = _fst1.arc_type()
+  cdef Fst _sigma = _compile_or_copy_Fst(sigma, arc_type)
   cdef unique_ptr[ComposeOptions] opts
   opts.reset(new ComposeOptions(connect,
                                 _get_compose_filter(tostring(compose_filter))))
   cdef Fst result = Fst(arc_type)
-  LenientlyCompose(deref(ifst1_compiled._fst),
-                   deref(ifst2_compiled._fst),
-                   deref(sigma_star_compiled._fst),
+  LenientlyCompose(deref(_fst1._fst),
+                   deref(_fst2._fst),
+                   deref(_sigma._fst),
                    result._mfst.get(),
                    deref(opts))
   result._check_mutating_imethod()
   return result
 
 
-cpdef bool matches(ifst1, ifst2, compose_filter=b"auto"):
+cpdef bool matches(fst1, fst2, compose_filter=b"auto"):
   """
-  matches(ifst1, ifst2, compose_filter="auto")
+  matches(fst1, fst2, compose_filter="auto")
 
   Returns whether or not two FSTs "match" (have a non-empty composition).
 
@@ -1161,16 +1099,16 @@ cpdef bool matches(ifst1, ifst2, compose_filter=b"auto"):
   configurations are possible.
 
   Args:
-    ifst1: The first input FST.
-    ifst2: The second input FST.
+    fst1: The first input FST.
+    fst2: The second input FST.
     compose_filter: A string matching a known composition filter; one of:
         "alt_sequence", "auto", "match", "no_match", "null", "sequence",
         "trivial".
 
   Returns:
-    True if the composition of ifst1 and ifst2 is non-null, else False.
+    True if the composition of fst1 and fst2 is non-null, else False.
   """
-  cdef Fst tfst = compose(ifst1, ifst2, compose_filter=compose_filter)
+  cdef Fst tfst = compose(fst1, fst2, compose_filter=compose_filter)
   # If the connected cascade FST has no start state, composition failed.
   return tfst._mfst.get().Start() != kNoStateId
 
@@ -1228,28 +1166,28 @@ cpdef Fst string_file(filename,
     FstIOError: Read failed.
   """
   cdef StringTokenType itype
-  cdef SymbolTable_ptr isyms = NULL
+  cdef SymbolTable_ptr isymbols = NULL
   if isinstance(input_token_type, pywrapfst._SymbolTable):
     itype = SYMBOL
-    isyms = (<SymbolTable_ptr> (<_SymbolTable> input_token_type)._table)
+    isymbols = (<SymbolTable_ptr> (<_SymbolTable> input_token_type)._table)
   else:
     itype = _get_token_type(tostring(input_token_type))
   cdef StringTokenType otype
-  cdef SymbolTable_ptr osyms = NULL
+  cdef SymbolTable_ptr osymbols = NULL
   if isinstance(output_token_type, pywrapfst._SymbolTable):
-    osyms = (<SymbolTable_ptr> (<_SymbolTable> output_token_type)._table)
+    osymbols = (<SymbolTable_ptr> (<_SymbolTable> output_token_type)._table)
     otype = SYMBOL
   else:
     otype = _get_token_type(tostring(output_token_type))
   cdef Fst result = Fst(defaults._get_arc_type(arc_type))
-  if not StringFile(tostring(filename),
-                    result._mfst.get(),
-                    itype,
-                    otype,
-                    isyms,
-                    osyms,
-                    attach_input_symbols,
-                    attach_output_symbols):
+  if not StringFileCompile(tostring(filename),
+                           result._mfst.get(),
+                           itype,
+                           otype,
+                           isymbols,
+                           osymbols,
+                           attach_input_symbols,
+                           attach_output_symbols):
     raise FstIOError("Read failed")
   return result
 
@@ -1304,17 +1242,17 @@ cpdef Fst string_map(lines,
     FstArgError: String map compilation failed.
   """
   cdef StringTokenType itype
-  cdef SymbolTable_ptr isyms = NULL
+  cdef SymbolTable_ptr isymbols = NULL
   if isinstance(input_token_type, pywrapfst._SymbolTable):
     itype = SYMBOL
-    isyms = (<SymbolTable_ptr> (<_SymbolTable> input_token_type)._table)
+    isymbols = (<SymbolTable_ptr> (<_SymbolTable> input_token_type)._table)
   else:
     itype = _get_token_type(tostring(input_token_type))
   cdef StringTokenType otype
-  cdef SymbolTable_ptr osyms = NULL
+  cdef SymbolTable_ptr osymbols = NULL
   if isinstance(output_token_type, pywrapfst._SymbolTable):
     otype = SYMBOL
-    osyms = (<SymbolTable_ptr> (<_SymbolTable> output_token_type)._table)
+    osymbols = (<SymbolTable_ptr> (<_SymbolTable> output_token_type)._table)
   else:
     otype = _get_token_type(tostring(output_token_type))
   cdef Fst result = Fst(defaults._get_arc_type(arc_type))
@@ -1332,19 +1270,19 @@ cpdef Fst string_map(lines,
       string_line.push_back(tostring(line))
     string_lines.push_back(string_line)
     string_line.clear()
-  if not StringMap(string_lines,
-                    result._mfst.get(),
-                    itype,
-                    otype,
-                    isyms,
-                    osyms,
-                    attach_input_symbols,
-                    attach_output_symbols):
+  if not StringMapCompile(string_lines,
+                          result._mfst.get(),
+                          itype,
+                          otype,
+                          isymbols,
+                          osymbols,
+                          attach_input_symbols,
+                          attach_output_symbols):
     raise FstArgError("String map compilation failed")
   return result
 
 
-def get_byte_symbol_table():
+cpdef _SymbolTable get_byte_symbol_table():
   """Returns a symbol table containing all bytes."""
   return _init_SymbolTable(GetByteSymbolTable())
 
@@ -1354,9 +1292,9 @@ def get_byte_symbol_table():
 
 def _1arg_patch(fnc):
   @functools.wraps(fnc)
-  def patch(arg, *args, **kwargs):
-    cdef Fst fst = _compile_or_copy_Fst(arg)
-    return _init_Fst_from_MutableFst(fnc(fst, *args, **kwargs))
+  def patch(fst, *args, **kwargs):
+    cdef Fst _fst = _compile_or_copy_Fst(fst)
+    return _init_Fst_from_MutableFst(fnc(_fst, *args, **kwargs))
   return patch
 
 
@@ -1375,9 +1313,9 @@ synchronize = _1arg_patch(pywrapfst.synchronize)
 
 def _shortestdistance_patch(fnc):
   @functools.wraps(fnc)
-  def patch(arg, *args, **kwargs):
-    cdef Fst fst = _compile_or_copy_Fst(arg)
-    return fnc(fst, *args, **kwargs)
+  def patch(fst, *args, **kwargs):
+    cdef Fst _fst = _compile_or_copy_Fst(fst)
+    return fnc(_fst, *args, **kwargs)
   return patch
 
 
@@ -1391,14 +1329,13 @@ shortestdistance = _shortestdistance_patch(pywrapfst.shortestdistance)
 
 def _compose_patch(fnc):
   @functools.wraps(fnc)
-  def patch(arg1, arg2, *args, **kwargs):
-    cdef Fst lhs
-    cdef Fst rhs
-    (lhs, rhs) = _compile_or_copy_two_Fsts(arg1, arg2)
-    MergeSymbols(lhs._mfst.get(), rhs._mfst.get(), MERGE_INSIDE)
-    _maybe_arcsort(lhs._mfst.get(), rhs._mfst.get())
-    lhs = _init_Fst_from_MutableFst(fnc(lhs, rhs, *args, **kwargs))
-    return lhs
+  def patch(fst1, fst2, *args, **kwargs):
+    cdef Fst _fst1
+    cdef Fst _fst2
+    (_fst1, _fst2) = _compile_or_copy_two_Fsts(fst1, fst2)
+    MergeSymbols(_fst1._mfst.get(), _fst2._mfst.get(), MERGE_INSIDE)
+    _maybe_arcsort(_fst1._mfst.get(), _fst2._mfst.get())
+    return _init_Fst_from_MutableFst(fnc(_fst1, _fst2, *args, **kwargs))
   return patch
 
 
@@ -1408,16 +1345,14 @@ intersect = _compose_patch(pywrapfst.intersect)
 
 def _difference_patch(fnc):
   @functools.wraps(fnc)
-  def patch(arg1, arg2, *args, **kwargs):
-    cdef Fst lhs
-    cdef Fst rhs
-    (lhs, rhs) = _compile_or_copy_two_Fsts(arg1, arg2)
-    if rhs._mfst.get().Properties(kDifferenceRhs, True) != kDifferenceRhs:
-      raise FstOpError("2nd argument must be an unweighted acceptor")
-    MergeSymbols(lhs._mfst.get(), rhs._mfst.get(), MERGE_INSIDE)
+  def patch(fst1, fst2, *args, **kwargs):
+    cdef Fst _fst1
+    cdef Fst _fst2
+    (_fst1, _fst2) = _compile_or_copy_two_Fsts(fst1, fst2)
+    MergeSymbols(_fst1._mfst.get(), _fst2._mfst.get(), MERGE_INSIDE)
     # Makes RHS epsilon-free and deterministic.
-    OptimizeDifferenceRhs(rhs._mfst.get(), True)
-    return _init_Fst_from_MutableFst(fnc(lhs, rhs, *args, **kwargs))
+    OptimizeDifferenceRhs(_fst2._mfst.get(), True)
+    return _init_Fst_from_MutableFst(fnc(_fst1, _fst2, *args, **kwargs))
   return patch
 
 
@@ -1429,11 +1364,11 @@ difference = _difference_patch(pywrapfst.difference)
 
 def _comp_patch(fnc):
   @functools.wraps(fnc)
-  def patch(arg1, arg2, *args, **kwargs):
-    cdef Fst lhs
-    cdef Fst rhs
-    (lhs, rhs) = _compile_or_copy_two_Fsts(arg1, arg2)
-    return fnc(lhs, rhs, *args, **kwargs)
+  def patch(fst1, fst2, *args, **kwargs):
+    cdef Fst _fst1
+    cdef Fst _fst2
+    (_fst1, _fst2) = _compile_or_copy_two_Fsts(fst1, fst2)
+    return fnc(_fst1, _fst2, *args, **kwargs)
   return patch
 
 
@@ -1446,12 +1381,12 @@ isomorphic = _comp_patch(pywrapfst.isomorphic)
 
 def _comp_merge_patch(fnc):
   @functools.wraps(fnc)
-  def patch(arg1, arg2, *args, **kwargs):
-    cdef Fst lhs
-    cdef Fst rhs
-    (lhs, rhs) = _compile_or_copy_two_Fsts(arg1, arg2)
-    MergeSymbols(lhs._mfst.get(), rhs._mfst.get(), MERGE_INPUT_OUTPUT)
-    return fnc(lhs, rhs, *args, **kwargs)
+  def patch(fst1, fst2, *args, **kwargs):
+    cdef Fst _fst1
+    cdef Fst _fst2
+    (_fst1, _fst2) = _compile_or_copy_two_Fsts(fst1, fst2)
+    MergeSymbols(_fst1._mfst.get(), _fst2._mfst.get(), MERGE_INPUT_OUTPUT)
+    return fnc(_fst1, _fst2, *args, **kwargs)
   return patch
 
 
@@ -1459,11 +1394,11 @@ equivalent = _comp_merge_patch(pywrapfst.equivalent)
 randequivalent = _comp_merge_patch(pywrapfst.randequivalent)
 
 
-def concat(*args):
+cpdef Fst concat(fst1, fst2):
   """
-  concat(*args)
+  concat(fst1, fst2)
 
-  Computes the concatenation (product) of two or more FSTs.
+  Computes the concatenation (product) of two FSTs.
 
   This operation destructively concatenates the FST with other FSTs. If A
   transduces string x to y with weight a and B transduces string w to v with
@@ -1471,49 +1406,44 @@ def concat(*args):
   a \otimes b.
 
   Args:
-   *args: Two or more input FSTs.
+    fst1: The first FST.
+    fst2: The second FST.
 
   Returns:
     An FST.
   """
-  (first, *rest) = args
-  if len(args) < 1:
-    raise FstArgError("Expected at least 2 positional arguments "
-                      "({} given)".format(len(rest) + 1))
-  cdef Fst lhs = _compile_or_copy_Fst(first)
-  for rhs in rest:
-    lhs.concat(rhs)
-  return lhs
+  cdef Fst _fst1
+  cdef Fst _fst2
+  (_fst1, _fst2) = _compile_or_copy_two_Fsts(fst1, fst2)
+  return _fst1.concat(_fst2)
 
 
-def replace(root,
-            replacements,
-            call_arc_labeling=b"neither",
-            return_arc_labeling=b"neither",
-            bool epsilon_on_replace=False,
-            int64 return_label=0):
+cpdef Fst replace(pairs,
+                  call_arc_labeling=b"input",
+                  return_arc_labeling=b"neither",
+                  bool epsilon_on_replace=False,
+                  int64 return_label=0):
   """
-  replace(root, replacements, call_arc_labeling="neither",
-          return_arc_labeling="neither", epsilon_on_replace=False,
-          return_label=0)
+  replace(pairs, call_arc_labeling="input", return_arc_labeling="neither",
+          epsilon_on_replace=False, return_label=0)
 
-  Constructively replaces arcs in an FST with other FST(s).
+  Recursively replaces arcs in the FST with other FST(s).
 
   This operation performs the dynamic replacement of arcs in one FST with
-  other FSTs, allowing for the definition of FSTs analogous to RTNs. The output
-  FST is the result of recursively replacing each arc in all input FSTs that
-  matches some "non-terminal" with a corresponding FST. More precisely, an arc
-  from state s to state d with nonterminal output label n in an input FST is
-  replaced by redirecting this "call" arc to the initial state of a copy of the
-  the replacement FST and then adding "return" arcs from each final state of
-  the replacement FST to d in the input FST. If there are cyclic dependencies
-  among the replacement rules, the resulting FST does not have a finite
-  expansion and an exception will be raised.
+  another FST, allowing the definition of FSTs analogous to RTNs. It takes as
+  input a set of pairs of a set of pairs formed by a non-terminal label and
+  its corresponding FST, and a label identifying the root FST in that set.
+  The resulting FST is obtained by taking the root FST and recursively replacing
+  each arc having a nonterminal as output label by its corresponding FST. More
+  precisely, an arc from state s to state d with (nonterminal) output label n in
+  this FST is replaced by redirecting this "call" arc to the initial state of a
+  copy F of the FST for n, and adding "return" arcs from each final state of F
+  to d. Optional arguments control how the call and return arcs are labeled; by
+  default, the only non-epsilon label is placed on the call arc.
 
   Args:
-    root: The root FST.
-    replacements: An iterable containing label/FST pairs. If the iterable
-       implements .items, this is used to extract the pairs.
+    pairs: An iterable of (nonterminal label, FST) pairs, where the former is an
+        unsigned integer and the latter is an Fst instance.  
     call_arc_labeling: A string indicating which call arc labels should be
         non-epsilon. One of: "input" (default), "output", "both", "neither".
         This value is set to "neither" if epsilon_on_replace is True.
@@ -1526,46 +1456,34 @@ def replace(root,
     return_label: The integer label for return arcs.
 
   Returns:
-    A replaced FST.
-
-  Raises:
-    KeyError: Nonterminal symbol not found.
-    FstOpError: Operation failed.
-
-  See also: `pdt_replace`.
+    An FST.
   """
-  cdef Fst root_fst = _compile_or_copy_Fst(root)
-  cdef string arc_type = root_fst.arc_type()
-  if hasattr(replacements, "items"):
-    replacements = replacements.items()
-  # This has the pleasant effect of preventing Python from garbage-collecting
-  # these FSTs until we're ready.
-  # TODO(kbg): Is there a better way?
-  replacements = [(nt, _compile_or_copy_Fst(rep, arc_type))
-                  for (nt, rep) in replacements]
-  cdef string nonterm
-  cdef Fst replacement
-  cdef vector[StringFstClassPair] pairs
-  pairs.reserve(len(replacements))
-  for (nt, rep) in replacements:
-    nonterm = tostring(nt)
-    replacement = rep
-    pairs.push_back(StringFstClassPair(nonterm, replacement._fst.get()))
-  cdef ReplaceLabelType cal = _get_replace_label_type(
-      tostring(call_arc_labeling), epsilon_on_replace)
-  cdef ReplaceLabelType ral = _get_replace_label_type(
-      tostring(return_arc_labeling), epsilon_on_replace)
-  cdef unique_ptr[ReplaceOptions] opts
-  opts.reset(new ReplaceOptions(-1, cal, ral, return_label))
-  cdef Fst result = Fst(arc_type)
-  PyniniReplace(deref(root_fst._fst), pairs, result._mfst.get(), deref(opts))
-  result._check_mutating_imethod()
-  return result
+  it = iter(pairs)
+  pair = next(it)
+  cdef int64 label = pair[0]
+  cdef Fst _root = _compile_or_copy_Fst(pair[1])
+  _pairs = [(label, _root)]
+  cdef Fst _fst
+  for (label, fst) in it:
+    _fst = _compile_or_copy_Fst(fst, _root.arc_type())
+    MergeSymbols(_root._mfst.get(), _fst._mfst.get(), MERGE_INPUT_OUTPUT)
+    # We only need the root FST's symbol tables after merging.
+    _fst._mfst.get().SetInputSymbols(NULL)
+    _fst._mfst.get().SetOutputSymbols(NULL)
+    _pairs.append((label, _fst))
+  return Fst.from_pywrapfst(_replace(_pairs,
+                                     call_arc_labeling,
+                                     return_arc_labeling,
+                                     epsilon_on_replace,
+                                     return_label))
 
 
-def union(*args):
+# Can't be typed because of the star-args.
+
+
+def union(*fsts):
   """
-  union(*args)
+  union(*fsts)
 
   Computes the union (sum) of two or more FSTs.
 
@@ -1574,19 +1492,14 @@ def union(*args):
   union transduces x to y with weight a and w to v with weight b.
 
   Args:
-   *args: Two or more input FSTs.
+   *fsts: Two or more input FSTs.
 
   Returns:
     An FST.
   """
-  (first, *rest) = args
-  if len(args) < 1:
-    raise FstArgError("Expected at least 2 positional arguments "
-                      "({} given)".format(len(rest) + 1))
-  cdef Fst lhs = _compile_or_copy_Fst(first)
-  for rhs in rest:
-    lhs.union(rhs)
-  return lhs
+  (fst1, *fsts2) = fsts
+  cdef Fst _fst1 = _compile_or_copy_Fst(fst1)
+  return _fst1.union(*fsts2)
 
 
 # Pushdown transducer classes and operations.
@@ -1689,13 +1602,13 @@ cdef class PdtParentheses(object):
       raise FstIOError("Write failed: {!r}".format(filename))
 
 
-def pdt_compose(ifst1,
-                ifst2,
+def pdt_compose(fst1,
+                fst2,
                 PdtParentheses parens,
                 compose_filter=b"paren",
                 bool left_pdt=True):
   """
-  pdt_compose(ifst1, ifst2, parens, compose_filter="paren", left_pdt=True)
+  pdt_compose(fst1, fst2, parens, compose_filter="paren", left_pdt=True)
 
   Composes a PDT with an FST.
 
@@ -1705,8 +1618,8 @@ def pdt_compose(ifst1,
   right-hand FST argument is to be interpreted as a PDT.
 
   Args:
-    ifst1: The left-hand-side input FST or PDT.
-    ifst2: The right-hand-side input FST or PDT.
+    fst1: The left-hand-side input FST or PDT.
+    fst2: The right-hand-side input FST or PDT.
     parens: A PdtParentheses object specifying the input PDT's stack symbols.
     compose_filter: A string indicating the desired PDT composition filter; one
         of: "paren" (keeps parentheses), "expand" (expands and removes
@@ -1722,17 +1635,17 @@ def pdt_compose(ifst1,
   Raises:
     FstOpError: Operation failed.
   """
-  cdef Fst lhs
-  cdef Fst rhs
-  (lhs, rhs) = _compile_or_copy_two_Fsts(ifst1, ifst2)
-  _maybe_arcsort(lhs._mfst.get(), rhs._mfst.get())
-  MergeSymbols(lhs._mfst.get(), rhs._mfst.get(), MERGE_INSIDE)
-  cdef Fst result = Fst(lhs.arc_type())
+  cdef Fst _fst1
+  cdef Fst _fst2
+  (_fst1, _fst2) = _compile_or_copy_two_Fsts(fst1, fst2)
+  _maybe_arcsort(_fst1._mfst.get(), _fst2._mfst.get())
+  MergeSymbols(_fst1._mfst.get(), _fst2._mfst.get(), MERGE_INSIDE)
+  cdef Fst result = Fst(_fst1.arc_type())
   cdef PdtComposeFilter compose_filter_enum = _get_pdt_compose_filter(
       tostring(compose_filter))
   cdef unique_ptr[PdtComposeOptions] opts
   opts.reset(new PdtComposeOptions(True, compose_filter_enum))
-  PdtCompose(deref(lhs._fst), deref(rhs._fst), parens._parens,
+  PdtCompose(deref(_fst1._fst), deref(_fst2._fst), parens._parens,
              result._mfst.get(), deref(opts), left_pdt)
   result._check_mutating_imethod()
   # If the "expand" filter is selected, all parentheses have been mapped to
@@ -1745,13 +1658,13 @@ def pdt_compose(ifst1,
   return result
 
 
-def pdt_expand(ipdt,
+def pdt_expand(fst,
                PdtParentheses parens,
                bool connect=True,
                bool keep_parentheses=False,
                weight=None):
   """
-  pdt_expand(ipdt, parens, connect=True, keep_parentheses=False, weight=None)
+  pdt_expand(fst, parens, connect=True, keep_parentheses=False, weight=None)
 
   Expands a bounded-stack PDT to an FST.
 
@@ -1763,7 +1676,7 @@ def pdt_expand(ipdt,
   expand the PDT into an FST and this operation will not terminate.
 
   Args:
-    ipdt: The FST component of the input PDT.
+    fst: The FST component of the input PDT.
     parens: A PdtParentheses object specifying the input PDT's stack symbols.
     connect: Should the output FST be trimmed?
     keep_parentheses: Should the output FST preserve parentheses arcs?
@@ -1777,19 +1690,53 @@ def pdt_expand(ipdt,
   Raises:
     FstOpError: Operation failed.
   """
-  cdef Fst pdt = _compile_or_copy_Fst(ipdt)
-  cdef Fst result = Fst(pdt.arc_type())
+  cdef Fst _fst = _compile_or_copy_Fst(fst)
+  cdef Fst result = Fst(_fst.arc_type())
   cdef WeightClass wc = _get_WeightClass_or_Zero(result.weight_type(), weight)
   cdef unique_ptr[PdtExpandOptions] opts
   opts.reset(new PdtExpandOptions(connect, keep_parentheses, wc))
-  PdtExpand(deref(pdt._fst), parens._parens, result._mfst.get(), deref(opts))
+  PdtExpand(deref(_fst._fst), parens._parens, result._mfst.get(), deref(opts))
   result._check_mutating_imethod()
   return result
 
 
-def pdt_replace(root, replacements, pdt_parser_type=b"left"):
+# Helper for the top-level pdt_replace, with an interface like pywrapfst.
+
+
+cdef object _pdt_replace(pairs,
+                         pdt_parser_type=b"left",
+                         int64 start_paren_labels=kNoLabel,
+                         left_paren_prefix=b"(_",
+                         right_paren_prefix=b")_"):
+  cdef vector[LabelFstClassPair] _pairs
+  cdef int64 label
+  cdef _Fst _fst
+  for (label, _fst) in pairs:
+    _pairs.push_back(LabelFstClassPair(label, _fst._fst.get()))
+  cdef Fst result = Fst(_pairs[0].second.ArcType())
+  cdef PdtParentheses parens = PdtParentheses()
+  PdtReplace(_pairs,
+             result._mfst.get(),
+             addr(parens._parens),
+             _pairs[0].first,
+             _get_pdt_parser_type(tostring(pdt_parser_type)),
+             start_paren_labels,
+             tostring(left_paren_prefix),
+             tostring(right_paren_prefix))
+  result._check_mutating_imethod()
+  return (result, parens)
+
+
+def pdt_replace(pairs,
+                pdt_parser_type=b"left",
+                int64 start_paren_labels=kNoLabel,
+                left_paren_prefix=b"(_",
+                right_paren_prefix=b")_"):
   """
-  pdt_replace(root, replacements, pdt_parser_type="left")
+  pdt_replace(pairs, pdt_parser_type="left", 
+              int64 start_paren_labels=NO_LABEL,
+              left_paren_prefix=b"(_",
+              right_paren_prefix=")_")
 
   Constructively replaces arcs in an FST with other FST(s), producing a PDT.
 
@@ -1808,51 +1755,46 @@ def pdt_replace(root, replacements, pdt_parser_type=b"left"):
   symbols to "return" arcs.
 
   Args:
-    root: The root FST.
-    replacements: An iterable containing string/FST pairs. If the iterable
-       implements .items, this is used to extract the pairs.
+    pairs: An iterable of (nonterminal label, FST) pairs, where the former is an
+        unsigned integer and the latter is an Fst instance.
     pdt_parser_type: A string matching a known PdtParserType. One of: "left"
         (default), "left_sr".
+    start_paren_labels: Index to use for the first inserted parentheses.
+    left_paren_prefix: Prefix to attach to SymbolTable labels for inserted left
+        parentheses.
+    right_paren_prefix: Prefix to attach to SymbolTable labels for inserted
+        right parentheses.
 
   Returns:
-   An (Fst, PdtParentheses) pair defining a PDT resulting from PDT replacement.
+   An (Fst, PdtParentheses) pair.
 
   Raises:
     FstOpError: Operation failed.
-
-  See also: `replace`.
   """
-  cdef Fst root_fst = _compile_or_copy_Fst(root)
-  cdef string arc_type = root_fst.arc_type()
-  if hasattr(replacements, "items"):
-    replacements = replacements.items()
-  # This has the pleasant effect of preventing Python from garbage-collecting
-  # these FSTs until we're ready.
-  # TODO(kbg): Is there a better way?
-  replacements = [(nt, _compile_or_copy_Fst(rep, arc_type)) for
-                  (nt, rep) in replacements]
-  cdef string nonterm
-  cdef Fst replacement
-  cdef vector[StringFstClassPair] pairs
-  pairs.reserve(len(replacements))
-  for (nt, rep) in replacements:
-    nonterm = tostring(nt)
-    replacement = rep
-    pairs.push_back(StringFstClassPair(nonterm, replacement._fst.get()))
-  cdef Fst result = Fst(arc_type)
-  cdef PdtParentheses parens = PdtParentheses()
-  PyniniPdtReplace(deref(root_fst._fst),
-                   pairs,
-                   result._mfst.get(),
-                   addr(parens._parens),
-                   _get_pdt_parser_type(tostring(pdt_parser_type)))
-  result._check_mutating_imethod()
-  return (result, parens)
+  it = iter(pairs)
+  pair = next(it)
+  cdef int64 label = pair[0]
+  cdef Fst _root = _compile_or_copy_Fst(pair[1])
+  # Keeps these in memory so they're not garbage-collected.
+  pairs = [(label, _root)]
+  cdef Fst _fst
+  for (label, fst) in it:
+    _fst = _compile_or_copy_Fst(fst, _root.arc_type())
+    MergeSymbols(_root._mfst.get(), _fst._mfst.get(), MERGE_INPUT_OUTPUT)
+    # We only need the root FST's symbol tables after merging.
+    _fst._mfst.get().SetInputSymbols(NULL)
+    _fst._mfst.get().SetOutputSymbols(NULL)
+    pairs.append((label, _fst))
+  return _pdt_replace(pairs,
+                      pdt_parser_type,
+                      start_paren_labels,
+                      left_paren_prefix,
+                      right_paren_prefix)
 
 
-def pdt_reverse(ipdt, PdtParentheses parens):
+cpdef Fst pdt_reverse(fst, PdtParentheses parens):
   """
-  pdt_reverse(ipdt, parens)
+  pdt_reverse(fst, parens)
 
   Reverses a PDT.
 
@@ -1860,26 +1802,26 @@ def pdt_reverse(ipdt, PdtParentheses parens):
   of an FST and a PdtParentheses object specifying the PDT stack symbols.
 
   Args:
-    ipdt: The FST component of the input PDT.
+    fst: The FST component of the input PDT.
     parens: A PdtParentheses object specifying the input PDT's stack symbols.
 
   Returns:
-    The FST component of a PDT resulting from reversing the input PDT.
+    An FST.
   """
-  cdef Fst pdt = _compile_or_copy_Fst(ipdt)
-  cdef Fst result = Fst(pdt.arc_type())
-  PdtReverse(deref(pdt._fst), parens._parens, result._mfst.get())
+  cdef Fst _fst = _compile_or_copy_Fst(fst)
+  cdef Fst result = Fst(_fst.arc_type())
+  PdtReverse(deref(_fst._fst), parens._parens, result._mfst.get())
   result._check_mutating_imethod()
   return result
 
 
-def pdt_shortestpath(ipdt,
-                     PdtParentheses parens,
-                     queue_type=b"fifo",
-                     bool keep_parentheses=False,
-                     bool path_gc=True):
+cpdef pdt_shortestpath(fst,
+                       PdtParentheses parens,
+                       queue_type=b"fifo",
+                       bool keep_parentheses=False,
+                       bool path_gc=True):
   """
-  pdt_shortestpath(ipdt, parens, queue_type="fifo", keep_parentheses=False,
+  pdt_shortestpath(fst, parens, queue_type="fifo", keep_parentheses=False,
                    path_gc=True)
 
   Computes the shortest path through a bounded-stack PDT.
@@ -1889,7 +1831,7 @@ def pdt_shortestpath(ipdt,
   the PDT stack symbols.
 
   Args:
-    ipdt: The FST component of an input PDT.
+    fst: The FST component of an input PDT.
     parens: A PdtParentheses object specifying the input PDT's stack symbols.
     queue_type: A string matching a known queue type; one of: "fifo" (default),
         "lifo", "state".
@@ -1897,17 +1839,17 @@ def pdt_shortestpath(ipdt,
     path_gc: Should shortest path data be garbage-collected?
 
   Returns:
-    A string FST representing the shortest path.
+    An FST.
 
   Raises:
     FstOpError: Operation failed.
   """
-  cdef Fst pdt = _compile_or_copy_Fst(ipdt)
-  cdef Fst result = Fst(pdt.arc_type())
+  cdef Fst _fst = _compile_or_copy_Fst(fst)
+  cdef Fst result = Fst(_fst.arc_type())
   cdef unique_ptr[PdtShortestPathOptions] opts
   opts.reset(new PdtShortestPathOptions(
         _get_queue_type(tostring(queue_type)), keep_parentheses, path_gc))
-  PdtShortestPath(deref(pdt._fst), parens._parens, result._mfst.get(),
+  PdtShortestPath(deref(_fst._fst), parens._parens, result._mfst.get(),
                   deref(opts))
   result._check_mutating_imethod()
   return result
@@ -2021,10 +1963,10 @@ cdef class MPdtParentheses(object):
       raise FstIOError("Write failed: {!r}".format(filename))
 
 
-cpdef Fst mpdt_compose(ifst1, ifst2, MPdtParentheses parens,
+cpdef Fst mpdt_compose(fst1, fst2, MPdtParentheses parens,
                        compose_filter=b"paren", bool left_mpdt=True):
   """
-  mpdt_compose(ifst1, ifst2, parens, compose_filter="paren", left_mpdt=True)
+  mpdt_compose(fst1, fst2, parens, compose_filter="paren", left_mpdt=True)
 
   Composes a MPDT with an FST.
 
@@ -2034,8 +1976,8 @@ cpdef Fst mpdt_compose(ifst1, ifst2, MPdtParentheses parens,
   or the right-hand FST argument is to be interpreted as a MPDT.
 
   Args:
-    ifst1: The left-hand-side input FST or MPDT.
-    ifst2: The right-hand-side input FST or MPDT.
+    fst1: The left-hand-side input FST or MPDT.
+    fst2: The right-hand-side input FST or MPDT.
     parens: A MPdtParentheses object specifying the input MPDT's stack
         operations and assignments.
     compose_filter: A string indicating the desired MPDT composition filter; one
@@ -2047,27 +1989,24 @@ cpdef Fst mpdt_compose(ifst1, ifst2, MPdtParentheses parens,
         as an FST.
 
   Returns:
-    The FST component of an MPDT produced by composition.
+    An FST.
 
   Raises:
     FstOpError: Operation failed.
-
-  See also: `compose`.
   """
-  cdef Fst lhs
-  cdef Fst rhs
-  (lhs, rhs) = _compile_or_copy_two_Fsts(ifst1, ifst2)
-  _maybe_arcsort(lhs._mfst.get(), rhs._mfst.get())
-  MergeSymbols(lhs._mfst.get(), rhs._mfst.get(), MERGE_INSIDE)
-  cdef Fst result = Fst(lhs.arc_type())
+  cdef Fst _fst1
+  cdef Fst _fst2
+  (_fst1, _fst2) = _compile_or_copy_two_Fsts(fst1, fst2)
+  _maybe_arcsort(_fst1._mfst.get(), _fst2._mfst.get())
+  MergeSymbols(_fst1._mfst.get(), _fst2._mfst.get(), MERGE_INSIDE)
+  cdef Fst result = Fst(_fst1.arc_type())
   cdef PdtComposeFilter compose_filter_enum = _get_pdt_compose_filter(
       tostring(compose_filter))
   cdef unique_ptr[MPdtComposeOptions] opts
   opts.reset(new MPdtComposeOptions(True, compose_filter_enum))
-  MPdtCompose(deref(lhs._fst), deref(rhs._fst), parens._parens,
+  MPdtCompose(deref(_fst1._fst), deref(_fst2._fst), parens._parens,
               parens._assign, result._mfst.get(), deref(opts), left_mpdt)
-  if result._fst.get().Properties(kError, True) == kError:
-    raise FstOpError("Operation failed")
+  result._check_mutating_imethod()
   # If the "expand" filter is selected, all parentheses have been mapped to
   # epsilon. This conveniently removes the arcs that result.
   if compose_filter_enum == EXPAND_FILTER:
@@ -2075,13 +2014,16 @@ cpdef Fst mpdt_compose(ifst1, ifst2, MPdtParentheses parens,
   # Otherwise, we need to add the parentheses to the result.
   else:
     _add_parentheses_symbols(result._mfst.get(), parens._parens, left_mpdt)
+  result._check_mutating_imethod()
   return result
 
 
-def mpdt_expand(impdt, MPdtParentheses parens, bool connect=True,
-                bool keep_parentheses=False):
+cpdef Fst mpdt_expand(fst,
+                      MPdtParentheses parens,
+                      bool connect=True,
+                      bool keep_parentheses=False):
   """
-  mpdt_expand(impdt, parens, connect=True, keep_parentheses=False):
+  mpdt_expand(fst, parens, connect=True, keep_parentheses=False):
 
   Expands a bounded-stack MPDT to an FST.
 
@@ -2093,31 +2035,31 @@ def mpdt_expand(impdt, MPdtParentheses parens, bool connect=True,
   expand the MPDT into an FST and this operation will not terminate.
 
   Args:
-    impdt: The FST component of the input MPDT.
+    fst: The FST component of the input MPDT.
     parens: A MPdtParentheses object specifying the input PDT's stack
         symbols and assignments.
     connect: Should the output FST be trimmed?
     keep_parentheses: Should the output FST preserve parentheses arcs?
 
   Returns:
-    An FST produced by expanding the bounded-stack MPDT.
+    An FST.
 
   Raises:
     FstOpError: Operation failed.
   """
-  cdef Fst mpdt = _compile_or_copy_Fst(impdt)
-  cdef Fst result = Fst(mpdt.arc_type())
+  cdef Fst _fst = _compile_or_copy_Fst(fst)
+  cdef Fst result = Fst(_fst.arc_type())
   cdef unique_ptr[MPdtExpandOptions] opts
   opts.reset(new MPdtExpandOptions(connect, keep_parentheses))
-  MPdtExpand(deref(mpdt._fst), parens._parens, parens._assign,
+  MPdtExpand(deref(_fst._fst), parens._parens, parens._assign,
              result._mfst.get(), deref(opts))
   result._check_mutating_imethod()
   return result
 
 
-def mpdt_reverse(impdt, MPdtParentheses parens):
+def mpdt_reverse(fst, MPdtParentheses parens):
   """
-  mpdt_reverse(impdt, parens)
+  mpdt_reverse(fst, parens)
 
   Reverses a MPDT.
 
@@ -2127,23 +2069,23 @@ def mpdt_reverse(impdt, MPdtParentheses parens):
   this operation also reverses the stack assignments. assignments.
 
   Args:
-    impdt: The FST component of the input MPDT.
+    fst: The FST component of the input MPDT.
     parens: A MPdtParentheses object specifying the input MPDT's stack symbols
         and assignments.
 
   Returns:
-    A (Fst, MPdtParentheses) pair specifying the reversed MPDT.
+    A (Fst, MPdtParentheses) pair.
   """
-  cdef Fst mpdt = _compile_or_copy_Fst(impdt)
-  cdef Fst result_fst = Fst(mpdt.arc_type())
+  cdef Fst _fst = _compile_or_copy_Fst(fst)
+  cdef Fst result_fst = Fst(_fst.arc_type())
   cdef MPdtParentheses result_parens = parens.copy()
-  MPdtReverse(deref(mpdt._fst), result_parens._parens,
+  MPdtReverse(deref(_fst._fst), result_parens._parens,
               addr(result_parens._assign), result_fst._mfst.get())
   result_fst._check_mutating_imethod()
   return (result_fst, result_parens)
 
 
-# Class for printing paths.
+# Class for extracting paths from an acyclic FST.
 
 
 cdef class StringPathIterator(object):
@@ -2182,26 +2124,29 @@ cdef class StringPathIterator(object):
   def __repr__(self):
     return "<StringPathIterator at 0x{:x}>".format(id(self))
 
-  def __init__(self, ifst, input_token_type=b"byte",
+  def __init__(self, fst, input_token_type=b"byte",
                output_token_type=b"byte"):
     # Sorts out the token type arguments.
     cdef StringTokenType itype
-    cdef SymbolTable_ptr isyms = NULL
+    cdef SymbolTable_ptr isymbols = NULL
     if isinstance(input_token_type, pywrapfst._SymbolTable):
       itype = SYMBOL
-      isyms = (<SymbolTable_ptr> (<_SymbolTable> input_token_type)._table)
+      isymbols = (<SymbolTable_ptr> (<_SymbolTable> input_token_type)._table)
     else:
       itype = _get_token_type(tostring(input_token_type))
     cdef StringTokenType otype
-    cdef SymbolTable_ptr osyms = NULL
+    cdef SymbolTable_ptr osymbols = NULL
     if isinstance(output_token_type, pywrapfst._SymbolTable):
       otype = SYMBOL
-      osyms = (<SymbolTable_ptr> (<_SymbolTable> output_token_type)._table)
+      osymbols = (<SymbolTable_ptr> (<_SymbolTable> output_token_type)._table)
     else:
       otype = _get_token_type(tostring(output_token_type))
-    cdef Fst ifst_compiled = _compile_or_copy_Fst(ifst)
-    self._paths.reset(new StringPathIteratorClass(deref(ifst_compiled._fst),
-                                                  itype, otype, isyms, osyms))
+    cdef Fst _fst = _compile_or_copy_Fst(fst)
+    self._paths.reset(new StringPathIteratorClass(deref(_fst._fst),
+                                                  itype,
+                                                  otype,
+                                                  isymbols,
+                                                  osymbols))
     if self._paths.get().Error():
       raise FstOpError("Operation failed")
 
@@ -2753,13 +2698,6 @@ from pywrapfst import ENCODE_LABELS
 from pywrapfst import ENCODE_WEIGHTS
 
 
-# Single-char aliases for the biggest three functions.
-
-
-a = acceptor
-t = transducer
-u = union
-
 
 # The following wrapper converts destructive FST operations (defined as
 # instance methods on the Fst class) to module-level functions which make a
@@ -2807,4 +2745,11 @@ from pywrapfst import divide
 from pywrapfst import power
 from pywrapfst import plus
 from pywrapfst import times
+
+
+# Single-char aliases for the biggest three functions.
+
+a = acceptor
+t = transducer
+u = union
 

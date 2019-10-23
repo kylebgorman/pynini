@@ -28,12 +28,11 @@ from fst cimport ComposeOptions
 from fst cimport FstClass
 from fst cimport MutableFstClass
 from fst cimport QueueType
-from fst cimport ReplaceOptions
 from fst cimport SymbolTable
 from fst cimport WeightClass
 
 
-ctypedef pair[string, const FstClass *] StringFstClassPair
+ctypedef pair[int64, const FstClass *] LabelFstClassPair
 
 
 cdef extern from "<fst/extensions/mpdt/mpdtlib.h>" namespace "fst" nogil:
@@ -52,28 +51,39 @@ cdef extern from "<fst/extensions/mpdt/mpdtlib.h>" namespace "fst" nogil:
 cdef extern from "<fst/extensions/mpdt/mpdtscript.h>" \
     namespace "fst::script" nogil:
 
-    void MPdtCompose(const FstClass &, const FstClass &,
-                     const vector[pair[int64, int64]] &, const vector[int64] &,
-                     MutableFstClass *, const MPdtComposeOptions &, bool)
+    void MPdtCompose(const FstClass &,
+                     const FstClass &,
+                     const vector[pair[int64, int64]] &,
+                     const vector[int64] &,
+                     MutableFstClass *,
+                     const MPdtComposeOptions &,
+                     bool)
 
-    void MPdtExpand(const FstClass &, const vector[pair[int64, int64]] &,
-                    const vector[int64] &, MutableFstClass *,
+    void MPdtExpand(const FstClass &,
+                    const vector[pair[int64, int64]] &,
+                    const vector[int64] &,
+                    MutableFstClass *,
                     const MPdtExpandOptions &)
 
-    void MPdtReverse(const FstClass &, const vector[pair[int64, int64]] &,
-                     vector[int64] *, MutableFstClass *)
+    void MPdtReverse(const FstClass &,
+                      const vector[pair[int64, int64]] &,
+                     vector[int64] *,
+                     MutableFstClass *)
 
 
 cdef extern from "<fst/extensions/mpdt/read_write_utils.h>" \
     namespace "fst" nogil:
 
-  bool ReadLabelTriples[L](const string &, vector[pair[L, L]] *, vector[L] *,
+  bool ReadLabelTriples[L](const string &,
+                           vector[pair[L, L]] *,
+                           vector[L] *,
                            bool)
 
   # TODO(kbg): The last argument is actually const but externally Cython 0.28
   # freaks out if it is so annotated. Re-annotate it const once this has been
   # fixed with the most recent Cython release.
-  bool WriteLabelTriples[L](const string &, const vector[pair[L, L]] &,
+  bool WriteLabelTriples[L](const string &,
+                            const vector[pair[L, L]] &,
                             vector[L] &)
 
 
@@ -96,34 +106,51 @@ cdef extern from "<fst/extensions/pdt/pdtlib.h>" namespace "fst" nogil:
 cdef extern from "<fst/extensions/pdt/getters.h>" \
     namespace "fst::script" nogil:
 
-  cdef bool GetPdtComposeFilter(const string &, PdtComposeFilter *)
+  bool GetPdtComposeFilter(const string &, PdtComposeFilter *)
 
 
 cdef extern from "<fst/extensions/pdt/pdtscript.h>" \
     namespace "fst::script" nogil:
 
-  void PdtCompose(const FstClass &, const FstClass &,
-                  const vector[pair[int64, int64]] &, MutableFstClass *,
-                  const PdtComposeOptions &, bool)
+  void PdtCompose(const FstClass &,
+                  const FstClass &,
+                  const vector[pair[int64, int64]] &,
+                  MutableFstClass *,
+                  const PdtComposeOptions &,
+                  bool)
 
   cdef cppclass PdtExpandOptions:
 
     PdtExpandOptions(bool, bool, const WeightClass &)
 
-  void PdtExpand(const FstClass &, const vector[pair[int64, int64]] &,
-                 MutableFstClass *, const PdtExpandOptions &)
+  void PdtExpand(const FstClass &,
+                 const vector[pair[int64, int64]] &,
+                 MutableFstClass *,
+                 const PdtExpandOptions &)
 
-  cdef bool GetPdtParserType(const string &, PdtParserType *)
+  bool GetPdtParserType(const string &, PdtParserType *)
 
-  void PdtReverse(const FstClass &, const vector[pair[int64, int64]] &,
+  void PdtReplace(const vector[LabelFstClassPair] &,
+                  MutableFstClass *,
+                  vector[pair[int64, int64]] *,
+                  int64,
+                  PdtParserType,
+                  int64,
+                  const string &,
+                  const string &)
+
+  void PdtReverse(const FstClass &,
+                  const vector[pair[int64, int64]] &,
                   MutableFstClass *)
 
   cdef cppclass PdtShortestPathOptions:
 
     PdtShortestPathOptions(QueueType, bool, bool)
 
-  void PdtShortestPath(const FstClass &, const vector[pair[int64, int64]] &,
-                       MutableFstClass *, const PdtShortestPathOptions &)
+  void PdtShortestPath(const FstClass &,
+                       const vector[pair[int64, int64]] &,
+                       MutableFstClass *,
+                       const PdtShortestPathOptions &)
 
 
 cdef extern from "<fst/fstlib.h>" namespace "fst" nogil:
@@ -151,6 +178,20 @@ cdef extern from "cdrewrite.h" \
     OPTIONAL
 
 
+cdef extern from "cdrewritescript.h" \
+    namespace "fst::script" nogil:
+
+  void CDRewriteCompile(const FstClass &,
+                        const FstClass &,
+                        const FstClass &,
+                        const FstClass &,
+                        MutableFstClass *,
+                        CDRewriteDirection,
+                        CDRewriteMode,
+                        int64,
+                        int64)
+
+
 cdef extern from "concatrangescript.h" \
     namespace "fst::script" nogil:
 
@@ -160,23 +201,29 @@ cdef extern from "concatrangescript.h" \
 cdef extern from "getters.h" \
     namespace "fst::script" nogil:
 
-  cdef bool GetCDRewriteDirection(const string &, CDRewriteDirection *)
+  bool GetCDRewriteDirection(const string &, CDRewriteDirection *)
 
-  cdef bool GetCDRewriteMode(const string &, CDRewriteMode *)
+  bool GetCDRewriteMode(const string &, CDRewriteMode *)
+
+  bool GetStringTokenType(const string &, StringTokenType *)
 
 
 cdef extern from "crossproductscript.h" \
     namespace "fst::script" nogil:
 
-  void CrossProduct(const FstClass &, const FstClass &, MutableFstClass *,
+  void CrossProduct(const FstClass &,
+                    const FstClass &,
+                    MutableFstClass *,
                     const WeightClass &)
 
 
 cdef extern from "lenientlycomposescript.h" \
     namespace "fst::script" nogil:
 
-  void LenientlyCompose(const FstClass &, const FstClass &,
-                        const FstClass &, MutableFstClass *,
+  void LenientlyCompose(const FstClass &,
+                        const FstClass &,
+                        const FstClass &,
+                        MutableFstClass *,
                         const ComposeOptions &)
 
 
@@ -215,8 +262,11 @@ cdef extern from "pathsscript.h" \
 
   cdef cppclass StringPathIteratorClass:
 
-    StringPathIteratorClass(const FstClass &, StringTokenType, StringTokenType,
-                            const SymbolTable *, const SymbolTable *)
+    StringPathIteratorClass(const FstClass &,
+                            StringTokenType,
+                            StringTokenType,
+                            const SymbolTable *,
+                            const SymbolTable *)
 
     bool Done()
 
@@ -246,50 +296,40 @@ cdef extern from "stringcompilescript.h" \
 cdef extern from "stringcompilescript.h" \
     namespace "fst::script" nogil:
 
-  bool CompileString(const string &, MutableFstClass *, StringTokenType,
-                     const SymbolTable *, const WeightClass &, bool)
+  bool CompileString(const string &,
+                     MutableFstClass *,
+                     StringTokenType,
+                     const SymbolTable *,
+                     const WeightClass &, bool)
 
 
 cdef extern from "stringmapscript.h" \
     namespace "fst::script" nogil:
 
-  bool StringFile(const string &, MutableFstClass *, StringTokenType,
-                  StringTokenType, const SymbolTable *, const SymbolTable *,
-                  bool, bool)
+  bool StringFileCompile(const string &,
+                         MutableFstClass *,
+                         StringTokenType,
+                         StringTokenType,
+                         const SymbolTable *,
+                         const SymbolTable *,
+                         bool,
+                         bool)
 
-  bool StringMap(const vector[vector[string]] &, MutableFstClass *,
-                 StringTokenType, StringTokenType, const SymbolTable *,
-                 const SymbolTable *, bool, bool)
+  bool StringMapCompile(const vector[vector[string]] &,
+                        MutableFstClass *,
+                        StringTokenType,
+                        StringTokenType,
+                        const SymbolTable *,
+                        const SymbolTable *,
+                        bool,
+                        bool)
 
 
 cdef extern from "stringprintscript.h" \
     namespace "fst::script" nogil:
 
-  bool PrintString(const FstClass &, string *, StringTokenType,
+  bool PrintString(const FstClass &,
+                   string *,
+                   StringTokenType,
                    const SymbolTable *)
-
-
-cdef extern from "stringtokentype.h" \
-    namespace "fst::script" nogil:
-
-  bool GetStringTokenType(const string &, StringTokenType *)
-
-
-cdef extern from "pynini_cdrewrite.h" \
-    namespace "fst::script" nogil:
-
-  void PyniniCDRewrite(const FstClass &, const FstClass &,
-                       const FstClass &, const FstClass &,
-                       MutableFstClass *, CDRewriteDirection, CDRewriteMode)
-
-
-cdef extern from "pynini_replace.h" \
-    namespace "fst::script" nogil:
-
-  void PyniniReplace(const FstClass &, const vector[StringFstClassPair],
-                     MutableFstClass *, const ReplaceOptions &)
-
-  void PyniniPdtReplace(const FstClass &, const vector[StringFstClassPair] &,
-                        MutableFstClass *, const vector[pair[int64, int64]] *,
-                        PdtParserType)
 

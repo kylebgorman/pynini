@@ -12,6 +12,7 @@
 #
 # Copyright 2017 and onwards Google, Inc.
 #
+#cython: language_level=3
 # See www.openfst.org for extensive documentation on this weighted
 # finite-state transducer library.
 
@@ -26,11 +27,12 @@ from libcpp.string cimport string
 from libcpp.utility cimport pair
 from libcpp.vector cimport vector
 
-from basictypes cimport int32
-from basictypes cimport int64
-from basictypes cimport uint32
-from basictypes cimport uint64
+from basictypes cimport *
+
 cimport fst as fst
+
+from ios cimport ostream
+from ios cimport ofstream
 from ios cimport stringstream
 
 
@@ -52,7 +54,8 @@ cdef fst.RandArcSelection _get_rand_arc_selection(
     const string &replace_label_type) except *
 
 cdef fst.ReplaceLabelType _get_replace_label_type(
-    const string &replace_label_type, bool epsilon_on_replace) except *
+    const string &replace_label_type,
+    bool epsilon_on_replace) except *
 
 
 # Weight.
@@ -120,16 +123,16 @@ cdef class _SymbolTable(object):
 
   cpdef size_t num_symbols(self)
 
-  cpdef void write(self, filename) except *
+  cpdef void write(self, source) except *
 
-  cpdef void write_text(self, filename) except *
+  cpdef void write_text(self, source) except *
 
   cpdef bytes write_to_string(self)
 
 
 cdef class _EncodeMapperSymbolTable(_SymbolTable):
 
-  cdef shared_ptr[fst.EncodeMapperClass] _encoder
+  cdef shared_ptr[fst.EncodeMapperClass] _mapper
 
 
 cdef class _FstSymbolTable(_SymbolTable):
@@ -157,14 +160,16 @@ cdef class SymbolTable(_MutableSymbolTable):
 
 
 cdef _EncodeMapperSymbolTable _init_EncodeMapperSymbolTable(
-    fst.SymbolTable *table, shared_ptr[fst.EncodeMapperClass] encoder)
+    fst.SymbolTable *table,
+    shared_ptr[fst.EncodeMapperClass] encoder)
 
 
 cdef _FstSymbolTable _init_FstSymbolTable(fst.SymbolTable *table,
                                           shared_ptr[fst.FstClass] ifst)
 
 
-cdef _MutableFstSymbolTable _init_MutableFstSymbolTable(fst.SymbolTable *table,
+cdef _MutableFstSymbolTable _init_MutableFstSymbolTable(
+    fst.SymbolTable *table,
     shared_ptr[fst.MutableFstClass] ifst)
 
 
@@ -195,29 +200,38 @@ cdef class SymbolTableIterator(object):
 
 cdef class EncodeMapper(object):
 
-  cdef shared_ptr[fst.EncodeMapperClass] _encoder
+  cdef shared_ptr[fst.EncodeMapperClass] _mapper
 
   cpdef string arc_type(self)
 
-  cpdef uint32 flags(self)
+  cpdef string weight_type(self)
+
+  cpdef uint8 flags(self)
+
+  cpdef uint64 properties(self, uint64 mask)
+
+  cpdef void write(self, source) except *
+
+  cpdef bytes write_to_string(self)
 
   cpdef _EncodeMapperSymbolTable input_symbols(self)
 
   cpdef _EncodeMapperSymbolTable output_symbols(self)
 
-  cpdef uint64 properties(self, uint64 mask)
-
   cpdef void set_input_symbols(self, _SymbolTable syms) except *
 
   cpdef void set_output_symbols(self, _SymbolTable syms) except *
 
-  cpdef string weight_type(self)
 
+cdef EncodeMapper _init_EncodeMapper(fst.EncodeMapperClass *mapper)
+
+cpdef EncodeMapper _read_EncodeMapper_from_string(state)
 
 # Fst.
 
 
 ctypedef fst.FstClass * FstClass_ptr
+ctypedef const fst.FstClass * const_FstClass_ptr
 ctypedef fst.MutableFstClass * MutableFstClass_ptr
 ctypedef fst.VectorFstClass * VectorFstClass_ptr
 
@@ -235,12 +249,22 @@ cdef class _Fst(object):
 
   cpdef _Fst copy(self)
 
-  cpdef void draw(self, filename, _SymbolTable isymbols=?,
-                  _SymbolTable osymbols=?, SymbolTable ssymbols=?,
-                  bool acceptor=?, title=?, double width=?,
-                  double height=?, bool portrait=?, bool vertical=?,
-                  double ranksep=?, double nodesep=?, int32 fontsize=?,
-                  int32 precision=?, float_format=?,
+  cpdef void draw(self,
+                  source,
+                  _SymbolTable isymbols=?,
+                  _SymbolTable osymbols=?,
+                  _SymbolTable ssymbols=?,
+                  bool acceptor=?,
+                  title=?,
+                  double width=?,
+                  double height=?,
+                  bool portrait=?,
+                  bool vertical=?,
+                  double ranksep=?,
+                  double nodesep=?,
+                  int32 fontsize=?,
+                  int32 precision=?,
+                  float_format=?,
                   bool show_weight_one=?)
 
   cpdef Weight final(self, int64 state)
@@ -263,15 +287,19 @@ cdef class _Fst(object):
 
   cpdef StateIterator states(self)
 
-  cpdef string text(self, _SymbolTable isymbols=?, _SymbolTable osymbols=?,
-                    _SymbolTable ssymbols=?, bool acceptor=?,
-                    bool show_weight_one=?, missing_sym=?)
+  cpdef string text(self,
+                    _SymbolTable isymbols=?,
+                    _SymbolTable osymbols=?,
+                    _SymbolTable ssymbols=?,
+                    bool acceptor=?,
+                    bool show_weight_one=?,
+                    missing_sym=?)
 
   cpdef bool verify(self)
 
   cpdef string weight_type(self)
 
-  cpdef void write(self, filename) except *
+  cpdef void write(self, source) except *
 
   cpdef bytes write_to_string(self)
 
@@ -292,7 +320,7 @@ cdef class _MutableFst(_Fst):
 
   cdef void _closure(self, bool closure_plus=?) except *
 
-  cdef void _concat(self, _Fst ifst) except *
+  cdef void _concat(self, _Fst fst2) except *
 
   cdef void _connect(self) except *
 
@@ -316,16 +344,22 @@ cdef class _MutableFst(_Fst):
 
   cdef void _prune(self, float delta=?, int64 nstate=?, weight=?) except *
 
-  cdef void _push(self, float delta=?, bool remove_total_weight=?,
+  cdef void _push(self,
+                  float delta=?,
+                  bool remove_total_weight=?,
                   bool to_final=?) except *
 
   cdef void _relabel_pairs(self, ipairs=?, opairs=?) except *
 
-  cdef void _relabel_tables(self, _SymbolTable old_isymbols=?,
-      _SymbolTable new_isymbols=?, unknown_isymbol=?,
-      bool attach_new_isymbols=?,
-      _SymbolTable old_osymbols=?, _SymbolTable new_osymbols=?,
-      unknown_osymbol=?, bool attach_new_osymbols=?) except *
+  cdef void _relabel_tables(self,
+                            _SymbolTable old_isymbols=?,
+                            _SymbolTable new_isymbols=?,
+                            unknown_isymbol=?,
+                            bool attach_new_isymbols=?,
+                            _SymbolTable old_osymbols=?,
+                            _SymbolTable new_osymbols=?,
+                            unknown_osymbol=?,
+                            bool attach_new_osymbols=?) except *
 
   cdef void _reserve_arcs(self, int64 state, size_t n) except *
 
@@ -333,8 +367,12 @@ cdef class _MutableFst(_Fst):
 
   cdef void _reweight(self, potentials, bool to_final=?) except *
 
-  cdef void _rmepsilon(self, queue_type=?, bool connect=?, weight=?,
-                       int64 nstate=?, float delta=?) except *
+  cdef void _rmepsilon(self,
+                       queue_type=?,
+                       bool connect=?,
+                       weight=?,
+                       int64 nstate=?,
+                       float delta=?) except *
 
   cdef void _set_final(self, int64 state, weight=?) except *
 
@@ -348,8 +386,6 @@ cdef class _MutableFst(_Fst):
 
   cdef void _topsort(self) except *
 
-  cdef void _union(self, _Fst ifst) except *
-
 
 # Construction helpers.
 
@@ -362,7 +398,7 @@ cdef _Fst _init_XFst(FstClass_ptr tfst)
 
 cdef _MutableFst _create_Fst(arc_type=?)
 
-cpdef _Fst _read(filename)
+cpdef _Fst _read(source)
 
 cpdef _Fst _read_Fst_from_string(state)
 
@@ -387,7 +423,7 @@ cdef class ArcIterator(object):
 
   cpdef bool done(self)
 
-  cpdef uint32 flags(self)
+  cpdef uint8 flags(self)
 
   cpdef void next(self)
 
@@ -397,7 +433,7 @@ cdef class ArcIterator(object):
 
   cpdef void seek(self, size_t a)
 
-  cpdef void set_flags(self, uint32 flags, uint32 mask)
+  cpdef void set_flags(self, uint8 flags, uint8 mask)
 
   cpdef object value(self)
 
@@ -409,7 +445,7 @@ cdef class MutableArcIterator(object):
 
   cpdef bool done(self)
 
-  cpdef uint32 flags(self)
+  cpdef uint8 flags(self)
 
   cpdef void next(self)
 
@@ -419,7 +455,7 @@ cdef class MutableArcIterator(object):
 
   cpdef void seek(self, size_t a)
 
-  cpdef void set_flags(self, uint32 flags, uint32 mask)
+  cpdef void set_flags(self, uint8 flags, uint8 mask)
 
   cpdef void set_value(self, Arc arc)
 
@@ -445,23 +481,37 @@ cdef class StateIterator(object):
 
 cdef _Fst _map(_Fst ifst, float delta=?, map_type=?, double power=?, weight=?)
 
-cpdef _Fst arcmap(_Fst ifst, float delta=?, map_type=?, double power=?,
+cpdef _Fst arcmap(_Fst ifst,
+                  float delta=?,
+                  map_type=?,
+                  double power=?,
                   weight=?)
 
-cpdef _MutableFst compose(_Fst ifst1, _Fst ifst2, compose_filter=?,
+cpdef _MutableFst compose(_Fst ifst1,
+                          _Fst ifst2,
+                          compose_filter=?,
                           bool connect=?)
 
 cpdef _Fst convert(_Fst ifst, fst_type=?)
 
-cpdef _MutableFst determinize(_Fst ifst, float delta=?, det_type=?,
-                              int64 nstate=?, int64 subsequential_label=?,
-                              weight=?, bool increment_subsequential_label=?)
+cpdef _MutableFst determinize(_Fst ifst,
+                              float delta=?,
+                              det_type=?,
+                              int64 nstate=?,
+                              int64 subsequential_label=?,
+                              weight=?,
+                              bool increment_subsequential_label=?)
 
-cpdef _MutableFst difference(_Fst ifst1, _Fst ifst2, compose_filter=?,
+cpdef _MutableFst difference(_Fst ifst1,
+                             _Fst ifst2,
+                             compose_filter=?,
                              bool connect=?)
 
-cpdef _MutableFst disambiguate(_Fst ifst, float delta=?, int64 nstate=?,
-                               int64 subsequential_label=?, weight=?)
+cpdef _MutableFst disambiguate(_Fst ifst,
+                               float delta=?,
+                               int64 nstate=?,
+                               int64 subsequential_label=?,
+                               weight=?)
 
 cpdef _MutableFst epsnormalize(_Fst ifst, bool eps_norm_output=?)
 
@@ -469,40 +519,66 @@ cpdef bool equal(_Fst ifst1, _Fst ifst2, float delta=?)
 
 cpdef bool equivalent(_Fst ifst1, _Fst ifst2, float delta=?) except *
 
-cpdef _MutableFst intersect(_Fst ifst1, _Fst ifst2, compose_filter=?,
+cpdef _MutableFst intersect(_Fst ifst1,
+                            _Fst ifst2,
+                            compose_filter=?,
                             bool connect=?)
 
 cpdef bool isomorphic(_Fst ifst1, _Fst ifst2, float delta=?)
 
-cpdef _MutableFst prune(_Fst ifst, float delta=?, int64 nstate=?,
+cpdef _MutableFst prune(_Fst ifst,
+                        float delta=?,
+                        int64 nstate=?,
                         weight=?)
 
-cpdef _MutableFst push(_Fst ifst, float delta=?, bool push_weights=?,
-                       bool push_labels=?, bool remove_common_affix=?,
-                       bool remove_total_weight=?, bool to_final=?)
+cpdef _MutableFst push(_Fst ifst,
+                       float delta=?,
+                       bool push_weights=?,
+                       bool push_labels=?,
+                       bool remove_common_affix=?,
+                       bool remove_total_weight=?,
+                       bool to_final=?)
 
-cpdef bool randequivalent(_Fst ifst1, _Fst ifst2, int32 npath=?,
-                          float delta=?, time_t seed=?, select=?,
+cpdef bool randequivalent(_Fst ifst1,
+                          _Fst ifst2,
+                          int32 npath=?,
+                          float delta=?,
+                          time_t seed=?,
+                          select=?,
                           int32 max_length=?) except *
 
-cpdef _MutableFst randgen(_Fst ifst, int32 npath=?, time_t seed=?,
-                          select=?, int32 max_length=?,
-                          bool remove_total_weight=?, bool weighted=?)
+cpdef _MutableFst randgen(_Fst ifst,
+                          int32 npath=?,
+                          time_t seed=?,
+                          select=?,
+                          int32 max_length=?,
+                          bool remove_total_weight=?,
+                          bool weighted=?)
 
-cdef fst.ReplaceLabelType _get_replace_label_type(string rlt,
+cdef fst.ReplaceLabelType _get_replace_label_type(
+    string rlt,
     bool epsilon_on_replace) except *
 
-cpdef _MutableFst replace(pairs, call_arc_labeling=?, return_arc_labeling=?,
-                          bool epsilon_on_replace=?, int64 return_label=?)
+cpdef _MutableFst replace(pairs,
+                          call_arc_labeling=?,
+                          return_arc_labeling=?,
+                          bool epsilon_on_replace=?,
+                          int64 return_label=?)
 
 cpdef _MutableFst reverse(_Fst ifst, bool require_superinitial=?)
 
-cdef vector[fst.WeightClass] *_shortestdistance(_Fst ifst, float delta=?,
-                                                int64 nstate=?, queue_type=?,
+cdef vector[fst.WeightClass] *_shortestdistance(_Fst ifst,
+                                                float delta=?,
+                                                int64 nstate=?,
+                                                queue_type=?,
                                                 bool reverse=?) except *
 
-cpdef _MutableFst shortestpath(_Fst ifst, float delta=?, int32 nshortest=?,
-                               int64 nstate=?, queue_type=?, bool unique=?,
+cpdef _MutableFst shortestpath(_Fst ifst,
+                               float delta=?,
+                               int32 nshortest=?,
+                               int64 nstate=?,
+                               queue_type=?,
+                               bool unique=?,
                                weight=?)
 
 cpdef _Fst statemap(_Fst ifst, map_type)

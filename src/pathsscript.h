@@ -21,20 +21,12 @@
 #include <algorithm>
 #include <vector>
 
-#include <fst/string.h>
 #include <fst/script/arg-packs.h>
 #include <fst/script/fstscript.h>
 #include "paths.h"
 
 namespace fst {
 namespace script {
-
-// Helpers.
-
-template <class Arc>
-inline StringTokenType GetStringPrinterTokenType(StringTokenType type) {
-  return static_cast<StringTokenType>(type);
-}
 
 // Virtual interface implemented by each concrete StatesImpl<F>.
 class StringPathIteratorImplBase {
@@ -43,13 +35,13 @@ class StringPathIteratorImplBase {
   virtual bool Error() const = 0;
   virtual void ILabels(std::vector<int64> *labels) const = 0;
   virtual std::vector<int64> ILabels() const = 0;
-  virtual void IString(string *result) const = 0;
-  virtual string IString() const = 0;
+  virtual void IString(std::string *result) const = 0;
+  virtual std::string IString() const = 0;
   virtual void Next() = 0;
   virtual void OLabels(std::vector<int64> *labels) const = 0;
   virtual std::vector<int64> OLabels() const = 0;
-  virtual void OString(string *result) const = 0;
-  virtual string OString() const = 0;
+  virtual void OString(std::string *result) const = 0;
+  virtual std::string OString() const = 0;
   virtual void Reset() = 0;
   virtual WeightClass Weight() const = 0;
   virtual ~StringPathIteratorImplBase() {}
@@ -85,9 +77,9 @@ class StringPathIteratorImpl : public StringPathIteratorImplBase {
     return labels;
   }
 
-  void IString(string *result) const override { impl_->IString(result); }
+  void IString(std::string *result) const override { impl_->IString(result); }
 
-  string IString() const override { return impl_->IString(); }
+  std::string IString() const override { return impl_->IString(); }
 
   void Next() override { impl_->Next(); }
 
@@ -106,9 +98,9 @@ class StringPathIteratorImpl : public StringPathIteratorImplBase {
     return labels;
   }
 
-  void OString(string *result) const override { impl_->OString(result); }
+  void OString(std::string *result) const override { impl_->OString(result); }
 
-  string OString() const override { return impl_->OString(); }
+  std::string OString() const override { return impl_->OString(); }
 
   WeightClass Weight() const override { return WeightClass(impl_->Weight()); }
 
@@ -150,9 +142,9 @@ class StringPathIteratorClass {
   friend void InitStringPathIteratorClass(
       InitStringPathIteratorClassArgs *args);
 
-  void IString(string *result) const { impl_->IString(result); }
+  void IString(std::string *result) const { impl_->IString(result); }
 
-  string IString() const { return impl_->IString(); }
+  std::string IString() const { return impl_->IString(); }
 
   void Next() { impl_->Next(); }
 
@@ -162,7 +154,7 @@ class StringPathIteratorClass {
 
   std::vector<int64> OLabels() const { return impl_->OLabels(); }
 
-  string OString() const { return impl_->OString(); }
+  std::string OString() const { return impl_->OString(); }
 
   WeightClass Weight() const { return WeightClass(impl_->Weight()); }
 

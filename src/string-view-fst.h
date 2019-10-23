@@ -118,9 +118,9 @@ class ArcIterator<StringViewFst<Arc, Viewer>> : public ArcIteratorBase<Arc> {
 
   void Reset() final { Seek(0); }
 
-  void SetFlags(uint32, uint32) final {}
+  constexpr uint8 Flags() const final { return kArcValueFlags; }
 
-  constexpr uint32 Flags() const final { return kArcValueFlags; }
+  constexpr void SetFlags(uint8, uint8) final {}
 
   size_t Position() const final { return done_ ? 0 : 1; }
 
@@ -181,7 +181,6 @@ class StringViewFstImpl : public FstImpl<A> {
   bool IsFinal(StateId s) const { return s == view_.size(); }
 
   absl::string_view view_;
-  Viewer viewer_;  // Stateless.
 };
 
 template <class A, class Viewer>

@@ -16,6 +16,7 @@
 // pynini.opengrm.org.
 
 #include "stringcompilescript.h"
+
 #include <fst/script/script-impl.h>
 
 namespace fst {
@@ -34,9 +35,7 @@ bool CompileString(const std::string &str, MutableFstClass *fst,
   return args.retval;
 }
 
-REGISTER_FST_OPERATION(CompileString, StdArc, CompileStringArgs);
-REGISTER_FST_OPERATION(CompileString, LogArc, CompileStringArgs);
-REGISTER_FST_OPERATION(CompileString, Log64Arc, CompileStringArgs);
+REGISTER_FST_OPERATION_3ARCS(CompileString, CompileStringArgs);
 
 }  // namespace script
 }  // namespace fst

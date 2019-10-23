@@ -44,6 +44,36 @@ bool GetCDRewriteMode(const std::string &str, CDRewriteMode *rm) {
   return true;
 }
 
+bool GetMergeSymbolsType(const std::string &str, MergeSymbolsType *ms) {
+  if (str == "input") {
+    *ms = MERGE_INPUT;
+  } else if (str == "output") {
+    *ms = MERGE_OUTPUT;
+  } else if (str == "input_output") {
+    *ms = MERGE_INPUT_OUTPUT;
+  } else if (str == "inside") {
+    *ms = MERGE_INSIDE;
+  } else if (str == "outside") {
+    *ms = MERGE_OUTSIDE;
+  } else {
+    return false;
+  }
+  return true;
+}
+
+bool GetStringTokenType(const std::string &str, StringTokenType *ttype) {
+  if (str == "byte") {
+    *ttype = BYTE;
+  } else if (str == "utf8") {
+    *ttype = UTF8;
+  } else if (str == "symbol") {
+    *ttype = SYMBOL;
+  } else {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace script
 }  // namespace fst
 

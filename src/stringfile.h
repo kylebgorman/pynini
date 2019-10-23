@@ -19,12 +19,11 @@
 #define PYNINI_STRINGFILE_H_
 
 #include <string>
-using std::string;
 #include <vector>
 
-#include <iostream>
-
+#include <fstream>
 #include "gtl.h"
+
 
 namespace fst {
 namespace internal {
@@ -34,8 +33,8 @@ namespace internal {
 class StringFile {
  public:
   // Opens a file input stream using the provided filename.
-  explicit StringFile(const std::string &fname)
-      : istrm_(fname), linenum_(0), fname_(fname) {
+  explicit StringFile(const std::string &source)
+      : istrm_(source), linenum_(0), source_(source) {
     if (!!istrm_) Next();
   }
 
@@ -49,19 +48,21 @@ class StringFile {
 
   size_t LineNumber() const { return linenum_; }
 
-  const std::string &Filename() const { return fname_; }
+  const std::string &Filename() const { return source_; }
 
  private:
   std::ifstream istrm_;
   std::string line_;
   size_t linenum_;
-  const std::string fname_;
+  const std::string source_;
 };
 
 // File iterator expecting multiple columns separated by tab.
 class ColumnStringFile {
  public:
-  explicit ColumnStringFile(const std::string &fname) : sf_(fname) { Parse(); }
+  explicit ColumnStringFile(const std::string &source) : sf_(source) {
+    Parse();
+  }
 
   void Reset();
 
@@ -70,7 +71,7 @@ class ColumnStringFile {
   bool Done() const { return sf_.Done(); }
 
   // Access to the underlying row vector.
-  const std::vector<string> Row() const { return row_; }
+  const std::vector<std::string> Row() const { return row_; }
 
   size_t LineNumber() const { return sf_.LineNumber(); }
 
@@ -80,7 +81,7 @@ class ColumnStringFile {
   void Parse() { row_ = strings::Split(sf_.GetString(), '\t'); }
 
   StringFile sf_;
-  std::vector<string> row_;
+  std::vector<std::string> row_;
 };
 
 }  // namespace internal

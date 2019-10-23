@@ -16,28 +16,27 @@
 // pynini.opengrm.org.
 
 #include "lenientlycomposescript.h"
+
 #include <fst/script/script-impl.h>
 
 namespace fst {
 namespace script {
 
 void LenientlyCompose(const FstClass &ifst1, const FstClass &ifst2,
-                      const FstClass &sigma_star, MutableFstClass *ofst,
+                      const FstClass &sigma, MutableFstClass *ofst,
                       const ComposeOptions &opts) {
   if (!internal::ArcTypesMatch(ifst1, ifst2, "LenientlyCompose") ||
-      !internal::ArcTypesMatch(ifst2, sigma_star, "LenientlyCompose") ||
-      !internal::ArcTypesMatch(sigma_star, *ofst, "LenientlyCompose")) {
+      !internal::ArcTypesMatch(ifst2, sigma, "LenientlyCompose") ||
+      !internal::ArcTypesMatch(sigma, *ofst, "LenientlyCompose")) {
     ofst->SetProperties(kError, kError);
     return;
   }
-  LenientlyComposeArgs args(ifst1, ifst2, sigma_star, ofst, opts);
+  LenientlyComposeArgs args(ifst1, ifst2, sigma, ofst, opts);
   Apply<Operation<LenientlyComposeArgs>>("LenientlyCompose", ifst1.ArcType(),
                                          &args);
 }
 
-REGISTER_FST_OPERATION(LenientlyCompose, StdArc, LenientlyComposeArgs);
-REGISTER_FST_OPERATION(LenientlyCompose, LogArc, LenientlyComposeArgs);
-REGISTER_FST_OPERATION(LenientlyCompose, Log64Arc, LenientlyComposeArgs);
+REGISTER_FST_OPERATION_3ARCS(LenientlyCompose, LenientlyComposeArgs);
 
 }  // namespace script
 }  // namespace fst

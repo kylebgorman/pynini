@@ -1,0 +1,89 @@
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// Copyright 2017 and onwards Google, Inc.
+//
+// For general information on the Pynini grammar compilation library, see
+// pynini.opengrm.org.
+
+#ifndef PYNINI_CDREWRITESCRIPT_H_
+#define PYNINI_CDREWRITESCRIPT_H_
+
+#include <utility>
+
+#include <fst/types.h>
+#include <fst/script/fst-class.h>
+#include "cdrewrite.h"
+
+namespace fst {
+namespace script {
+
+using CDRewriteCompileArgs1 =
+    std::tuple<const FstClass &, const FstClass &, const FstClass &,
+               const FstClass &, const FstClass &, MutableFstClass *,
+               CDRewriteDirection, CDRewriteMode, int64, int64>;
+
+template <class Arc>
+void CDRewriteCompile(CDRewriteCompileArgs1 *args) {
+  const Fst<Arc> &phi = *(std::get<0>(*args).GetFst<Arc>());
+  const Fst<Arc> &psi = *(std::get<1>(*args).GetFst<Arc>());
+  const Fst<Arc> &lambda = *(std::get<2>(*args).GetFst<Arc>());
+  const Fst<Arc> &rho = *(std::get<3>(*args).GetFst<Arc>());
+  const Fst<Arc> &sigma = *(std::get<4>(*args).GetFst<Arc>());
+  MutableFst<Arc> *ofst = std::get<5>(*args)->GetMutableFst<Arc>();
+  const CDRewriteDirection dir = std::get<6>(*args);
+  const CDRewriteMode mode = std::get<7>(*args);
+  const typename Arc::Label initial_boundary_marker = std::get<8>(*args);
+  const typename Arc::Label final_boundary_marker = std::get<9>(*args);
+  CDRewriteCompile(phi, psi, lambda, rho, sigma, ofst, dir, mode,
+                   initial_boundary_marker, final_boundary_marker);
+}
+
+void CDRewriteCompile(const FstClass &phi, const FstClass &psi,
+                      const FstClass &lambda, const FstClass &rho,
+                      const FstClass &sigma, MutableFstClass *ofst,
+                      CDRewriteDirection dir, CDRewriteMode mode,
+                      int64 initial_boundary_marker = kNoLabel,
+                      int64 final_boundary_marker = kNoLabel);
+
+using CDRewriteCompileArgs2 =
+    std::tuple<const FstClass &, const FstClass &, const FstClass &,
+               const FstClass &, MutableFstClass *, CDRewriteDirection,
+               CDRewriteMode, int64, int64>;
+
+template <class Arc>
+void CDRewriteCompile(CDRewriteCompileArgs2 *args) {
+  const Fst<Arc> &tau = *(std::get<0>(*args).GetFst<Arc>());
+  const Fst<Arc> &lambda = *(std::get<1>(*args).GetFst<Arc>());
+  const Fst<Arc> &rho = *(std::get<2>(*args).GetFst<Arc>());
+  const Fst<Arc> &sigma = *(std::get<3>(*args).GetFst<Arc>());
+  MutableFst<Arc> *ofst = std::get<4>(*args)->GetMutableFst<Arc>();
+  const CDRewriteDirection dir = std::get<5>(*args);
+  const CDRewriteMode mode = std::get<6>(*args);
+  const typename Arc::Label initial_boundary_marker = std::get<7>(*args);
+  const typename Arc::Label final_boundary_marker = std::get<8>(*args);
+  CDRewriteCompile(tau, lambda, rho, sigma, ofst, dir, mode,
+                   initial_boundary_marker, final_boundary_marker);
+}
+
+void CDRewriteCompile(const FstClass &tau, const FstClass &lambda,
+                      const FstClass &rho, const FstClass &sigma,
+                      MutableFstClass *ofst, CDRewriteDirection dir,
+                      CDRewriteMode mode,
+                      int64 initial_boundary_marker = kNoLabel,
+                      int64 final_boundary_marker = kNoLabel);
+
+}  // namespace script
+}  // namespace fst
+
+#endif  // PYNINI_CDREWRITESCRIPT_H_
+

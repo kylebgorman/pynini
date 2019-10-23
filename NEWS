@@ -1,3 +1,19 @@
+v. 2.0.9 (compatible with OpenFst 1.7.4)
+========================================
+
+* Simplifies `replace` backend
+* Simplifies `cdrewrite` backend
+* Fixes name error in `string_map`
+* Adds efficient star-args `union`
+* Removes inefficient star-args `concat`
+* `EncodeMapper` gains complete reading support
+* Removes underutilized `epsilon_machine` function
+* Fixes off-by-one allocation bug in string compiler
+* Fixes arc-type bug with cross-product of precompiled acceptors
+* Merges `input_token_type` and `output_token_type` (as `token_type`) and 
+  `attach_input_symbols` and `attach_output_symbols` (as `attach_symbols`)
+  in `transducer`
+
 v. 2.0.8 (compatible with OpenFst 1.7.3)
 ========================================
 

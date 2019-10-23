@@ -16,6 +16,7 @@
 // pynini.opengrm.org.
 
 #include "crossproductscript.h"
+
 #include <fst/script/fst-class.h>
 #include <fst/script/script-impl.h>
 
@@ -47,9 +48,7 @@ void CrossProduct(const FstClass &ifst1, const FstClass &ifst2,
   Apply<Operation<CrossProductArgs>>("CrossProduct", ofst->ArcType(), &args);
 }
 
-REGISTER_FST_OPERATION(CrossProduct, StdArc, CrossProductArgs);
-REGISTER_FST_OPERATION(CrossProduct, LogArc, CrossProductArgs);
-REGISTER_FST_OPERATION(CrossProduct, Log64Arc, CrossProductArgs);
+REGISTER_FST_OPERATION_3ARCS(CrossProduct, CrossProductArgs);
 
 }  // namespace script
 }  // namespace fst

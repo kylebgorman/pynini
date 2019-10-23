@@ -19,13 +19,9 @@
 #define PYNINI_GTL_H_
 
 #include <algorithm>
-#include <fstream>
-#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-
-using std::string;
 
 // Prefix tree stuff.
 
@@ -48,16 +44,16 @@ typename T::value_type::second_type LookupOrInsertNew(T * const collection,
 namespace strings {
 namespace internal {
 
-inline void StringReplace(string *full, const string &before,
-                          const string &after) {
+inline void StringReplace(std::string *full, const std::string &before,
+                          const std::string &after) {
   size_t pos = 0;
-  while ((pos = full->find(before, pos)) != string::npos) {
+  while ((pos = full->find(before, pos)) != std::string::npos) {
     full->replace(pos, before.size(), after);
     pos += after.size();
   }
 }
 
-inline void StripTrailingAsciiWhitespace(string *full) {
+inline void StripTrailingAsciiWhitespace(std::string *full) {
   const auto lambda = [](char ch) { return !std::isspace(ch); };
   const auto pos = std::find_if(full->rbegin(), full->rend(), lambda).base();
   full->erase(pos, full->end());
@@ -65,19 +61,21 @@ inline void StripTrailingAsciiWhitespace(string *full) {
 
 }  // namespace internal
 
-string Join(const std::vector<string> &elements, const string &delim);
+std::string Join(const std::vector<std::string> &elements,
+                 const std::string &delim);
 
-std::vector<string> Split(const string &full, char delim);
+std::vector<std::string> Split(const std::string &full, char delim);
 
-inline string StringReplace(const string &full, const string &before,
-                            const string &after, bool /* ignored */) {
-  string copy(full);
+inline std::string StringReplace(const std::string &full,
+                                 const std::string &before,
+                                 const std::string &after, bool /* ignored */) {
+  std::string copy(full);
   internal::StringReplace(&copy, before, after);
   return copy;
 }
 
-inline string StripTrailingAsciiWhitespace(const string &full) {
-  string copy(full);
+inline std::string StripTrailingAsciiWhitespace(const std::string &full) {
+  std::string copy(full);
   internal::StripTrailingAsciiWhitespace(&copy);
   return copy;
 }

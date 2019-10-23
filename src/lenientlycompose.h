@@ -18,13 +18,20 @@
 #ifndef PYNINI_LENIENTLYCOMPOSE_H_
 #define PYNINI_LENIENTLYCOMPOSE_H_
 
-#include <fst/fstlib.h>
-#include "sigma_star.h"
-
-// Lenient FST composition, after:
+// Lenient FST composition. For more information on this construction, see:
 //
-// L. Karttunen. 1998. The proper treatment of Optimality Theory in
+// Karttunen, L.. 1998. The proper treatment of Optimality Theory in
 // computational phonology. In Proc. FSMNLP, pages 1-12.
+
+#include <fst/compose.h>
+#include <fst/determinize.h>
+#include <fst/difference.h>
+#include <fst/fst.h>
+#include <fst/mutable-fst.h>
+#include <fst/project.h>
+#include <fst/rmepsilon.h>
+#include <fst/union.h>
+#include "checkprops.h"
 
 namespace fst {
 namespace internal {
@@ -39,25 +46,25 @@ namespace internal {
 // Then, if U is the vanilla union of Q and R, U(a) -> {b, c}. But if P is the
 // priority union of Q and R, U(a) -> b (not c).
 //
-// Here we compute the priority union of two FSTs with respect to sigma_star, a
+// Here we compute the priority union of two FSTs with respect to sigma, a
 // cyclic, unweighted acceptor representing the universal language. Then
 // priority union is simply:
 //
-// func PriorityUnion[Q, R, sigma_star] {
+// func PriorityUnion[Q, R, sigma] {
 //   input = Determinize[RmEpsilon[Project[Q, 'input']]];
-//   return Q | ((sigma_star - input) @ R);
+//   return Q | ((sigma - input) @ R);
 // }
 template <class Arc>
 void PriorityUnion(MutableFst<Arc> *fst1, const Fst<Arc> &fst2,
-                   const Fst<Arc> &sigma_star) {
-  if (!CheckSigmaStarProperties(sigma_star, "PriorityUnion")) {
+                   const Fst<Arc> &sigma) {
+  if (!CheckUnweightedAcceptor(sigma, "PriorityUnion", "sigma")) {
     fst1->SetProperties(kError, kError);
     return;
   }
   const ProjectFst<Arc> project(*fst1, PROJECT_INPUT);
   const RmEpsilonFst<Arc> rmepsilon(project);
   const DeterminizeFst<Arc> determinize(rmepsilon);
-  const DifferenceFst<Arc> difference(sigma_star, determinize);
+  const DifferenceFst<Arc> difference(sigma, determinize);
   // We bail out if the contract for Difference was not satisfied.
   if (difference.Properties(kError, true) == kError) {
     fst1->SetProperties(kError, kError);
@@ -74,15 +81,15 @@ void PriorityUnion(MutableFst<Arc> *fst1, const Fst<Arc> &fst2,
 // Thus it is a composition which gives priority to X @ Y, falling back upon X.
 // Then lenient composition is simply:
 //
-// func LenientlyCompose[X, Y, sigma_star] {
-//   return PriorityUnion[X @ Y, X, sigma_star];
+// func LenientlyCompose[X, Y, sigma] {
+//   return PriorityUnion[X @ Y, X, sigma];
 // }
 template <class Arc>
 void LenientlyCompose(const Fst<Arc> &ifst1, const Fst<Arc> &ifst2,
-                      const Fst<Arc> &sigma_star, MutableFst<Arc> *ofst,
+                      const Fst<Arc> &sigma, MutableFst<Arc> *ofst,
                       const ComposeOptions &opts = ComposeOptions()) {
   Compose(ifst1, ifst2, ofst, opts);
-  internal::PriorityUnion(ofst, ifst1, sigma_star);
+  internal::PriorityUnion(ofst, ifst1, sigma);
 }
 
 }  // namespace fst

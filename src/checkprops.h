@@ -15,21 +15,31 @@
 // For general information on the Pynini grammar compilation library, see
 // pynini.opengrm.org.
 
-#ifndef PYNINI_STRINGTOKENTYPE_H_
-#define PYNINI_STRINGTOKENTYPE_H_
+#ifndef PYNINI_CHECKPROPS_H_
+#define PYNINI_CHECKPROPS_H_
 
 #include <string>
-using std::string;
 
-#include <fst/string.h>
+#include <fst/fst.h>
 
 namespace fst {
-namespace script {
+namespace internal {
 
-bool GetStringTokenType(const std::string &str, StringTokenType *ttype);
+// Checks that an FST is an unweighted acceptor.
+template <class Arc>
+bool CheckUnweightedAcceptor(const Fst<Arc> &fst, const std::string &op_name,
+                             const std::string &fst_name) {
+  static constexpr auto props = kAcceptor | kUnweighted;
+  if (fst.Properties(props, true) != props) {
+    LOG(ERROR) << op_name << ": " << fst_name
+               << " must be a unweighted acceptor";
+    return false;
+  }
+  return true;
+}
 
-}  // namespace script
+}  // namespace internal
 }  // namespace fst
 
-#endif  // PYNINI_STRINGTOKENTYPE_H_
+#endif  // PYNINI_CHECKPROPS_H_
 

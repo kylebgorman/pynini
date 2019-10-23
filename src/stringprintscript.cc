@@ -20,7 +20,7 @@
 namespace fst {
 namespace script {
 
-bool PrintString(const FstClass &fst, string *str, StringTokenType ttype,
+bool PrintString(const FstClass &fst, std::string *str, StringTokenType ttype,
                  const SymbolTable *syms) {
   PrintStringInnerArgs iargs(fst, str, ttype, syms);
   PrintStringArgs args(iargs);
@@ -28,9 +28,7 @@ bool PrintString(const FstClass &fst, string *str, StringTokenType ttype,
   return args.retval;
 }
 
-REGISTER_FST_OPERATION(PrintString, StdArc, PrintStringArgs);
-REGISTER_FST_OPERATION(PrintString, LogArc, PrintStringArgs);
-REGISTER_FST_OPERATION(PrintString, Log64Arc, PrintStringArgs);
+REGISTER_FST_OPERATION_3ARCS(PrintString, PrintStringArgs);
 
 }  // namespace script
 }  // namespace fst

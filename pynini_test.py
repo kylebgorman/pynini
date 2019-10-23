@@ -23,7 +23,7 @@ import pywrapfst
 SEED = 212
 
 
-class PyniniCDRewriteTest(unittest.TestCase):
+class CDRewriteTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
@@ -94,27 +94,26 @@ class PyniniCDRewriteTest(unittest.TestCase):
 
   def testLambdaTransducerRaisesFstOpError(self):
     with self.assertRaises(FstOpError):
-      unused_f = cdrewrite(transducer("[phi]", "[psi]"),
-                           transducer("[lambda]", "[lambda_prime]"),
-                           "[rho]", self.sigstar)
+      unused_f = cdrewrite(
+          transducer("A", "B"), transducer("C", "D"), "E", self.sigstar)
 
   def testRhoTransducerRaisesFstOpError(self):
     with self.assertRaises(FstOpError):
-      unused_f = cdrewrite(transducer("[phi]", "[psi]"), "[lambda]",
-                           transducer("[rho]", "[rho_prime]"), self.sigstar)
+      unused_f = cdrewrite(
+          transducer("A", "B"), "C", transducer("D", "E"), self.sigstar)
 
   def testWeightedLambdaRaisesFstOpError(self):
     with self.assertRaises(FstOpError):
-      unused_f = cdrewrite(transducer("[phi]", "[psi]"),
-                           acceptor("[lambda]", 2), "[rho]", self.sigstar)
+      unused_f = cdrewrite(
+          transducer("A", "B"), acceptor("C", weight=2), "D", self.sigstar)
 
   def testWeightedRhoRaisesFstOpError(self):
     with self.assertRaises(FstOpError):
-      unused_f = cdrewrite(transducer("[phi]", "[psi]"), "[lambda]",
-                           acceptor("[rho]", 2), self.sigstar)
+      unused_f = cdrewrite(
+          transducer("A", "B"), "C", acceptor("D", weight=2), self.sigstar)
 
 
-class PyniniClosureTest(unittest.TestCase):
+class ClosureTest(unittest.TestCase):
 
   def testRangeClosure(self):
     m = 3
@@ -132,14 +131,12 @@ class PyniniClosureTest(unittest.TestCase):
     self.assertEqual(compose(ac, cheese * (n + 1)).num_states(), 0)
 
 
-class PyniniDefaultsTest(unittest.TestCase):
+class DefaultsTest(unittest.TestCase):
 
   def setUp(self):
-    super(PyniniDefaultsTest, self).setUp()
     defaults.arc_type = "standard"
 
   def tearDown(self):
-    super(PyniniDefaultsTest, self).tearDown()
     defaults.arc_type = "standard"
 
   def testDefaultNonexistentSlotRaisesAttributeError(self):
@@ -153,7 +150,7 @@ class PyniniDefaultsTest(unittest.TestCase):
     self.assertEqual(f.arc_type(), defaults.arc_type)
 
 
-class PyniniDifferenceTest(unittest.TestCase):
+class DifferenceTest(unittest.TestCase):
 
   def testDifferenceWithUnion(self):
     ab = union("a", "b")
@@ -161,7 +158,7 @@ class PyniniDifferenceTest(unittest.TestCase):
     self.assertEqual(difference(abc, ab).optimize(), "c")
 
 
-class PyniniDowncastTest(unittest.TestCase):
+class DowncastTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
@@ -183,24 +180,7 @@ class PyniniDowncastTest(unittest.TestCase):
     self.assertNotEqual(self.f.num_states(), 0)
 
 
-class PyniniEpsilonMachineTest(unittest.TestCase):
-
-  @classmethod
-  def setUpClass(cls):
-    cls.final_weight = 1.5
-    cls.f = epsilon_machine(cls.final_weight)
-
-  def testLog64EpsilonMachineHasRightTopology(self):
-    self.assertEqual(self.f.num_states(), 1)
-    self.assertEqual(self.f.start(), 0)
-    self.assertEqual(self.f.num_arcs(self.f.start()), 0)
-
-  def testEpsilonMachineHasFinalWeight(self):
-    self.assertEqual(self.f.final(self.f.start()),
-                     Weight(self.f.weight_type(), self.final_weight))
-
-
-class PyniniEqualTest(unittest.TestCase):
+class EqualTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
@@ -216,7 +196,7 @@ class PyniniEqualTest(unittest.TestCase):
     self.assertFalse(self.f != self.f.copy())
 
 
-class PyniniExceptionsTest(unittest.TestCase):
+class ExceptionsTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
@@ -288,16 +268,6 @@ class PyniniExceptionsTest(unittest.TestCase):
     with self.assertRaises(FstArgError):
       unused_f = randgen(self.f, select="nonexistent")
 
-  def testGarbageCallArcLabelingReplaceRaisesFstArgError(self):
-    with self.assertRaises(FstArgError):
-      unused_f = replace(
-          self.f, (("f", self.f),), call_arc_labeling="nonexistent")
-
-  def testGarbageReturnArcLabelingReplaceRaisesFstArgError(self):
-    with self.assertRaises(FstArgError):
-      unused_f = replace(
-          self.f, (("f", self.f),), call_arc_labeling="nonexistent")
-
   def testGarbageInputTokenTypeStringFileRaisesFstArgError(self):
     with self.assertRaises(FstArgError):
       unused_f = string_file(self.map_file, input_token_type="nonexistent")
@@ -362,7 +332,7 @@ class PyniniExceptionsTest(unittest.TestCase):
       unused_w = Weight("nonexistent", 1)
 
 
-class PyniniGetByteSymbolTable(unittest.TestCase):
+class GetByteSymbolTable(unittest.TestCase):
 
   def testGetByteSymbolTable(self):
     syms = get_byte_symbol_table()
@@ -370,7 +340,7 @@ class PyniniGetByteSymbolTable(unittest.TestCase):
     self.assertEqual(257, size)
 
 
-class PyniniIOTest(unittest.TestCase):
+class IOTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
@@ -404,7 +374,7 @@ class PyniniIOTest(unittest.TestCase):
     self.TestFstAndTypeEquality(g)
 
 
-class PyniniLenientlyComposeTest(unittest.TestCase):
+class LenientlyComposeTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
@@ -440,7 +410,7 @@ class PyniniLenientlyComposeTest(unittest.TestCase):
                      "England")
 
 
-class PyniniMatchesTest(unittest.TestCase):
+class MatchesTest(unittest.TestCase):
 
   def testMatches(self):
     m1 = "abc123"
@@ -453,52 +423,7 @@ class PyniniMatchesTest(unittest.TestCase):
     self.assertFalse(matches(m1, m2))
 
 
-class PyniniPdtReplaceTest(unittest.TestCase):
-
-  def testPdtReplace(self):
-    s_rhs = union("a[S]b", "ab")  # a^n b^n.
-    (f, parens) = pdt_replace("[S]", (("S", s_rhs),))
-    for n in range(1, 100):
-      anbn = n * "a" + n * "b"
-      self.assertEqual(pdt_compose(f, anbn, parens, compose_filter="expand"),
-                       anbn)
-
-
-class PyniniReplaceTest(unittest.TestCase):
-
-  # Based loosely on an example from Thrax.
-
-  def testReplace(self):
-    root = acceptor("[Number] [Measure]")
-    singular_numbers = transducer("1", "one")
-    singular_measurements = string_map(
-        (("ft", "foot"), ("in", "inch"), ("cm", "centimeter"), ("m", "meter"),
-         ("kg", "kilogram")))
-    singular = replace(
-        root, (("Number", singular_numbers), ("Measure",
-                                              singular_measurements)),
-        call_arc_labeling="neither",
-        return_arc_labeling="neither")
-    self.assertEqual(optimize(project("1 ft" * singular, True)), "one foot")
-    plural_numbers = string_map(
-        (("2", "two"), ("3", "three"), ("4", "four"), ("5", "five"),
-         ("6", "six"), ("7", "seven"), ("8", "eight"), ("9", "nine")))
-    plural_measurements = string_map(
-        (("ft", "feet"), ("in", "inches"), ("cm", "centimeter"),
-         ("m", "meters"), ("kg", "kilograms")))
-    plural = replace(
-        root, (("Number", plural_numbers), ("Measure", plural_measurements)),
-        call_arc_labeling="neither",
-        return_arc_labeling="neither")
-    self.assertEqual(optimize(project("2 m" * plural, True)), "two meters")
-
-  def testReplaceWithCyclicDependenciesRaisesFstOpError(self):
-    s_rhs = union("a[S]b", "ab")  # a^n b^n.
-    with self.assertRaises(FstOpError):
-      unused_f = replace("[S]", (("S", s_rhs),))
-
-
-class PyniniStringTest(unittest.TestCase):
+class StringTest(unittest.TestCase):
 
   """Tests string compilation and stringification."""
 
@@ -675,24 +600,13 @@ class PyniniStringTest(unittest.TestCase):
       unused_ac = acceptor("Wensleydale", arc_type="log",
                            weight=Weight.One("log64"))
 
-  def testTropicalWeightToLog64TransducerRaisesFstOpError(self):
-    with self.assertRaises(FstOpError):
-      unused_tr = transducer("Venezuelan Beaver Cheese", "Not today sir, no",
-                             arc_type="log64", weight=Weight.One("tropical"))
-
   def testAcceptorWithoutAttachedSymbolTables(self):
     ac = acceptor("Cheshire", attach_symbols=False)
     self.assertIsNone(ac.input_symbols())
     self.assertIsNone(ac.output_symbols())
 
-  def testTransducerWithoutAttachedSymbolTables(self):
-    tr = transducer("Gouda", "No", attach_input_symbols=False,
-                    attach_output_symbols=False)
-    self.assertIsNone(tr.input_symbols())
-    self.assertIsNone(tr.output_symbols())
 
-
-class PyniniStringFileTest(unittest.TestCase):
+class StringFileTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
@@ -738,13 +652,13 @@ class PyniniStringFileTest(unittest.TestCase):
     self.ContainsMapping("Pont-l'Évêque", mapper, symc("Camembert"))
 
   def testStringFileWithoutAttachedSymbolTables(self):
-    mapper = string_file(self.map_file, attach_input_symbols=False,
-                         attach_output_symbols=False)
+    mapper = string_file(
+        self.map_file, attach_input_symbols=False, attach_output_symbols=False)
     self.assertIsNone(mapper.input_symbols())
     self.assertIsNone(mapper.output_symbols())
 
 
-class PyniniStringMapTest(unittest.TestCase):
+class StringMapTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
@@ -805,7 +719,7 @@ class PyniniStringMapTest(unittest.TestCase):
     self.assertIsNone(mapper.output_symbols())
 
 
-class PyniniStringPathIteratorTest(unittest.TestCase):
+class StringPathIteratorTest(unittest.TestCase):
 
   # Implements this, in the case of Python 2.7.
 
@@ -854,7 +768,7 @@ class PyniniStringPathIteratorTest(unittest.TestCase):
     self.assertCountEqual(cheeses, sp.ostrings())
 
 
-class PyniniSymbolTableTest(unittest.TestCase):
+class SymbolTableTest(unittest.TestCase):
 
   def testInputSymbolTableAccessAfterFstDeletion(self):
     f = transducer("Greek Feta", "Ah, not as such")
@@ -877,7 +791,37 @@ class PyniniSymbolTableTest(unittest.TestCase):
     self.assertEqual(f.labeled_checksum(), g.labeled_checksum())
 
 
-class PyniniWeightTest(unittest.TestCase):
+class TransducerTest(unittest.TestCase):
+
+  def testPrecompiledLogCrossProduct(self):
+    upper = acceptor("Smoked Austrian", arc_type="log")
+    lower = acceptor("No", arc_type="log")
+    tr = transducer(upper, lower)
+    self.assertEqual(tr.arc_type(), "log")
+
+  def testImplicitLeftLogCrossProducts(self):
+    tr = transducer("Smoked Austrian", acceptor("No", arc_type="log"))
+    self.assertEqual(tr.arc_type(), "log")
+
+  def testImplicitRightLogCrossProducts(self):
+    tr = transducer(acceptor("Smoked Austrian", arc_type="log"), "No")
+    self.assertEqual(tr.arc_type(), "log")
+
+  def testTropicalWeightToLog64TransducerRaisesFstOpError(self):
+    with self.assertRaises(FstOpError):
+      unused_tr = transducer(
+          "Venezuelan Beaver Cheese",
+          "Not today sir, no",
+          arc_type="log64",
+          weight=Weight.One("tropical"))
+
+  def testTransducerWithoutAttachedSymbolTables(self):
+    tr = transducer("Gouda", "No", attach_symbols=False)
+    self.assertIsNone(tr.input_symbols())
+    self.assertIsNone(tr.output_symbols())
+
+
+class WeightTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
@@ -1118,7 +1062,7 @@ class PyniniWeightTest(unittest.TestCase):
     self.assertEqual(power(zero, 0), one)
 
 
-class PyniniWorkedExampleTest(unittest.TestCase):
+class WorkedExampleTest(unittest.TestCase):
 
   def testWorkedExample(self):
     pairs = zip(string.ascii_lowercase, string.ascii_uppercase)
@@ -1134,9 +1078,5 @@ class PyniniWorkedExampleTest(unittest.TestCase):
     self.assertEqual(cascade.stringify(), cheese)
 
 
-def main():
-  unittest.main()
-
-
 if __name__ == "__main__":
-  main()
+  unittest.main()

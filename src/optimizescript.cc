@@ -16,6 +16,7 @@
 // pynini.opengrm.org.
 
 #include "optimizescript.h"
+
 #include <fst/script/fst-class.h>
 #include <fst/script/script-impl.h>
 
@@ -27,19 +28,15 @@ void Optimize(MutableFstClass *fst, bool compute_props) {
   Apply<Operation<OptimizeArgs>>("Optimize", fst->ArcType(), &args);
 }
 
+REGISTER_FST_OPERATION_3ARCS(Optimize, OptimizeArgs);
+
 void OptimizeDifferenceRhs(MutableFstClass *fst, bool compute_props) {
   OptimizeArgs args(fst, compute_props);
   Apply<Operation<OptimizeArgs>>("OptimizeDifferenceRhs", fst->ArcType(),
                                  &args);
 }
 
-REGISTER_FST_OPERATION(Optimize, StdArc, OptimizeArgs);
-REGISTER_FST_OPERATION(Optimize, LogArc, OptimizeArgs);
-REGISTER_FST_OPERATION(Optimize, Log64Arc, OptimizeArgs);
-
-REGISTER_FST_OPERATION(OptimizeDifferenceRhs, StdArc, OptimizeArgs);
-REGISTER_FST_OPERATION(OptimizeDifferenceRhs, LogArc, OptimizeArgs);
-REGISTER_FST_OPERATION(OptimizeDifferenceRhs, Log64Arc, OptimizeArgs);
+REGISTER_FST_OPERATION_3ARCS(OptimizeDifferenceRhs, OptimizeArgs);
 
 }  // namespace script
 }  // namespace fst

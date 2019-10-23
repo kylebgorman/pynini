@@ -20,25 +20,26 @@
 #include "gtl.h"
 
 namespace strings {
-namespace internal {
+namespace {
 
 // Computes size of joined string.
-size_t GetResultSize(const std::vector<string> &elements, size_t s_size) {
-  const auto lambda = [](size_t partial, const string &right) {
-      return partial + right.size();
+size_t GetResultSize(const std::vector<std::string> &elements, size_t s_size) {
+  const auto lambda = [](size_t partial, const std::string &right) {
+    return partial + right.size();
   };
   return (std::accumulate(elements.begin(), elements.end(), 0, lambda) +
           s_size * (elements.size() - 1));
 }
 
-}  // namespace internal
+}  // namespace
 
 // Joins a vector of strings on a given delimiter.
-string Join(const std::vector<string> &elements, const string &delim) {
-  string result;
+std::string Join(const std::vector<std::string> &elements,
+                 const std::string &delim) {
+  std::string result;
   if (elements.empty()) return result;
   size_t s_size = delim.size();
-  result.reserve(internal::GetResultSize(elements, s_size));
+  result.reserve(GetResultSize(elements, s_size));
   auto it = elements.begin();
   result.append(it->data(), it->size());
   for (++it; it != elements.end(); ++it) {
@@ -50,22 +51,23 @@ string Join(const std::vector<string> &elements, const string &delim) {
 
 // Splits a string according to delimiter, skipping over consecutive
 // delimiters.
-std::vector<string> Split(const string &full, char delim) {
+std::vector<std::string> Split(const std::string &full, char delim) {
   size_t prev = 0;
   size_t found = full.find_first_of(delim);
   size_t size = found - prev;
-  std::vector<string> result;
-  if (size > 0) result.push_back(full.substr(prev, size));
-  while (found != string::npos) {
+  std::vector<std::string> result;
+  if (size > 0) result.emplace_back(full.substr(prev, size));
+  while (found != std::string::npos) {
     prev = found + 1;
     found = full.find_first_of(delim, prev);
     size = found - prev;
-    if (size > 0) result.push_back(full.substr(prev, size));
+    if (size > 0) result.emplace_back(full.substr(prev, size));
   }
   return result;
 }
 
-std::vector<string> Split(const string &full, const string &delim) {
+std::vector<std::string> Split(const std::string &full,
+                               const std::string &delim) {
   return Split(full, delim.c_str());
 }
 

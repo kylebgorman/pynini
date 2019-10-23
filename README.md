@@ -14,7 +14,8 @@ would appreciate if you cite the following paper:
 > In *Proc. ACL Workshop on Statistical NLP and Weighted Automata*,
 > 75-80.
 
-(Note that some of the code samples in the paper are now out of date.)
+(Note that some of the code samples in the paper are now out of date and not
+expected to work.)
 
 Dependencies
 ============
@@ -23,12 +24,12 @@ Pynini depends on:
 
 -   A standards-compliant C++ 11 compiler (GCC &gt;= 4.8 or Clang &gt;= 700)
 -   The most recent version of [OpenFst](http://openfst.org) (at the time of
-    writing, 1.7.3) built with the `far`, `pdt`, `mpdt`, and `script` extensions
+    writing, 1.7.4) built with the `far`, `pdt`, `mpdt`, and `script` extensions
     (i.e., built with `./configure --enable-grm`) and headers
 -   [Python 2.7 or 3.6+](https://www.python.org) and headers
 
-It is tested with: Debian Linux 4.19.37 on x86\_64, GCC 7.3.0, Cython 0.29.12 and
-Python 2.7.13 and Python 3.7.2.
+It is tested with: Debian Linux 4.19.37 on x86\_64, GCC 7.3.0, Cython 0.29.13
+and Python 3.7.2.
 
 Installation instructions
 =========================
@@ -37,9 +38,8 @@ Execute `python setup.py install`. Depending on your environment, you may need
 to be superuser while running this command for installation to complete. To
 confirm successful installation, execute `python setup.py test`.
 
-Pynini is not currently available from [PyPi](https://pypi.org/) or `pip`
-because there is another package squatting on the name `pynini`. However, we do
-maintain a periodically updated
+Pynini will be available from [PyPi](https://pypi.org/) eventually. In the
+meantime, we do maintain a periodically updated
 [read-only GitHub mirror](https://github.com/kylebgorman/pynini) which can be
 used to install the current version of the library by executing `pip install -e
 git+git@github.com:kylebgorman/pynini.git#egg=pynini`.

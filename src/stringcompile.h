@@ -21,7 +21,6 @@
 #include <algorithm>
 #include <memory>
 #include <string>
-using std::string;
 #include <utility>
 
 #include <fst/types.h>
@@ -103,7 +102,7 @@ void CompileFstFromLabels(const std::vector<typename Arc::Label> &labels,
                           typename Arc::Weight weight = Arc::Weight::One()) {
   using Weight = typename Arc::Weight;
   fst->DeleteStates();
-  fst->ReserveStates(labels.size());
+  fst->ReserveStates(labels.size() + 1);
   auto s = fst->AddState();
   fst->SetStart(s);
   for (const auto label : labels) {
@@ -111,8 +110,15 @@ void CompileFstFromLabels(const std::vector<typename Arc::Label> &labels,
     fst->AddArc(s, Arc(label, label, nextstate));
     s = nextstate;
   }
-  fst->SetFinal(s, std::move(weight));
-  fst->SetProperties(kCompiledStringProperties, kCompiledStringProperties);
+  auto props = kCompiledStringProperties;
+  if (weight == Weight::One()) {
+    fst->SetFinal(s);
+  } else {
+    fst->SetFinal(s, std::move(weight));
+    props &= ~kUnweighted;
+    props |= kWeighted;
+  }
+  fst->SetProperties(props, props);
 }
 
 // Parses a bracketed span.

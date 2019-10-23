@@ -18,9 +18,25 @@
 #ifndef PYNINI_OPTIMIZE_H_
 #define PYNINI_OPTIMIZE_H_
 
+// Generic optimization methods for FSTs, inspired by those originally included
+// in Thrax.
+//
+// For more information on the optimization procedure, see:
+//
+// Allauzen, C., Mohri, M., Riley, M., and Roark, B. 2004. A generalized
+// construction of integrated speech recognition transducers. In Proc. ICASSP,
+// pages 761-764.
+
 #include <type_traits>
 
-#include <fst/fstlib.h>
+#include <fst/types.h>
+#include <fst/arcsort.h>
+#include <fst/determinize.h>
+#include <fst/encode.h>
+#include <fst/minimize.h>
+#include <fst/mutable-fst.h>
+#include <fst/rmepsilon.h>
+#include <fst/state-map.h>
 
 // These functions are generic optimization methods for mutable FSTs, inspired
 // by those originally included in Thrax.
@@ -49,26 +65,21 @@ void DeterminizeAndMinimize(MutableFst<Arc> *fst) {
   Minimize(fst);
 }
 
-template <class Arc>
-void ArcSumMap(MutableFst<Arc> *fst) {
-  StateMap(fst, ArcSumMapper<Arc>(*fst));
-}
-
 // Optimizes the FST according to the encoder flags:
 //
 //   kEncodeLabels: optimize as a weighted acceptor
 //   kEncodeWeights: optimize as an unweighted transducer
 //   kEncodeLabels | kEncodeWeights: optimize as an unweighted acceptor
 template <class Arc>
-void OptimizeAs(MutableFst<Arc> *fst, uint32 flags) {
-  EncodeMapper<Arc> encoder(flags, ENCODE);
+void OptimizeAs(MutableFst<Arc> *fst, uint8 flags) {
+  EncodeMapper<Arc> encoder(flags);
   Encode(fst, &encoder);
   DeterminizeAndMinimize(fst);
   Decode(fst, encoder);
 }
 
 // Generic FST optimization function to be used when the FST is known to be an
-// acceptor.  Version for FSTs with non-idempotent weights, limiting
+// acceptor. Version for FSTs with non-idempotent weights, limiting
 // optimization possibilities.
 template <class Arc,
           typename std::enable_if<(Arc::Weight::Properties() & kIdempotent) !=
@@ -76,9 +87,6 @@ template <class Arc,
 void OptimizeAcceptor(MutableFst<Arc> *fst, bool compute_props = false) {
   // If the FST is not (known to be) epsilon-free, perform epsilon-removal.
   MaybeRmEpsilon(fst, compute_props);
-  // Combines identically labeled arcs with the same source and destination,
-  // and sums their weights.
-  ArcSumMap(fst);
   // The FST has non-idempotent weights; limiting optimization possibilities.
   if (fst->Properties(kIDeterministic, compute_props) != kIDeterministic) {
     // But "any acyclic weighted automaton over a zero-sum-free semiring has
@@ -97,16 +105,14 @@ template <class Arc,
 void OptimizeAcceptor(MutableFst<Arc> *fst, bool compute_props = false) {
   // If the FST is not (known to be) epsilon-free, perform epsilon-removal.
   MaybeRmEpsilon(fst, compute_props);
-  // Combines identically labeled arcs with the same source and destination,
-  // and sums their weights.
-  ArcSumMap(fst);
   // If the FST is not (known to be) deterministic, determinize it.
   if (fst->Properties(kIDeterministic, compute_props) != kIDeterministic) {
     // If the FST is not known to have no weighted cycles, it is encoded
     // before determinization and minimization.
     if (!fst->Properties(kDoNotEncodeWeights, compute_props)) {
       OptimizeAs(fst, kEncodeWeights);
-      ArcSumMap(fst);
+      // Combines any remaining muti-arcs.
+      StateMap(fst, ArcSumMapper<Arc>(*fst));
     } else {
       DeterminizeAndMinimize(fst);
     }
@@ -116,7 +122,7 @@ void OptimizeAcceptor(MutableFst<Arc> *fst, bool compute_props = false) {
 }
 
 // Generic FST optimization function to be used when the FST is (may be) a
-// transducer.  Version for FSTs with non-idempotent weights, limiting
+// transducer. Version for FSTs with non-idempotent weights, limiting
 // optimization possibilities.
 template <class Arc,
           typename std::enable_if<(Arc::Weight::Properties() & kIdempotent) !=
@@ -124,9 +130,6 @@ template <class Arc,
 void OptimizeTransducer(MutableFst<Arc> *fst, bool compute_props = false) {
   // If the FST is not (known to be) epsilon-free, perform epsilon-removal.
   MaybeRmEpsilon(fst, compute_props);
-  // Combines identically labeled arcs with the same source and destination,
-  // and sums their weights.
-  ArcSumMap(fst);
   // The FST has non-idempotent weights; limiting optimization possibilities.
   if (fst->Properties(kIDeterministic, compute_props) != kIDeterministic) {
     // But "any acyclic weighted automaton over a zero-sum-free semiring has
@@ -146,9 +149,6 @@ template <class Arc,
 void OptimizeTransducer(MutableFst<Arc> *fst, bool compute_props = false) {
   // If the FST is not (known to be) epsilon-free, perform epsilon-removal.
   MaybeRmEpsilon(fst, compute_props);
-  // Combines identically labeled arcs with the same source and destination,
-  // and sums their weights.
-  ArcSumMap(fst);
   // If the FST is not (known to be) deterministic, determinize it.
   if (fst->Properties(kIDeterministic, compute_props) != kIDeterministic) {
     // FST labels are always encoded before determinization and minimization.
@@ -156,7 +156,8 @@ void OptimizeTransducer(MutableFst<Arc> *fst, bool compute_props = false) {
     // also encoded before determinization and minimization.
     if (!fst->Properties(kDoNotEncodeWeights, compute_props)) {
       OptimizeAs(fst, kEncodeLabels | kEncodeWeights);
-      ArcSumMap(fst);
+      // Combines any remaining muti-arcs.
+      StateMap(fst, ArcSumMapper<Arc>(*fst));
     } else {
       OptimizeAs(fst, kEncodeLabels);
     }
@@ -196,7 +197,8 @@ void OptimizeDifferenceRhs(MutableFst<Arc> *fst, bool compute_props = false) {
   }
   // Minimally, RHS must be input label-sorted; the LHS does not need
   // arc-sorting when the RHS is deterministic (as it now should be).
-  ArcSort(fst, ILabelCompare<Arc>());
+  static const ILabelCompare<Arc> comp;
+  ArcSort(fst, comp);
 }
 
 }  // namespace fst

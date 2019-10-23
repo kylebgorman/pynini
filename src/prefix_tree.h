@@ -92,7 +92,7 @@ class PrefixTree {
     o->weight = Plus(o->weight, std::forward<T>(weight));
   }
 
-  // Same but with semiring One.
+  // With semiring One as a default.
   template <class Iterator1, class Iterator2>
   void Add(Iterator1 iter1, Iterator1 end1, Iterator2 iter2, Iterator2 end2) {
     Add(iter1, end1, iter2, end2, Weight::One());
@@ -104,10 +104,10 @@ class PrefixTree {
         std::forward<T>(weight));
   }
 
-  // Same but with semiring One.
+  // With semiring One as a default.
   template <class Container1, class Container2>
   void Add(const Container1 &cont1, const Container2 &cont2) {
-    Add(cont1, cont2, Weight::One());
+    Add(cont1.begin(), cont1.end(), cont2.begin(), cont2.end(), Weight::One());
   }
 
   // Removes all elements from this prefix tree.

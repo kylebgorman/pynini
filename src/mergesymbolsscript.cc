@@ -15,9 +15,10 @@
 // For general information on the Pynini grammar compilation library, see
 // pynini.opengrm.org.
 
+#include "mergesymbolsscript.h"
+
 #include <fst/script/fst-class.h>
 #include <fst/script/script-impl.h>
-#include "mergesymbolsscript.h"
 
 namespace fst {
 namespace script {
@@ -29,9 +30,7 @@ void MergeSymbols(MutableFstClass *fst1, MutableFstClass *fst2,
   Apply<Operation<MergeSymbolsArgs>>("MergeSymbols", fst1->ArcType(), &args);
 }
 
-REGISTER_FST_OPERATION(MergeSymbols, StdArc, MergeSymbolsArgs);
-REGISTER_FST_OPERATION(MergeSymbols, LogArc, MergeSymbolsArgs);
-REGISTER_FST_OPERATION(MergeSymbols, Log64Arc, MergeSymbolsArgs);
+REGISTER_FST_OPERATION_3ARCS(MergeSymbols, MergeSymbolsArgs);
 
 }  // namespace script
 }  // namespace fst

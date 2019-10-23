@@ -40,7 +40,7 @@ SymbolTable *MergeSymbols(const SymbolTable *syms1, const SymbolTable *syms2,
       continue;
     }
     const auto s1_sym = merged->Find(s2_key);
-    if (s1_sym != "" && s1_sym != s2_sym) {
+    if (!s1_sym.empty() && s1_sym != s2_sym) {
       merged->AddSymbol(s2_sym);
       *relabel = true;
     } else {

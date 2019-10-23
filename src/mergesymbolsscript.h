@@ -18,7 +18,8 @@
 #ifndef PYNINI_MERGESYMBOLSSCRIPT_H_
 #define PYNINI_MERGESYMBOLSSCRIPT_H_
 
-#include <fst/script/arg-packs.h>
+#include <utility>
+
 #include <fst/script/fst-class.h>
 #include "mergesymbols.h"
 
