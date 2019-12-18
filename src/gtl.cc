@@ -66,9 +66,4 @@ std::vector<std::string> Split(const std::string &full, char delim) {
   return result;
 }
 
-std::vector<std::string> Split(const std::string &full,
-                               const std::string &delim) {
-  return Split(full, delim.c_str());
-}
-
 }  // namespace strings
