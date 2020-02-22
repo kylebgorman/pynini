@@ -48,10 +48,7 @@ class StringMapCompiler {
                              StringTokenType otype = BYTE,
                              const SymbolTable *isyms = nullptr,
                              const SymbolTable *osyms = nullptr)
-      : itype_(itype),
-        otype_(otype),
-        isyms_(GetSymbolTable(itype_, isyms)),
-        osyms_(GetSymbolTable(otype_, osyms)) {}
+      : itype_(itype), otype_(otype), isyms_(isyms), osyms_(osyms) {}
 
   // One-string version.
   bool Add(const std::string &iostring) {
@@ -62,18 +59,14 @@ class StringMapCompiler {
   bool Add(const std::string &istring, const std::string &ostring,
            Weight weight = Weight::One()) {
     std::vector<Label> ilabels;
-    if (!StringToLabels(istring, &ilabels, itype_, isyms_.get())) {
-      return false;
-    }
+    if (!StringToLabels(istring, &ilabels, itype_, isyms_)) return false;
     std::vector<Label> olabels;
-    if (!StringToLabels(ostring, &olabels, otype_, osyms_.get())) {
-      return false;
-    }
+    if (!StringToLabels(ostring, &olabels, otype_, osyms_)) return false;
     ptree_.Add(ilabels, olabels, std::move(weight));
     return true;
   }
 
-  // Three-string version.
+  // Three-string version, which also requires us to parse the weight.
   bool Add(const std::string &istring, const std::string &ostring,
            const std::string &wstring) {
     std::istringstream strm(wstring);
@@ -86,20 +79,13 @@ class StringMapCompiler {
     return Add(istring, ostring, std::move(weight));
   }
 
-  void Compile(MutableFst<Arc> *fst,
-               bool attach_input_symbols = true,
-               bool attach_output_symbols = true) const {
-    ptree_.ToFst(fst);
-    // Optionally attaches symbol tables.
-    if (attach_input_symbols) fst->SetInputSymbols(isyms_.get());
-    if (attach_output_symbols) fst->SetOutputSymbols(osyms_.get());
-  }
+  void Compile(MutableFst<Arc> *fst) const { ptree_.ToFst(fst); }
 
  private:
   const StringTokenType itype_;
   const StringTokenType otype_;
-  const std::unique_ptr<SymbolTable> isyms_;
-  const std::unique_ptr<SymbolTable> osyms_;
+  const SymbolTable *isyms_;
+  const SymbolTable *osyms_;
   PrefixTree<Arc> ptree_;
 };
 
@@ -112,9 +98,7 @@ bool StringFileCompile(const std::string &source, MutableFst<Arc> *fst,
                        StringTokenType itype = BYTE,
                        StringTokenType otype = BYTE,
                        const SymbolTable *isyms = nullptr,
-                       const SymbolTable *osyms = nullptr,
-                       bool attach_input_symbols = true,
-                       bool attach_output_symbols = true) {
+                       const SymbolTable *osyms = nullptr) {
   internal::StringMapCompiler<Arc> compiler(itype, otype, isyms, osyms);
   internal::ColumnStringFile csf(source);
   if (csf.Done()) return false;  // File opening failed.
@@ -145,7 +129,7 @@ bool StringFileCompile(const std::string &source, MutableFst<Arc> *fst,
       }
     }
   }
-  compiler.Compile(fst, attach_input_symbols, attach_output_symbols);
+  compiler.Compile(fst);
   return true;
 }
 
@@ -156,9 +140,7 @@ bool StringMapCompile(const std::vector<std::vector<std::string>> &lines,
                       MutableFst<Arc> *fst, StringTokenType itype = BYTE,
                       StringTokenType otype = BYTE,
                       const SymbolTable *isyms = nullptr,
-                      const SymbolTable *osyms = nullptr,
-                      bool attach_input_symbols = true,
-                      bool attach_output_symbols = true) {
+                      const SymbolTable *osyms = nullptr) {
   internal::StringMapCompiler<Arc> compiler(itype, otype, isyms, osyms);
   for (const auto &line : lines) {
     switch (line.size()) {
@@ -180,7 +162,7 @@ bool StringMapCompile(const std::vector<std::vector<std::string>> &lines,
       }
     }
   }
-  compiler.Compile(fst, attach_input_symbols, attach_output_symbols);
+  compiler.Compile(fst);
   return true;
 }
 
@@ -193,8 +175,7 @@ bool StringMapCompile(
         std::tuple<std::string, std::string, typename Arc::Weight>> &lines,
     MutableFst<Arc> *fst, StringTokenType itype = BYTE,
     StringTokenType otype = BYTE, const SymbolTable *isyms = nullptr,
-    const SymbolTable *osyms = nullptr, bool attach_input_symbols = true,
-    bool attach_output_symbols = true) {
+    const SymbolTable *osyms = nullptr) {
   internal::StringMapCompiler<Arc> compiler(itype, otype, isyms, osyms);
   for (const auto &line : lines) {
     const auto &istring = std::get<0>(line);
@@ -202,7 +183,7 @@ bool StringMapCompile(
     const auto &weight = std::get<2>(line);
     if (!compiler.Add(istring, ostring, weight)) return false;
   }
-  compiler.Compile(fst, attach_input_symbols, attach_output_symbols);
+  compiler.Compile(fst);
   return true;
 }
 

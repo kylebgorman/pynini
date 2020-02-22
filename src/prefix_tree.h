@@ -66,36 +66,36 @@ class PrefixTree {
   // Add an entry to the prefix tree, consisting of two label sequences and a
   // weight. Each label sequence must be provided as a pair of iterators.
   template <class Iterator1, class Iterator2, class T>
-  void Add(Iterator1 iter1, Iterator1 end1, Iterator2 iter2, Iterator2 end2,
+  void Add(Iterator1 it1, Iterator1 end1, Iterator2 it2, Iterator2 end2,
            T &&weight) {
     if (!root_) {
       CHECK_EQ(0, num_states_);
       root_ = new INode();
       root_->state = num_states_++;
     }
-    INode *n = root_;
-    for (; iter1 != end1; ++iter1) {
-      if (!*iter1) continue;  // Skips over epsilons.
-      n = LookupOrInsertNew(&n->children, *iter1);
-      if (kNoStateId == n->state) n->state = num_states_++;
+    INode *inode = root_;
+    for (; it1 != end1; ++it1) {
+      if (!*it1) continue;  // Skips over epsilons.
+      inode = LookupOrInsertNew(&inode->children, *it1);
+      if (kNoStateId == inode->state) inode->state = num_states_++;
     }
-    if (!n->output) {
-      n->output = new ONode();
-      n->output->state = num_states_++;
+    if (!inode->output) {
+      inode->output = new ONode();
+      inode->output->state = num_states_++;
     }
-    ONode *o = n->output;
-    for (; iter2 != end2; ++iter2) {
-      if (!*iter2) continue;  // Skips over epsilons.
-      o = LookupOrInsertNew(&o->children, *iter2);
-      if (kNoStateId == o->state) o->state = num_states_++;
+    ONode *onode = inode->output;
+    for (; it2 != end2; ++it2) {
+      if (!*it2) continue;  // Skips over epsilons.
+      onode = LookupOrInsertNew(&onode->children, *it2);
+      if (kNoStateId == onode->state) onode->state = num_states_++;
     }
-    o->weight = Plus(o->weight, std::forward<T>(weight));
+    onode->weight = Plus(onode->weight, std::forward<T>(weight));
   }
 
   // With semiring One as a default.
   template <class Iterator1, class Iterator2>
-  void Add(Iterator1 iter1, Iterator1 end1, Iterator2 iter2, Iterator2 end2) {
-    Add(iter1, end1, iter2, end2, Weight::One());
+  void Add(Iterator1 it1, Iterator1 end1, Iterator2 it2, Iterator2 end2) {
+    Add(it1, end1, it2, end2, Weight::One());
   }
 
   template <class Container1, class Container2, class T>
@@ -123,24 +123,24 @@ class PrefixTree {
     // dealing with a tree.
     iq.push(root_);
     while (!iq.empty()) {
-      INode *n = iq.top();
+      INode *inode = iq.top();
       iq.pop();
-      if (n->output)
-        oq.push(n->output);  // Found a root node of an output trie.
-      for (auto iter = n->children.begin(); iter != n->children.end(); ++iter) {
-        iq.push(iter->second);
+      // Found a root node of an output trie.
+      if (inode->output) oq.push(inode->output);
+      for (const auto &item : inode->children) {
+        iq.push(item.second);
       }
-      delete n;
+      delete inode;
     }
     // Second, perform simple depth-first traversals over the output tries,
     // starting at their root nodes.
     while (!oq.empty()) {
-      ONode *o = oq.top();
+      ONode *onode = oq.top();
       oq.pop();
-      for (auto oter = o->children.begin(); oter != o->children.end(); ++oter) {
-        oq.push(oter->second);
+      for (const auto &item : onode->children) {
+        oq.push(item.second);
       }
-      delete o;
+      delete onode;
     }
     num_states_ = 0;
     root_ = nullptr;
@@ -155,38 +155,37 @@ class PrefixTree {
     }
     // For the creation of the FST to be efficient, we reserve enough space
     // for the states and arcs to avoid reallocation and internal copying.
-    fst->ReserveStates(num_states_);
-    for (StateId i = 0; i < num_states_; ++i) fst->AddState();
+    fst->AddStates(num_states_);
     fst->SetStart(root_->state);
     std::stack<INode *> iq;
     std::stack<ONode *> oq;
     iq.push(root_);
     while (!iq.empty()) {
-      INode *n = iq.top();
+      INode *inode = iq.top();
       iq.pop();
-      const auto q = n->state;
+      const auto q = inode->state;
       CHECK_NE(kNoStateId, q);
-      ONode *o = n->output;
-      fst->ReserveArcs(q, (o ? 1 : 0) + n->children.size());
-      if (o) {
-        fst->AddArc(q, Arc(0, 0, o->state));
-        oq.push(o);
+      ONode *onode = inode->output;
+      fst->ReserveArcs(q, (onode ? 1 : 0) + inode->children.size());
+      if (onode) {
+        fst->AddArc(q, Arc(0, 0, onode->state));
+        oq.push(onode);
       }
-      for (auto iter = n->children.begin(); iter != n->children.end(); ++iter) {
-        fst->AddArc(q, Arc(iter->first, 0, iter->second->state));
-        iq.push(iter->second);
+      for (const auto &item : inode->children) {
+        fst->AddArc(q, Arc(item.first, 0, item.second->state));
+        iq.push(item.second);
       }
     }
     while (!oq.empty()) {
-      ONode *o = oq.top();
+      ONode *onode = oq.top();
       oq.pop();
-      StateId q = o->state;
+      const auto q = onode->state;
       CHECK_NE(kNoStateId, q);
-      for (auto oter = o->children.begin(); oter != o->children.end(); ++oter) {
-        fst->AddArc(q, Arc(0, oter->first, oter->second->state));
-        oq.push(oter->second);
+      for (const auto &item : onode->children) {
+        fst->AddArc(q, Arc(0, item.first, item.second->state));
+        oq.push(item.second);
       }
-      fst->SetFinal(q, o->weight);
+      fst->SetFinal(q, onode->weight);
     }
   }
 

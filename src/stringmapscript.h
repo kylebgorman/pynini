@@ -34,48 +34,45 @@ namespace script {
 
 using StringFileCompileInnerArgs =
     std::tuple<const std::string &, MutableFstClass *, StringTokenType,
-               StringTokenType, const SymbolTable *, const SymbolTable *, bool,
-               bool>;
+               StringTokenType, const SymbolTable *, const SymbolTable *>;
 
 using StringFileCompileArgs = WithReturnValue<bool, StringFileCompileInnerArgs>;
 
 template <class Arc>
 void StringFileCompile(StringFileCompileArgs *args) {
   MutableFst<Arc> *fst = std::get<1>(args->args)->GetMutableFst<Arc>();
-  args->retval = StringFileCompile(
-      std::get<0>(args->args), fst, std::get<2>(args->args),
-      std::get<3>(args->args), std::get<4>(args->args), std::get<5>(args->args),
-      std::get<6>(args->args), std::get<7>(args->args));
+  args->retval =
+      StringFileCompile(std::get<0>(args->args), fst, std::get<2>(args->args),
+                        std::get<3>(args->args), std::get<4>(args->args),
+                        std::get<5>(args->args));
 }
 
 bool StringFileCompile(const std::string &source, MutableFstClass *fst,
                        StringTokenType itype = BYTE,
                        StringTokenType otype = BYTE,
                        const SymbolTable *isyms = nullptr,
-                       const SymbolTable *osyms = nullptr,
-                       bool attach_input_symbols = true,
-                       bool attach_output_symbols = true);
+                       const SymbolTable *osyms = nullptr);
 
 using StringMapCompileInnerArgs1 =
     std::tuple<const std::vector<std::vector<std::string>> &, MutableFstClass *,
                StringTokenType, StringTokenType, const SymbolTable *,
-               const SymbolTable *, bool, bool>;
+               const SymbolTable *>;
 
 using StringMapCompileArgs1 = WithReturnValue<bool, StringMapCompileInnerArgs1>;
 
 template <class Arc>
 void StringMapCompile(StringMapCompileArgs1 *args) {
   MutableFst<Arc> *fst = std::get<1>(args->args)->GetMutableFst<Arc>();
-  args->retval = StringMapCompile(
-      std::get<0>(args->args), fst, std::get<2>(args->args),
-      std::get<3>(args->args), std::get<4>(args->args), std::get<5>(args->args),
-      std::get<6>(args->args), std::get<7>(args->args));
+  args->retval =
+      StringMapCompile(std::get<0>(args->args), fst, std::get<2>(args->args),
+                       std::get<3>(args->args), std::get<4>(args->args),
+                       std::get<5>(args->args));
 }
 
 using StringMapCompileInnerArgs2 = std::tuple<
     const std::vector<std::tuple<std::string, std::string, WeightClass>> &,
     MutableFstClass *, StringTokenType, StringTokenType, const SymbolTable *,
-    const SymbolTable *, bool, bool>;
+    const SymbolTable *>;
 
 using StringMapCompileArgs2 = WithReturnValue<bool, StringMapCompileInnerArgs2>;
 
@@ -94,24 +91,20 @@ void StringMapCompile(StringMapCompileArgs2 *args) {
   MutableFst<Arc> *fst = std::get<1>(args->args)->GetMutableFst<Arc>();
   args->retval = StringMapCompile(
       lines, fst, std::get<2>(args->args), std::get<3>(args->args),
-      std::get<4>(args->args), std::get<5>(args->args), std::get<6>(args->args),
-      std::get<7>(args->args));
+      std::get<4>(args->args), std::get<5>(args->args));
 }
 
 bool StringMapCompile(const std::vector<std::vector<std::string>> &lines,
                       MutableFstClass *fst, StringTokenType itype = BYTE,
                       StringTokenType otype = BYTE,
                       const SymbolTable *isyms = nullptr,
-                      const SymbolTable *osyms = nullptr,
-                      bool attach_input_symbols = true,
-                      bool attach_output_symbols = true);
+                      const SymbolTable *osyms = nullptr);
 
 bool StringMapCompile(
     const std::vector<std::tuple<std::string, std::string, WeightClass>> &lines,
     MutableFstClass *fst, StringTokenType itype = BYTE,
     StringTokenType otype = BYTE, const SymbolTable *isyms = nullptr,
-    const SymbolTable *osyms = nullptr, bool attach_input_symbols = true,
-    bool attach_output_symbols = true);
+    const SymbolTable *osyms = nullptr);
 
 }  // namespace script
 }  // namespace fst

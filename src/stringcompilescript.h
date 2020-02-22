@@ -27,7 +27,7 @@ namespace script {
 
 using CompileStringInnerArgs =
     std::tuple<const std::string &, MutableFstClass *, StringTokenType,
-               const SymbolTable *, const WeightClass &, bool>;
+               const SymbolTable *, const WeightClass &>;
 
 using CompileStringArgs = WithReturnValue<bool, CompileStringInnerArgs>;
 
@@ -38,14 +38,14 @@ void CompileString(CompileStringArgs *args) {
       *(std::get<4>(args->args).GetWeight<typename Arc::Weight>());
   args->retval =
       CompileString(std::get<0>(args->args), fst, std::get<2>(args->args),
-                    std::get<3>(args->args), weight, std::get<5>(args->args));
+                    std::get<3>(args->args), weight);
 }
 
 // As is sometimes the case, there are fewer default arguments for the scripting
 // API variant because we can't infer the underlying weight type.
 bool CompileString(const std::string &str, MutableFstClass *fst,
                    StringTokenType ttype, const SymbolTable *syms,
-                   const WeightClass &weight, bool attach_symbols = true);
+                   const WeightClass &weight);
 
 }  // namespace script
 }  // namespace fst

@@ -37,5 +37,5 @@ Sample operations:
     project(f, ...)                       f.project(...)
                                           f.paths(...)
     shortestpath(f, ...)
-                                          f.stringify(...)
+                                          f.string(...)
     union(f, g, ...)         f | g        f.union(g)

@@ -359,9 +359,7 @@ void CDRewriteRule<Arc>::MakeFilter(
   }
   static const IdentityArcMapper<StdArc> imapper;
   if (reverse) {
-    Reverse(
-        ArcMapFst<StdArc, StdArc, IdentityArcMapper<StdArc>>(ufilter, imapper),
-        &ufilter);
+    Reverse(MakeArcMapFst(ufilter, imapper), &ufilter);
     VectorFst<StdArc> reversed_sigma;
     Reverse(usigma, &reversed_sigma);
     RmEpsilon(&reversed_sigma);
@@ -375,9 +373,7 @@ void CDRewriteRule<Arc>::MakeFilter(
   Minimize(&ufilter);
   MakeMarker(&ufilter, usigma, type, markers);
   if (reverse) {
-    Reverse(
-        ArcMapFst<StdArc, StdArc, IdentityArcMapper<StdArc>>(ufilter, imapper),
-        &ufilter);
+    Reverse(MakeArcMapFst(ufilter, imapper), &ufilter);
   }
   static const ILabelCompare<StdArc> icomp;
   ArcSort(&ufilter, icomp);

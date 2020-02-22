@@ -21,15 +21,15 @@ from libcpp.string cimport string
 from libcpp.utility cimport pair
 from libcpp.vector cimport vector
 
-from basictypes cimport int32
-from basictypes cimport int64
+from cintegral_types cimport int32
+from cintegral_types cimport int64
 
-from fst cimport ComposeOptions
-from fst cimport FstClass
-from fst cimport MutableFstClass
-from fst cimport QueueType
-from fst cimport SymbolTable
-from fst cimport WeightClass
+from cpywrapfst cimport ComposeOptions
+from cpywrapfst cimport FstClass
+from cpywrapfst cimport MutableFstClass
+from cpywrapfst cimport QueueType
+from cpywrapfst cimport SymbolTable
+from cpywrapfst cimport WeightClass
 
 
 ctypedef pair[int64, const FstClass *] LabelFstClassPair
@@ -227,22 +227,6 @@ cdef extern from "lenientlycomposescript.h" \
                         const ComposeOptions &)
 
 
-cdef extern from "mergesymbols.h" namespace "fst":
-
-  enum MergeSymbolsType:
-    MERGE_INPUT
-    MERGE_OUTPUT
-    MERGE_INPUT_OUTPUT
-    MERGE_INSIDE
-    MERGE_OUTSIDE
-
-
-cdef extern from "mergesymbolsscript.h" \
-    namespace "fst::script" nogil:
-
-  void MergeSymbols(MutableFstClass *, MutableFstClass *, MergeSymbolsType)
-
-
 cdef extern from "optimizescript.h" \
     namespace "fst::script" nogil:
 
@@ -287,20 +271,24 @@ cdef extern from "pathsscript.h" \
     WeightClass Weight()
 
 
-cdef extern from "stringcompilescript.h" \
+cdef extern from "stringcompile.h" \
     namespace "fst" nogil:
 
-  SymbolTable *GetByteSymbolTable()
+  int64 kBosIndex
+  int64 kEosIndex
+
+  SymbolTable *GeneratedSymbols()
 
 
 cdef extern from "stringcompilescript.h" \
     namespace "fst::script" nogil:
 
+
   bool CompileString(const string &,
                      MutableFstClass *,
                      StringTokenType,
                      const SymbolTable *,
-                     const WeightClass &, bool)
+                     const WeightClass &)
 
 
 cdef extern from "stringmapscript.h" \
@@ -311,18 +299,14 @@ cdef extern from "stringmapscript.h" \
                          StringTokenType,
                          StringTokenType,
                          const SymbolTable *,
-                         const SymbolTable *,
-                         bool,
-                         bool)
+                         const SymbolTable *)
 
   bool StringMapCompile(const vector[vector[string]] &,
                         MutableFstClass *,
                         StringTokenType,
                         StringTokenType,
                         const SymbolTable *,
-                        const SymbolTable *,
-                        bool,
-                        bool)
+                        const SymbolTable *)
 
 
 cdef extern from "stringprintscript.h" \

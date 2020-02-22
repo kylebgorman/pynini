@@ -1,3 +1,14 @@
+v. 2.1.0 (compatible with OpenFst 1.7.6)
+========================================
+
+* Python 2.7 support removed
+* Renames the `text` method to `print`
+* Improves symbol table lifetime management
+* Removes underutilized `defaults` singleton
+* Improves consistency of the FST class hierarchy
+* Internal improvements to the symbol table iterator interface
+* Symbol tables are no longer automatically attached to compiled FSTs
+
 v. 2.0.9 (compatible with OpenFst 1.7.4)
 ========================================
 

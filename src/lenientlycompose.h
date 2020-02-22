@@ -24,6 +24,7 @@
 // computational phonology. In Proc. FSMNLP, pages 1-12.
 
 #include <fst/compose.h>
+#include <fst/connect.h>
 #include <fst/determinize.h>
 #include <fst/difference.h>
 #include <fst/fst.h>
@@ -90,6 +91,7 @@ void LenientlyCompose(const Fst<Arc> &ifst1, const Fst<Arc> &ifst2,
                       const ComposeOptions &opts = ComposeOptions()) {
   Compose(ifst1, ifst2, ofst, opts);
   internal::PriorityUnion(ofst, ifst1, sigma);
+  if (opts.connect) Connect(ofst);
 }
 
 }  // namespace fst

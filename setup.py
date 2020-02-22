@@ -18,7 +18,10 @@
 
 from io import open
 from os import path
+
+from Cython.Build import cythonize
 from setuptools import Extension, setup
+
 
 COMPILE_ARGS = [
     "-std=c++17",
@@ -28,40 +31,31 @@ COMPILE_ARGS = [
     "-funsigned-char",
 ]
 
+LIBRARIES = ["fstfarscript", "fstfar", "fstscript", "fst", "m", "dl"]
+
 pywrapfst = Extension(
     name="pywrapfst",
     language="c++",
     extra_compile_args=COMPILE_ARGS,
-    libraries=["fstfarscript", "fstfar", "fstscript", "fst", "m", "dl"],
-    sources=["src/pywrapfst.cc"],
+    libraries=LIBRARIES,
+    sources=["src/pywrapfst.pyx"],
 )
 
 pynini = Extension(
     name="pynini",
     language="c++",
     extra_compile_args=COMPILE_ARGS,
-    libraries=[
-        "fstfarscript",
-        "fstpdtscript",
-        "fstmpdtscript",
-        "fstscript",
-        "fstfar",
-        "fst",
-        "m",
-        "dl",
-    ],
+    libraries=["fstmpdtscript", "fstpdtscript"] + LIBRARIES,
     sources=[
+        "src/pynini.pyx",
         "src/cdrewritescript.cc",
         "src/concatrangescript.cc",
         "src/crossproductscript.cc",
         "src/getters.cc",
         "src/gtl.cc",
         "src/lenientlycomposescript.cc",
-        "src/mergesymbols.cc",
-        "src/mergesymbolsscript.cc",
         "src/optimizescript.cc",
         "src/pathsscript.cc",
-        "src/pynini.cc",
         "src/stringcompile.cc",
         "src/stringcompilescript.cc",
         "src/stringfile.cc",
@@ -75,14 +69,16 @@ this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, "README.md"), encoding="utf8") as source:
   long_description = source.read()
 
+__version__ = "2.1.0"
+
 setup(
     name="pynini",
-    version="2.0.9.post2",
-    description="Finite-state grammar compilation library",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
+    version=__version__,
     author="Kyle Gorman",
     author_email="kbg@google.com",
+    description="Finite-state grammar compilation",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url="http://pynini.opengrm.org",
     keywords=[
         "natural language processing",
@@ -104,5 +100,8 @@ setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Scientific/Engineering :: Mathematics",
     ],
-    ext_modules=[pywrapfst, pynini],
+    license="Apache 2.0",
+    zip_safe=False,
+    install_requires=["Cython >= 0.29"],
+    ext_modules=cythonize([pywrapfst, pynini]),
 )

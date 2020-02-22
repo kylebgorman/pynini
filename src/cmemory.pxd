@@ -10,20 +10,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Copyright 2016 and onwards Google, Inc.
+# Copyright 2017 and onwards Google, Inc.
 #
-# For general information on the Pynini grammar compilation library, see
-# pynini.opengrm.org.
+# See www.openfst.org for extensive documentation on this weighted
+# finite-state transducer library.
 
 
-from libc.stdint cimport *
+from libcpp.memory cimport unique_ptr
 
+cdef extern from "<fst/compat.h>" namespace "fst" nogil:
 
-ctypedef int8_t int8
-ctypedef int16_t int16
-ctypedef int32_t int32
-ctypedef int64_t int64
-ctypedef uint8_t uint8
-ctypedef uint16_t uint16
-ctypedef uint32_t uint32
-ctypedef uint64_t uint64
+  unique_ptr[T] WrapUnique[T](T *)
+

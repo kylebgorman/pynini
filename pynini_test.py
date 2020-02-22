@@ -34,7 +34,7 @@ class CDRewriteTest(unittest.TestCase):
 
   # Non-static helper.
   def TestRule(self, rule, istring, ostring):
-    self.assertEqual((istring * rule).stringify(), ostring)
+    self.assertEqual((istring @ rule).string(), ostring)
 
   # A -> B / C __ D.
   def testAGoesToBInTheContextOfCAndD(self):
@@ -89,7 +89,7 @@ class CDRewriteTest(unittest.TestCase):
     td_deletion = cdrewrite(transducer(union("T", "D"), ""), cons, "[EOS]",
                             self.sigstar, direction="ltr", mode="opt")
     # Asserts that both are possible.
-    self.assertEqual(optimize(project("FIST" * td_deletion, True)),
+    self.assertEqual(optimize(project("FIST" @ td_deletion, True)),
                      optimize(union("FIS", "FIST")))
 
   def testLambdaTransducerRaisesFstOpError(self):
@@ -131,25 +131,6 @@ class ClosureTest(unittest.TestCase):
     self.assertEqual(compose(ac, cheese * (n + 1)).num_states(), 0)
 
 
-class DefaultsTest(unittest.TestCase):
-
-  def setUp(self):
-    defaults.arc_type = "standard"
-
-  def tearDown(self):
-    defaults.arc_type = "standard"
-
-  def testDefaultNonexistentSlotRaisesAttributeError(self):
-    with self.assertRaises(AttributeError):
-      defaults.nonexistent = "nonexistent"
-
-  def testNonDefaults(self):
-    defaults.arc_type = "log"
-    cheese = u"Pont l'Evêque"
-    f = acceptor(cheese)
-    self.assertEqual(f.arc_type(), defaults.arc_type)
-
-
 class DifferenceTest(unittest.TestCase):
 
   def testDifferenceWithUnion(self):
@@ -162,16 +143,16 @@ class DowncastTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.f = pywrapfst.Fst()
+    cls.f = pywrapfst.VectorFst()
     # Epsilon machine.
     s = cls.f.add_state()
     cls.f.set_start(s)
     cls.f.set_final(s)
 
   def testDowncastTypesAreCorrect(self):
-    self.assertEqual(type(self.f), pywrapfst._MutableFst)
+    self.assertIsInstance(self.f, pywrapfst.VectorFst)
     f_downcast = Fst.from_pywrapfst(self.f)
-    self.assertEqual(type(f_downcast), Fst)
+    self.assertIsInstance(f_downcast, Fst)
 
   def testDowncastedMutationTriggersDeepCopy(self):
     f_downcast = Fst.from_pywrapfst(self.f)
@@ -331,13 +312,35 @@ class ExceptionsTest(unittest.TestCase):
     with self.assertRaises(FstArgError):
       unused_w = Weight("nonexistent", 1)
 
+class GeneratedSymbolsTest(unittest.TestCase):
 
-class GetByteSymbolTable(unittest.TestCase):
+  def testBosIndex(self):
+    bos_index = 0xF8FE  # Defined in stringcompile.h.
+    f = acceptor("[BOS]")
+    aiter = f.arcs(f.start())
+    self.assertFalse(aiter.done())
+    arc = aiter.value()
+    self.assertEqual(bos_index, arc.ilabel)
+    self.assertEqual(bos_index, arc.ilabel)
+    aiter.next()
+    self.assertTrue(aiter.done())
 
-  def testGetByteSymbolTable(self):
-    syms = get_byte_symbol_table()
-    size = sum(1 for _ in syms)
-    self.assertEqual(257, size)
+  def testEosIndex(self):
+    eos_index = 0xF8FF  # Defined in stringcompile.h.
+    f = acceptor("[EOS]")
+    aiter = f.arcs(f.start())
+    arc = aiter.value()
+    self.assertEqual(eos_index, arc.ilabel)
+    self.assertEqual(eos_index, arc.olabel)
+    aiter.next()
+    self.assertTrue(aiter.done())
+
+  def testGeneratedSymbols(self):
+    cheese = "Parmesan"
+    unused_f = acceptor(f"[{cheese}]")
+    syms = generated_symbols()
+    self.assertTrue(syms.member(cheese))
+
 
 
 class IOTest(unittest.TestCase):
@@ -468,12 +471,6 @@ class StringTest(unittest.TestCase):
     self.assertEqual(cheese.properties(self.acceptor_props, True),
                      self.acceptor_props)
 
-  def testBracketedTokenizationAcceptorCompilation(self):
-    cheese_tokens = self.cheese.split()
-    cheese = acceptor("".join("[{}]".format(t) for t in cheese_tokens))
-    i = cheese.input_symbols().find(cheese_tokens[1])  # "Leicester".
-    self.assertGreater(i, 255)
-
   def testBracketedCharsBytestringAcceptorCompilation(self):
     cheese = acceptor("".join("[{:d}]".format(ord(ch)) for ch in self.cheese))
     self.assertEqual(cheese, self.cheese)
@@ -493,7 +490,7 @@ class StringTest(unittest.TestCase):
                      self.acceptor_props)
 
   def testEscapedBracketsBytestringAcceptorCompilation(self):
-    ac = acceptor("[\[Camembert\] is a]\[cheese\]")
+    ac = acceptor(r"[\[Camembert\] is a]\[cheese\]")
     # Should have 3 states accepting generated symbols, 8 accepting a byte,
     # and 1 final state.
     self.assertEqual(ac.num_states(), 12)
@@ -531,65 +528,59 @@ class StringTest(unittest.TestCase):
     self.assertEqual(exchange, self.cheese)
 
   def testAsciiByteStringify(self):
-    self.assertEqual(acceptor(self.cheese).stringify(), self.cheese)
+    self.assertEqual(acceptor(self.cheese).string(), self.cheese)
 
   def testAsciiUtf8Stringify(self):
-    self.assertEqual(acceptor(self.cheese, token_type="utf8").stringify("utf8"),
+    self.assertEqual(acceptor(self.cheese, token_type="utf8").string("utf8"),
                      self.cheese)
 
   def testUtf8ByteStringify(self):
     self.assertEqual(
-        acceptor(self.imported_cheese).stringify(), self.imported_cheese)
+        acceptor(self.imported_cheese).string(), self.imported_cheese)
 
   def testAsciiByteStringifyAfterSymbolTableDeletion(self):
     ac = acceptor(self.cheese)
     ac.set_output_symbols(None)
-    self.assertEqual(ac.stringify(), self.cheese)
+    self.assertEqual(ac.string(), self.cheese)
 
   def testUtf8Utf8Stringify(self):
     self.assertEqual(
-        acceptor(self.imported_cheese, token_type="utf8").stringify("utf8"),
+        acceptor(self.imported_cheese, token_type="utf8").string("utf8"),
         self.imported_cheese)
 
   def testUnicodeByteStringify(self):
     self.assertEqual(
-        acceptor(self.imported_cheese).stringify(), self.imported_cheese)
+        acceptor(self.imported_cheese).string(), self.imported_cheese)
 
   def testUnicodeUtf8Stringify(self):
     self.assertEqual(
-        acceptor(self.imported_cheese, token_type="utf8").stringify("utf8"),
+        acceptor(self.imported_cheese, token_type="utf8").string("utf8"),
         self.imported_cheese)
 
   def testUtf8StringifyAfterSymbolTableDeletion(self):
     ac = acceptor(self.imported_cheese, token_type="utf8")
     ac.set_output_symbols(None)
-    self.assertEqual(ac.stringify("utf8"), self.imported_cheese)
+    self.assertEqual(ac.string("utf8"), self.imported_cheese)
 
-  def testUnicodeSymbolStringify(self):
-    ac = acceptor(self.imported_cheese, token_type="utf8")
-    self.assertEqual(
-        ac.stringify(ac.output_symbols()),
-        "P o n t <SPACE> l ' E v <0xea> q u e")
-
-  def testStringifyOnNonkStringFstRaisesFstOpError(self):
+ def testStringifyOnNonkStringFstRaisesFstOpError(self):
     with self.assertRaises(FstOpError):
-      unused_ac = union(self.cheese, self.imported_cheese).stringify()
+      unused_ac = union(self.cheese, self.imported_cheese).string()
 
   def testCompositionOfStringAndLogArcWorks(self):
     cheese = "Greek Feta"
-    self.assertEqual(cheese * acceptor(cheese, arc_type="log"), cheese)
+    self.assertEqual(cheese @ acceptor(cheese, arc_type="log"), cheese)
 
   def testCompositionOfLogArcAndStringWorks(self):
     cheese = "Tilsit"
-    self.assertEqual(acceptor(cheese, arc_type="log") * cheese, cheese)
+    self.assertEqual(acceptor(cheese, arc_type="log") @ cheese, cheese)
 
   def testCompositionOfStringAndLog64ArcWorks(self):
     cheese = "Greek Feta"
-    self.assertEqual(cheese * acceptor(cheese, arc_type="log64"), cheese)
+    self.assertEqual(cheese @ acceptor(cheese, arc_type="log64"), cheese)
 
   def testCompositionOfLog64ArcAndStringWorks(self):
     cheese = "Tilsit"
-    self.assertEqual(acceptor(cheese, arc_type="log64") * cheese, cheese)
+    self.assertEqual(acceptor(cheese, arc_type="log64") @ cheese, cheese)
 
   def testLogWeightToStandardAcceptorRaisesFstStringCompilationError(self):
     with self.assertRaises(FstOpError):
@@ -599,11 +590,6 @@ class StringTest(unittest.TestCase):
     with self.assertRaises(FstOpError):
       unused_ac = acceptor("Wensleydale", arc_type="log",
                            weight=Weight.One("log64"))
-
-  def testAcceptorWithoutAttachedSymbolTables(self):
-    ac = acceptor("Cheshire", attach_symbols=False)
-    self.assertIsNone(ac.input_symbols())
-    self.assertIsNone(ac.output_symbols())
 
 
 class StringFileTest(unittest.TestCase):
@@ -650,12 +636,6 @@ class StringFileTest(unittest.TestCase):
     symc = functools.partial(acceptor, token_type=syms)
     self.ContainsMapping("[Bel Paese]", mapper, symc("Sorry"))
     self.ContainsMapping("Pont-l'Évêque", mapper, symc("Camembert"))
-
-  def testStringFileWithoutAttachedSymbolTables(self):
-    mapper = string_file(
-        self.map_file, attach_input_symbols=False, attach_output_symbols=False)
-    self.assertIsNone(mapper.input_symbols())
-    self.assertIsNone(mapper.output_symbols())
 
 
 class StringMapTest(unittest.TestCase):
@@ -712,12 +692,6 @@ class StringMapTest(unittest.TestCase):
     self.ContainsMapping("[Bel Paese]", mapper, symc("Sorry"))
     self.ContainsMapping("Pont-l'Évêque", mapper, symc("Camembert"))
 
-  def testStringMapWithoutAttachedSymbolTables(self):
-    mapper = string_map(self.lines, attach_input_symbols=False,
-                        attach_output_symbols=False)
-    self.assertIsNone(mapper.input_symbols())
-    self.assertIsNone(mapper.output_symbols())
-
 
 class StringPathIteratorTest(unittest.TestCase):
 
@@ -770,23 +744,10 @@ class StringPathIteratorTest(unittest.TestCase):
 
 class SymbolTableTest(unittest.TestCase):
 
-  def testInputSymbolTableAccessAfterFstDeletion(self):
-    f = transducer("Greek Feta", "Ah, not as such")
-    isyms = f.input_symbols().copy()
-    isyms2 = f.input_symbols()
-    del f  # Should be garbage-collected immediately.
-    self.assertEqual(isyms2.labeled_checksum(), isyms.labeled_checksum())
-
-  def testOutputSymbolTableAccessAfterFstDeletion(self):
-    f = transducer("Red Windsor", "Normally, sir, yes, "
-                                  "but today the van broke down")
-    osyms = f.output_symbols().copy()
-    osyms2 = f.output_symbols()
-    del f  # Should be garbage-collected immediately.
-    self.assertEqual(osyms2.labeled_checksum(), osyms.labeled_checksum())
-
   def testPickleIO(self):
-    f = get_byte_symbol_table()
+    f = SymbolTable()
+    f.add_symbol("<epsilon>")
+    f.add_symbol("Dorset Blue Vinney")
     g = pickle.loads(pickle.dumps(f))
     self.assertEqual(f.labeled_checksum(), g.labeled_checksum())
 
@@ -814,11 +775,6 @@ class TransducerTest(unittest.TestCase):
           "Not today sir, no",
           arc_type="log64",
           weight=Weight.One("tropical"))
-
-  def testTransducerWithoutAttachedSymbolTables(self):
-    tr = transducer("Gouda", "No", attach_symbols=False)
-    self.assertIsNone(tr.input_symbols())
-    self.assertIsNone(tr.output_symbols())
 
 
 class WeightTest(unittest.TestCase):
@@ -1070,12 +1026,12 @@ class WorkedExampleTest(unittest.TestCase):
     self.downcaser = invert(self.upcaser)
     awords = "You do have some cheese do you".lower().split()
     for aword in awords:
-      result = (aword * self.upcaser).project(True).optimize()
+      result = (aword @ self.upcaser).project(True).optimize()
       self.assertEqual(result, aword.upper())
     cheese = "Parmesan".lower()
-    cascade = (cheese * self.upcaser * self.downcaser *
-               self.upcaser * self.downcaser)
-    self.assertEqual(cascade.stringify(), cheese)
+    cascade = (cheese @ self.upcaser @ self.downcaser @
+               self.upcaser @ self.downcaser)
+    self.assertEqual(cascade.string(), cheese)
 
 
 if __name__ == "__main__":
