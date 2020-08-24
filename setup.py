@@ -18,9 +18,12 @@
 
 from io import open
 from os import path
+from setuptools import Extension
+from setuptools import find_packages
+from setuptools import setup
+from sys import platform
 
 from Cython.Build import cythonize
-from setuptools import Extension, setup
 
 
 COMPILE_ARGS = [
@@ -30,78 +33,96 @@ COMPILE_ARGS = [
     "-Wno-unused-local-typedefs",
     "-funsigned-char",
 ]
+if platform.startswith("darwin"):
+  COMPILE_ARGS.append("-stdlib=libc++")
+  COMPILE_ARGS.append("-mmacosx-version-min=10.7")
+
 
 LIBRARIES = ["fstfarscript", "fstfar", "fstscript", "fst", "m", "dl"]
 
+
 pywrapfst = Extension(
-    name="pywrapfst",
+    name="_pywrapfst",
     language="c++",
     extra_compile_args=COMPILE_ARGS,
     libraries=LIBRARIES,
-    sources=["src/pywrapfst.pyx"],
+    sources=["extensions/_pywrapfst.pyx"],
 )
-
 pynini = Extension(
-    name="pynini",
+    name="_pynini",
     language="c++",
     extra_compile_args=COMPILE_ARGS,
     libraries=["fstmpdtscript", "fstpdtscript"] + LIBRARIES,
     sources=[
-        "src/pynini.pyx",
-        "src/cdrewritescript.cc",
-        "src/concatrangescript.cc",
-        "src/crossproductscript.cc",
-        "src/getters.cc",
-        "src/gtl.cc",
-        "src/lenientlycomposescript.cc",
-        "src/optimizescript.cc",
-        "src/pathsscript.cc",
-        "src/stringcompile.cc",
-        "src/stringcompilescript.cc",
-        "src/stringfile.cc",
-        "src/stringmapscript.cc",
-        "src/stringprintscript.cc",
-        "src/stripcomment.cc",
+        "extensions/_pynini.pyx",
+        "extensions/cdrewritescript.cc",
+        "extensions/concatrangescript.cc",
+        "extensions/crossscript.cc",
+        "extensions/defaults.cc",
+        "extensions/getters.cc",
+        "extensions/gtl.cc",
+        "extensions/lenientlycomposescript.cc",
+        "extensions/optimizescript.cc",
+        "extensions/pathsscript.cc",
+        "extensions/stringcompile.cc",
+        "extensions/stringcompilescript.cc",
+        "extensions/stringfile.cc",
+        "extensions/stringmapscript.cc",
+        "extensions/stringprintscript.cc",
+        "extensions/stringutil.cc",
     ],
 )
+
 
 this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, "README.md"), encoding="utf8") as source:
   long_description = source.read()
 
-__version__ = "2.1.0"
 
-setup(
-    name="pynini",
-    version=__version__,
-    author="Kyle Gorman",
-    author_email="kbg@google.com",
-    description="Finite-state grammar compilation",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    url="http://pynini.opengrm.org",
-    keywords=[
-        "natural language processing",
-        "speech recognition",
-        "machine learning",
-    ],
-    classifiers=[
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Development Status :: 5 - Production/Stable",
-        "Environment :: Other Environment",
-        "Environment :: Console",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: Apache Software License",
-        "Operating System :: OS Independent",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        "Topic :: Text Processing :: Linguistic",
-        "Topic :: Scientific/Engineering :: Artificial Intelligence",
-        "Topic :: Scientific/Engineering :: Mathematics",
-    ],
-    license="Apache 2.0",
-    zip_safe=False,
-    install_requires=["Cython >= 0.29"],
-    ext_modules=cythonize([pywrapfst, pynini]),
-)
+__version__ = "2.1.2"
+
+
+def main() -> None:
+  setup(
+      name="pynini",
+      version=__version__,
+      author="Kyle Gorman",
+      author_email="kbg@google.com",
+      description="Finite-state grammar compilation",
+      long_description=long_description,
+      long_description_content_type="text/markdown",
+      url="http://pynini.opengrm.org",
+      keywords=[
+          "natural language processing",
+          "speech recognition",
+          "machine learning",
+      ],
+      classifiers=[
+          "Programming Language :: Python :: 3.6",
+          "Programming Language :: Python :: 3.7",
+          "Development Status :: 5 - Production/Stable",
+          "Environment :: Other Environment",
+          "Environment :: Console",
+          "Intended Audience :: Developers",
+          "License :: OSI Approved :: Apache Software License",
+          "Operating System :: OS Independent",
+          "Topic :: Software Development :: Libraries :: Python Modules",
+          "Topic :: Text Processing :: Linguistic",
+          "Topic :: Scientific/Engineering :: Artificial Intelligence",
+          "Topic :: Scientific/Engineering :: Mathematics",
+      ],
+      license="Apache 2.0",
+      install_requires=["Cython >= 0.29"],
+      ext_modules=cythonize([pywrapfst, pynini]),
+      packages=find_packages(exclude=["tests"]),
+      package_data={
+          "pywrapfst": ["__init__.pyi", "py.typed"],
+          "pynini": ["__init__.pyi", "py.typed"],
+          "pynini.lib": ["py.typed"],
+      },
+      zip_safe=False,
+  )
+
+
+if __name__ == "__main__":
+  main()

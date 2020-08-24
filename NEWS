@@ -1,3 +1,24 @@
+v. 2.1.2 (compatible with OpenFst 1.7.9)
+========================================
+
+* Adds `lib` submodule
+* Renames `acceptor` to `accep`
+* Removes single-character aliases
+* Removes residual Python 2 support
+* Adds string-escaping function `escape`
+* Adds `default_token_type` context decorator/manager
+* Overloads `**` operator to support range concatenation
+* Renames `transducer` to `cross` and simplifies interface
+* Improves `string_file`/`string_map` implementation for acceptors
+* Converts `Weight` class methods `NoWeight`, `One`, `Zero` to snake_case
+* Modifies `project` to take a string (`input`, `output`) rather than a
+  boolean argument
+
+v. 2.1.1 (compatible with OpenFst 1.7.7)
+========================================
+
+* Adds PEP 484/PEP 561-compatible type stubs
+
 v. 2.1.0 (compatible with OpenFst 1.7.6)
 ========================================
 
