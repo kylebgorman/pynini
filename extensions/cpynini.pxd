@@ -1,4 +1,6 @@
 #cython: language_level=3
+# Copyright 2016-2020 Google LLC
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -11,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Copyright 2016 and onwards Google, Inc.
-#
+
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 
@@ -96,14 +97,18 @@ cdef extern from "<fst/extensions/pdt/pdtlib.h>" namespace "fst" nogil:
 
     PdtComposeOptions(bool, PdtComposeFilter)
 
-  enum PdtComposeFilter:
-    PAREN_FILTER
-    EXPAND_FILTER
-    EXPAND_PAREN_FILTER
+  # TODO(wolfsonkin): Don't do this hack if Cython gets proper enum class
+  # support: https://github.com/cython/cython/issues/1603
+  ctypedef enum PdtComposeFilter:
+    PAREN_FILTER "fst::PdtComposeFilter::PAREN"
+    EXPAND_FILTER "fst::PdtComposeFilter::EXPAND"
+    EXPAND_PAREN_FILTER "fst::PdtComposeFilter::EXPAND_PAREN"
 
-  enum PdtParserType:
-    PDT_LEFT_PARSER
-    PDT_LEFT_SR_PARSER
+  # TODO(wolfsonkin): Don't do this hack if Cython gets proper enum class
+  # support: https://github.com/cython/cython/issues/1603
+  ctypedef enum PdtParserType:
+    PDT_LEFT_PARSER "fst::PdtParserType::LEFT"
+    PDT_LEFT_SR_PARSER "fst::PdtParserType::LEFT_SR"
 
 
 cdef extern from "<fst/extensions/pdt/getters.h>" \

@@ -1,3 +1,5 @@
+// Copyright 2016-2020 Google LLC
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -10,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// Copyright 2016 and onwards Google, Inc.
-//
+
 
 #ifndef PYNINI_STRING_VIEW_FST_H_
 #define PYNINI_STRING_VIEW_FST_H_
@@ -21,6 +22,7 @@
 #include <fst/types.h>
 #include <fst/fst.h>
 #include <fst/string.h>
+#include <fst/compat.h>
 
 
 namespace fst {
@@ -235,7 +237,8 @@ class StringViewFst
   }
 
   void InitArcIterator(StateId s, ArcIteratorData<Arc> *data) const override {
-    data->base = new ArcIterator<StringViewFst<Arc, Viewer>>(*this, s);
+    data->base =
+        fst::make_unique<ArcIterator<StringViewFst<Arc, Viewer>>>(*this, s);
   }
 
  private:

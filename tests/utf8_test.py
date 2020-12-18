@@ -1,4 +1,19 @@
 # Lint as: python3
+# Copyright 2016-2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 """Tests for utf8.py."""
@@ -6,14 +21,14 @@
 import pynini
 from pynini.lib import byte
 from pynini.lib import utf8
-import unittest
+from absl.testing import absltest
 
 ASCII_STRINGS = ["ha ha", "who?", "Capitals!", "`1234567890~!@#$%^&*()"]
 NON_ASCII_CHARS = ["é", "ב", "क", "€", "д", "零"]
 UTF8_STRINGS = ["Who?", "¿Quién?", "ארה״ב", "हिन्दी", "今日はそれがググりました。"]
 
 
-class Utf8Test(unittest.TestCase):
+class Utf8Test(absltest.TestCase):
 
   def is_subset(self, string: pynini.FstLike, fsa: pynini.Fst) -> bool:
     fsa = pynini.determinize(fsa.copy().rmepsilon())
@@ -44,24 +59,24 @@ class Utf8Test(unittest.TestCase):
     return fsa.optimize()
 
   def all_single_byte_prefixes(self, fsa: pynini.Fst) -> pynini.Fst:
-    return pynini.intersect(self.all_prefixes(fsa), byte.BYTES).optimize()
+    return pynini.intersect(self.all_prefixes(fsa), byte.BYTE).optimize()
 
   def all_single_byte_suffixes(self, fsa: pynini.Fst) -> pynini.Fst:
-    return pynini.intersect(self.all_suffixes(fsa), byte.BYTES).optimize()
+    return pynini.intersect(self.all_suffixes(fsa), byte.BYTE).optimize()
 
   def all_single_byte_substrings(self, fsa: pynini.Fst) -> pynini.Fst:
-    return pynini.intersect(self.all_substrings(fsa), byte.BYTES).optimize()
+    return pynini.intersect(self.all_substrings(fsa), byte.BYTE).optimize()
 
   def assertIsFsa(self, fsa: pynini.Fst) -> None:
     if fsa.properties(pynini.ACCEPTOR, True) != pynini.ACCEPTOR:
-      raise AssertionError(f"Expected {fsa} to be an acceptor, but was not.")
+      raise AssertionError(f"Expected {fsa} to be an acceptor")
 
   def assertStrInAcceptorLanguage(self, string: pynini.FstLike,
                                   fst: pynini.Fst) -> None:
     self.assertIsFsa(fst)
     if not self.is_subset(string, fst):
       raise AssertionError(
-          f"Expected {string} to be in the language defined by {fst}, but was not."
+          f"Expected {string} to be in the language defined by {fst}"
       )
 
   def assertStrNotInAcceptorLanguage(self, string: pynini.FstLike,
@@ -69,7 +84,7 @@ class Utf8Test(unittest.TestCase):
     self.assertIsFsa(fst)
     if self.is_subset(string, fst):
       raise AssertionError(
-          f"Expected {string} to not be in the language defined by {fst}, but was."
+          f"Expected {string} to not be in the language defined by {fst}"
       )
 
   def assertFsasEquivalent(self, fsa1: pynini.Fst, fsa2: pynini.Fst) -> None:
@@ -78,8 +93,7 @@ class Utf8Test(unittest.TestCase):
     fsa1 = pynini.determinize(pynini.rmepsilon(fsa1))
     fsa2 = pynini.determinize(pynini.rmepsilon(fsa2))
     if not pynini.equivalent(fsa1, fsa2):
-      raise AssertionError(
-          f"Expected {fsa1} and {fsa2} to be equivalent, but were not.")
+      raise AssertionError(f"Expected {fsa1} and {fsa2} to be equivalent")
 
   def testAsciiStringsAgainstValidSingleByte(self) -> None:
     for string in ASCII_STRINGS:
@@ -129,7 +143,7 @@ class Utf8Test(unittest.TestCase):
 
   def testVerifyValidBytesDefinition(self):
     valid_bytes = self.all_single_byte_substrings(utf8.VALID_UTF8_CHAR)
-    self.assertFsasEquivalent(valid_bytes, utf8.VALID_BYTES)
+    self.assertFsasEquivalent(valid_bytes, utf8.VALID_BYTE)
 
   def testVerifyUtf8Rfc3629Definition(self):
     utf8_rfc3629_char = pynini.string_map(
@@ -160,5 +174,5 @@ class Utf8Test(unittest.TestCase):
 
 
 if __name__ == "__main__":
-  unittest.main()
+  absltest.main()
 

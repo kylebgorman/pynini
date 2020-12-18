@@ -1,8 +1,17 @@
+v. 2.1.3 (compatible with OpenFst 1.8.0)
+=========================================
+
+* Adds `examples` submodule
+* Renames `acceptor` to `accep`
+* Adds `join` operator to `pynutil`
+* Iterator classes are now protected (e.g., `_StateIterator`); use
+  `arcs`, `mutable_arcs`, `paths`, and `states` methods instead.
+* Renames `byte` lib's `BYTES` to `BYTE`
+
 v. 2.1.2 (compatible with OpenFst 1.7.9)
 ========================================
 
 * Adds `lib` submodule
-* Renames `acceptor` to `accep`
 * Removes single-character aliases
 * Removes residual Python 2 support
 * Adds string-escaping function `escape`
@@ -24,6 +33,7 @@ v. 2.1.0 (compatible with OpenFst 1.7.6)
 
 * Python 2.7 support removed
 * Renames the `text` method to `print`
+* Renames the `stringify` method to `string`
 * Improves symbol table lifetime management
 * Removes underutilized `defaults` singleton
 * Improves consistency of the FST class hierarchy

@@ -1,0 +1,287 @@
+# Copyright 2015-2020 Google LLC. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
+
+py_test(
+    name = "byte_test",
+    size = "small",
+    srcs = ["byte_test.py"],
+    python_version = "PY3",
+    srcs_version = "PY3ONLY",
+    deps = [
+        "//pynini",
+        "//pynini/lib:byte",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "case_test",
+    size = "small",
+    srcs = ["case_test.py"],
+    python_version = "PY3",
+    deps = [
+        "//pynini/examples:case",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "chatspeak_test",
+    size = "small",
+    srcs = ["chatspeak_test.py"],
+    data = [":testdata/chatspeak_lexicon.tsv"],
+    python_version = "PY3",
+    deps = [
+        "//pynini",
+        "//pynini/examples:chatspeak",
+        "//pynini/lib:rewrite",
+        "@io_abseil_py//absl/flags",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "dates_test",
+    size = "small",
+    srcs = ["dates_test.py"],
+    python_version = "PY3",
+    deps = [
+        "//pynini/examples:dates",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "edit_transducer_test",
+    size = "small",
+    srcs = ["edit_transducer_test.py"],
+    python_version = "PY3",
+    srcs_version = "PY3",
+    deps = [
+        "//pynini/lib:edit_transducer",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "features_test",
+    srcs = ["features_test.py"],
+    python_version = "PY3",
+    srcs_version = "PY3",
+    deps = [
+        "//pynini",
+        "//pynini/lib:features",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "g2p_test",
+    size = "small",
+    srcs = ["g2p_test.py"],
+    python_version = "PY3",
+    deps = [
+        "//pynini/examples:g2p",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "numbers_test",
+    size = "small",
+    srcs = ["numbers_test.py"],
+    python_version = "PY3",
+    deps = [
+        "//pynini/examples:numbers",
+        "//pynini/lib:rewrite",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "paradigms_test",
+    srcs = ["paradigms_test.py"],
+    python_version = "PY3",
+    srcs_version = "PY3",
+    deps = [
+        "//pynini",
+        "//pynini/lib:byte",
+        "//pynini/lib:features",
+        "//pynini/lib:paradigms",
+        "//pynini/lib:pynutil",
+        "//pynini/lib:rewrite",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "plurals_test",
+    size = "small",
+    srcs = ["plurals_test.py"],
+    python_version = "PY3",
+    deps = [
+        "//pynini/examples:plurals",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "rewrite_test",
+    size = "small",
+    srcs = ["rewrite_test.py"],
+    python_version = "PY3",
+    srcs_version = "PY3",
+    deps = [
+        "//pynini",
+        "//pynini/lib:pynutil",
+        "//pynini/lib:rewrite",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "rule_cascade_test",
+    size = "small",
+    srcs = ["rule_cascade_test.py"],
+    python_version = "PY3",
+    srcs_version = "PY3",
+    deps = [
+        "//pynini",
+        "//pynini/lib:rule_cascade",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "t9_test",
+    size = "small",
+    srcs = ["t9_test.py"],
+    python_version = "PY3",
+    deps = [
+        "//pynini/examples:t9",
+        "@io_abseil_py//absl/flags",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "tagger_test",
+    size = "small",
+    srcs = ["tagger_test.py"],
+    python_version = "PY3",
+    deps = [
+        "//pynini",
+        "//pynini/lib:rewrite",
+        "//pynini/lib:tagger",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "pynini_test",
+    size = "small",
+    srcs = ["pynini_test.py"],
+    data = ["testdata/str.map"],
+    python_version = "PY3",
+    srcs_version = "PY3ONLY",
+    deps = [
+        "//pynini",
+        "//pywrapfst",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "pynutil_test",
+    size = "small",
+    srcs = ["pynutil_test.py"],
+    python_version = "PY3",
+    srcs_version = "PY3ONLY",
+    deps = [
+        "//pynini",
+        "//pynini/lib:pynutil",
+        "//pynini/lib:rewrite",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "utf8_test",
+    timeout = "long",
+    srcs = ["utf8_test.py"],
+    python_version = "PY3",
+    srcs_version = "PY3ONLY",
+    deps = [
+        "//pynini",
+        "//pynini/lib:byte",
+        "//pynini/lib:utf8",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "weather_test",
+    size = "small",
+    srcs = ["weather_test.py"],
+    python_version = "PY3",
+    deps = [
+        "//pynini/examples:weather",
+        "@io_abseil_py//absl/testing:absltest",
+    ],
+)
+
+py_test(
+    name = "grm_test",
+    srcs = ["grm_test.py"],
+    python_version = "PY3",
+    srcs_version = "PY3ONLY",
+    deps = [
+        "//pynini",
+        "//pynini/export:grm",
+        "@io_abseil_py//absl/flags",
+        "@io_abseil_py//absl/testing:absltest",
+        "@io_abseil_py//absl/testing:flagsaver",
+    ],
+)
+
+py_test(
+    name = "multi_grm_test",
+    srcs = ["multi_grm_test.py"],
+    python_version = "PY3",
+    srcs_version = "PY3ONLY",
+    deps = [
+        "//pynini",
+        "//pynini/export:multi_grm",
+        "@io_abseil_py//absl/flags",
+        "@io_abseil_py//absl/testing:absltest",
+        "@io_abseil_py//absl/testing:flagsaver",
+    ],
+)
+
+py_test(
+    name = "export_test",
+    srcs = ["export_test.py"],
+    python_version = "PY3",
+    srcs_version = "PY3ONLY",
+    deps = [
+        "//pynini",
+        "//pynini/export",
+        "@io_abseil_py//absl/testing:absltest",
+        "@io_abseil_py//absl/testing:flagsaver",
+    ],
+)

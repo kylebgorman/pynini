@@ -1,27 +1,39 @@
 # Lint as: python3
+# Copyright 2016-2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 """Implementation of features mirroring functionality in Thrax."""
 
 import operator
-from typing import List, Dict, Optional, Iterable
+
+from typing import Dict, Iterable, List, Optional
 
 import pynini
+from pynini.lib import byte
 from pynini.lib import pynutil
 
 
-def _concatstar(args: Iterable[pynini.FstLike]) -> pynini.Fst:
+def _concatstar(args: Iterable[pynini.Fst]) -> pynini.Fst:
   """Helper for repeated concatenation."""
-  # TODO(kbg): This is inefficient and ugly to boot.
-  it = iter(args)
-  result = next(it)
-  # This prevents us from returning a string, or from accidentally mutating
-  # the input argument.
-  result = result.copy() if isinstance(result,
-                                       pynini.Fst) else pynini.acceptor(result)
-  for arg in it:
+  (car, *cdr) = args
+  result = car.copy()
+  for arg in cdr:
     result.concat(arg)
-  return result
+  return result.rmepsilon()
 
 
 class Error(Exception):
@@ -56,7 +68,7 @@ class Feature:
     if self._default:
       if self._default not in self._values:
         self._values.append(self._default)
-      self._default_acceptor = pynini.acceptor(f"[{name}={self._default}]")
+      self._default_acceptor = pynini.accep(f"[{name}={self._default}]")
       self._default_acceptor.optimize()
     self._acceptor = pynini.union(*(f"[{self._name}={v}]"
                                     for v in self._values))
@@ -143,13 +155,42 @@ class Category:
     if not features:
       Error("No features provided to Category object")
     self._features = sorted(features, key=operator.attrgetter("name"))
-    self._acceptor = _concatstar(f.acceptor for f in self._features).rmepsilon()
+    self._acceptor = _concatstar(f.acceptor for f in self._features)
     self._feature_mapper = self._make_feature_mapper()
     transducers = []
     for f in self._features:
       default = f.default_acceptor if f.default_acceptor else f.acceptor
       transducers.append(pynutil.insert(default) | f.acceptor)
     self._feature_filler = _concatstar(transducers).optimize()
+    self._feature_labels = pynini.project(self._feature_mapper, "input")
+    self._sigma_star = pynini.union(byte.BYTE,
+                                    self._feature_labels).closure().optimize()
+
+  def _make_feature_mapper(self) -> pynini.Fst:
+    r"""Convenience function generating a map to human-readable strings.
+
+    Returns:
+      A transducer that maps from internal symbols like "[case=nom]" to a
+      sequence that will be readable as a string ("\[case=nom\]") for all
+      feature-value combinations.
+    """
+    pairs = []
+    for feature in self._features:
+      name = feature.name
+      for value in feature.values:
+        f = f"[{name}={value}]"
+        v = pynini.escape(f"[{name}={value}]")
+        pairs.append(pynini.cross(f, v))
+    return pynini.union(*pairs).closure().optimize()
+
+  def _make_sigma_star(self) -> pynini.Fst:
+    r"""Convenience function generating \Sigma^* including feature labels.
+
+    Returns:
+      A \Sigma^* transducer.
+    """
+    feature_labels = pynini.project(self._feature_mapper, "input")
+    return pynini.union(byte.BYTE, feature_labels).closure().optimize()
 
   def __eq__(self, other: "Category") -> bool:
     return (isinstance(other, self.__class__) and
@@ -171,25 +212,16 @@ class Category:
     return self._feature_filler
 
   @property
+  def feature_labels(self) -> pynini.Fst:
+    return self._feature_labels
+
+  @property
   def feature_mapper(self) -> pynini.Fst:
     return self._feature_mapper
 
-  def _make_feature_mapper(self) -> pynini.Fst:
-    r"""Convenience func to map from internal syms to human-readable strings.
-
-    Returns:
-      A transducer that maps from internal symbols like "[case=nom]" to a
-      sequence that will be readable as a string ("\[case=nom\]") for all
-      feature-value combinations.
-    """
-    pairs = []
-    for feature in self._features:
-      name = feature.name
-      for value in feature.values:
-        f = f"[{name}={value}]"
-        v = pynini.escape(f"[{name}={value}]")
-        pairs.append(pynini.cross(f, v))
-    return pynini.union(*pairs).closure().optimize()
+  @property
+  def sigma_star(self) -> pynini.Fst:
+    return self._sigma_star
 
 
 class FeatureVector:
@@ -223,11 +255,12 @@ class FeatureVector:
         if self._feature_settings[feature.name] not in feature.values:
           raise Error(f"Invalid name: {feature.name}")
         acceptors.append(
-            f"[{feature.name}={self._feature_settings[feature.name]}]")
+            pynini.accep(
+                f"[{feature.name}={self._feature_settings[feature.name]}]"))
       else:
         # If not specified, allows all values.
         acceptors.append(feature.acceptor)
-    self._acceptor = _concatstar(acceptors).rmepsilon()
+    self._acceptor = _concatstar(acceptors)
 
   def __eq__(self, other: "FeatureVector") -> bool:
     return (isinstance(other, self.__class__) and

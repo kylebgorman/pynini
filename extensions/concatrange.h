@@ -1,3 +1,5 @@
+// Copyright 2016-2020 Google LLC
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -10,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// Copyright 2016 and onwards Google, Inc.
-//
+
 
 #ifndef PYNINI_CONCATRANGE_H_
 #define PYNINI_CONCATRANGE_H_
@@ -62,7 +63,7 @@ void SetStartFinal(MutableFst<Arc> *fst) {
 // these act as upper and lower bounds, respectively, for the number of cycles
 // through the original FST one is permitted to take in the modified FST. So,
 // ConcatRange(A, 0, 1) is mutates A so it transduces between empty strings with
-// weight One and // transduces strings x to y with weight w, similar to the ?
+// weight One and transduces strings x to y with weight w, similar to the ?
 // quantifier in PCRE. And, ConcatRange(A, 2, 5) mutates A so that it behaves
 // like the concatenation of between 2 and 5 A's.
 //

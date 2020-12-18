@@ -1,4 +1,6 @@
 #cython: c_string_encoding=utf8, c_string_type=unicode, language_level=3, nonecheck=True
+# Copyright 2016-2020 Google LLC
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -11,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Copyright 2016 and onwards Google, Inc.
-#
+
 # See www.openfst.org for extensive documentation on this weighted
 # finite-state transducer library.
 
@@ -40,7 +41,7 @@ Python variables here use snake_case and constants are in all caps, minus the
 normal `k` prefix.
 """
 
-# Overview of the file:
+# Outline:
 #
 # * Imports
 # * Custom exceptions
@@ -52,8 +53,9 @@ normal `k` prefix.
 # * EncodeMapper
 # * Fst, MutableFst, and VectorFst
 # * FST properties
-# * Arc, ArcIterator, and MutableArcIterator
-# * StateIterator
+# * Arc
+# * _ArcIterator and _MutableArcIterator
+# * _StateIterator
 # * FST operations
 # * Compiler
 # * FarReader and FarWriter
@@ -1636,7 +1638,7 @@ cdef class Fst:
     """
     return self._fst.get().ArcType()
 
-  cpdef ArcIterator arcs(self, int64 state):
+  cpdef _ArcIterator arcs(self, int64 state):
     """
     arcs(self, state)
 
@@ -1646,9 +1648,9 @@ cdef class Fst:
       state: The source state ID.
 
     Returns:
-      An ArcIterator.
+      An _ArcIterator.
     """
-    return ArcIterator(self, state)
+    return _ArcIterator(self, state)
 
   cpdef Fst copy(self):
     """
@@ -1957,16 +1959,16 @@ cdef class Fst:
     """
     return self._fst.get().Start()
 
-  cpdef StateIterator states(self):
+  cpdef _StateIterator states(self):
     """
     states(self)
 
     Returns an iterator over all states in the FST.
 
     Returns:
-      A StateIterator object for the FST.
+      A _StateIterator object for the FST.
     """
-    return StateIterator(self)
+    return _StateIterator(self)
 
   cpdef bool verify(self):
     """
@@ -2340,7 +2342,7 @@ cdef class MutableFst(Fst):
     self._minimize(delta, allow_nondet)
     return self
 
-  cpdef MutableArcIterator mutable_arcs(self, int64 state):
+  cpdef _MutableArcIterator mutable_arcs(self, int64 state):
     """
     mutable_arcs(self, state)
 
@@ -2350,9 +2352,9 @@ cdef class MutableFst(Fst):
       state: The source state ID.
 
     Returns:
-      A MutableArcIterator.
+      A _MutableArcIterator.
     """
-    return MutableArcIterator(self, state)
+    return _MutableArcIterator(self, state)
 
   def mutable_input_symbols(self):
     """
@@ -3067,7 +3069,7 @@ ENCODE_WEIGHTS = fst.kEncodeWeights
 ENCODE_FLAGS = fst.kEncodeFlags
 
 
-## Arc, ArcIterator, and MutableArcIterator.
+## Arc.
 
 
 cdef class Arc:
@@ -3137,16 +3139,19 @@ cdef Arc _init_Arc(const fst.ArcClass &arc):
   return Arc(arc.ilabel, arc.olabel, _weight, arc.nextstate)
 
 
-cdef class ArcIterator:
+## _ArcIterator and _MutableArcIterator.
+
+
+cdef class _ArcIterator:
 
   """
-  ArcIterator(ifst, state)
+  _ArcIterator(ifst, state)
 
   This class is used for iterating over the arcs leaving some state of an FST.
   """
 
   def __repr__(self):
-    return f"<ArcIterator at 0x{id(self):x}>"
+    return f"<_ArcIterator at 0x{id(self):x}>"
 
   def __init__(self, Fst ifst, int64 state):
     if not ifst._fst.get().ValidStateId(state):
@@ -3248,17 +3253,17 @@ cdef class ArcIterator:
     return _init_Arc(self._aiter.get().Value())
 
 
-cdef class MutableArcIterator:
+cdef class _MutableArcIterator:
 
   """
-  MutableArcIterator(ifst, state)
+  _MutableArcIterator(ifst, state)
 
   This class is used for iterating over the arcs leaving some state of an FST,
   also permitting mutation of the current arc.
   """
 
   def __repr__(self):
-    return f"<MutableArcIterator at 0x{id(self):x}>"
+    return f"<_MutableArcIterator at 0x{id(self):x}>"
 
   def __init__(self, MutableFst ifst, int64 state):
     if not ifst._fst.get().ValidStateId(state):
@@ -3272,6 +3277,14 @@ cdef class MutableArcIterator:
     while not self.done():
       yield self.value()
       self.next()
+
+  # Magic method used to get a Pythonic API out of the C++ API.
+  def __next__(self):
+    if self.done():
+      raise StopIteration
+    result = self.value()
+    self.next()
+    return result
 
   cpdef bool done(self):
     """
@@ -3365,19 +3378,19 @@ cdef class MutableArcIterator:
     return _init_Arc(self._aiter.get().Value())
 
 
-## StateIterator.
+## _StateIterator.
 
 
-cdef class StateIterator:
+cdef class _StateIterator:
 
   """
-  StateIterator(ifst)
+  _StateIterator(ifst)
 
   This class is used for iterating over the states in an FST.
   """
 
   def __repr__(self):
-    return f"<StateIterator at 0x{id(self):x}>"
+    return f"<_StateIterator at 0x{id(self):x}>"
 
   def __init__(self, Fst ifst):
     # Makes copy of the shared_ptr, potentially extending the FST's lifetime.
@@ -3444,11 +3457,12 @@ cdef Fst _map(Fst ifst,
   if not fst.GetMapType(tostring(map_type), addr(_map_type)):
     raise FstArgError(f"Unknown map type: {map_type!r}")
   cdef fst.WeightClass _weight
-  if _map_type == fst.TIMES_MAPPER:
+  if _map_type == fst.MapType.TIMES_MAPPER:
       _weight = _get_WeightClass_or_one(ifst.weight_type(), weight)
   else:
       _weight = _get_WeightClass_or_zero(ifst.weight_type(), weight)
-  return _init_XFst(fst.Map(deref(ifst._fst), _map_type, delta, power, _weight))
+  return _init_XFst(
+    fst.Map(deref(ifst._fst), _map_type, delta, power, _weight).release())
 
 
 cpdef Fst arcmap(Fst ifst,
@@ -3553,7 +3567,7 @@ cpdef Fst convert(Fst ifst, fst_type=""):
   """
   cdef string _fst_type = tostring(fst_type)
   cdef unique_ptr[fst.FstClass] _tfst
-  _tfst.reset(fst.Convert(deref(ifst._fst), _fst_type))
+  _tfst = fst.Convert(deref(ifst._fst), _fst_type)
   # Script-land Convert returns a null pointer to signal failure.
   if _tfst.get() == NULL:
     raise FstOpError(f"Conversion to {fst_type!r} failed")
@@ -4126,7 +4140,7 @@ cdef void _shortestdistance(Fst ifst,
   else:
     _opts.reset(
         new fst.ShortestDistanceOptions(_get_queue_type(tostring(queue_type)),
-                                        fst.ANY_ARC_FILTER,
+                                        fst.ArcFilterType.ANY_ARC_FILTER,
                                         nstate,
                                         delta))
     fst.ShortestDistance(deref(ifst._fst), distance, deref(_opts))
@@ -4372,18 +4386,18 @@ cdef class Compiler:
       FstOpError: Compilation failed.
     """
     cdef unique_ptr[fst.FstClass] _tfst
-    _tfst.reset(fst.CompileFstInternal(deref(self._sstrm),
-                                       b"<pywrapfst>",
-                                       self._fst_type,
-                                       self._arc_type,
-                                       self._isymbols,
-                                       self._osymbols,
-                                       self._ssymbols,
-                                       self._acceptor,
-                                       self._keep_isymbols,
-                                       self._keep_osymbols,
-                                       self._keep_state_numbering,
-                                       self._allow_negative_labels))
+    _tfst = fst.CompileFstInternal(deref(self._sstrm),
+                                   b"<pywrapfst>",
+                                   self._fst_type,
+                                   self._arc_type,
+                                   self._isymbols,
+                                   self._osymbols,
+                                   self._ssymbols,
+                                   self._acceptor,
+                                   self._keep_isymbols,
+                                   self._keep_osymbols,
+                                   self._keep_state_numbering,
+                                   self._allow_negative_labels)
     self._sstrm.reset(new stringstream())
     if _tfst.get() == NULL:
       raise FstOpError("Compilation failed")
@@ -4457,11 +4471,11 @@ cdef class FarReader:
     """
     cdef vector[string] _sources = [path_tostring(source) for source in sources]
     cdef unique_ptr[fst.FarReaderClass] _tfar
-    _tfar.reset(fst.FarReaderClass.Open(_sources))
+    _tfar = fst.FarReaderClass.Open(_sources)
     if _tfar.get() == NULL:
       raise FstIOError(f"Read failed: {sources!r}")
     cdef FarReader reader = FarReader.__new__(FarReader)
-    reader._reader.reset(_tfar.release())
+    reader._reader = move(_tfar)
     return reader
 
   cpdef string arc_type(self):
@@ -4618,10 +4632,10 @@ cdef class FarWriter:
       FstIOError: Read failed.
     """
     cdef unique_ptr[fst.FarWriterClass] _tfar
-    _tfar.reset(fst.FarWriterClass.Create(
+    _tfar = fst.FarWriterClass.Create(
         path_tostring(source),
         tostring(arc_type),
-        _get_far_type(tostring(far_type))))
+        _get_far_type(tostring(far_type)))
     if _tfar.get() == NULL:
       raise FstIOError(f"Open failed: {source!r}")
     cdef FarWriter writer = FarWriter.__new__(FarWriter)

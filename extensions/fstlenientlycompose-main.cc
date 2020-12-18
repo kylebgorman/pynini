@@ -1,3 +1,5 @@
+// Copyright 2016-2020 Google LLC
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -10,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// Copyright 2016 and onwards Google, Inc.
-//
+
 
 // Creates the lenient composition of two FSTs w.r.t. some alphabet.
 
@@ -40,7 +41,7 @@ int fstlenientlycompose_main(int argc, char **argv) {
   SetCommandLineOptionWithMode("minloglevel", "1", SET_FLAG_IF_DEFAULT);
 
   if (argc < 4 || argc > 5) {
-    ShowUsageWithFlagsRestrict(argv[0], "fst");
+    base::ReportCommandLineHelpMatch("fst");
     return 1;
   }
 

@@ -119,12 +119,12 @@ class CDRewriteTest(unittest.TestCase):
   def testWeightedLambdaRaisesFstOpError(self):
     with self.assertRaises(FstOpError):
       unused_f = cdrewrite(
-          cross("A", "B"), acceptor("C", weight=2), "D", self.sigstar)
+          cross("A", "B"), accep("C", weight=2), "D", self.sigstar)
 
   def testWeightedRhoRaisesFstOpError(self):
     with self.assertRaises(FstOpError):
       unused_f = cdrewrite(
-          cross("A", "B"), "C", acceptor("D", weight=2), self.sigstar)
+          cross("A", "B"), "C", accep("D", weight=2), self.sigstar)
 
 
 class ClosureTest(unittest.TestCase):
@@ -133,7 +133,7 @@ class ClosureTest(unittest.TestCase):
     m = 3
     n = 7
     cheese = "Red Windsor"
-    ac = acceptor(cheese)
+    ac = accep(cheese)
     ac.closure(m, n)
     # Doesn't accept <3 copies.
     for i in range(m):
@@ -179,7 +179,7 @@ class EqualTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.f = acceptor("Danish Blue")
+    cls.f = accep("Danish Blue")
 
   def testEqual(self):
     self.assertTrue(equal(self.f, self.f.copy()))
@@ -331,7 +331,7 @@ class GeneratedSymbolsTest(unittest.TestCase):
 
   def testBosIndex(self):
     bos_index = 0xF8FE  # Defined in stringcompile.h.
-    f = acceptor("[BOS]")
+    f = accep("[BOS]")
     aiter = f.arcs(f.start())
     self.assertFalse(aiter.done())
     arc = aiter.value()
@@ -342,7 +342,7 @@ class GeneratedSymbolsTest(unittest.TestCase):
 
   def testEosIndex(self):
     eos_index = 0xF8FF  # Defined in stringcompile.h.
-    f = acceptor("[EOS]")
+    f = accep("[EOS]")
     aiter = f.arcs(f.start())
     arc = aiter.value()
     self.assertEqual(eos_index, arc.ilabel)
@@ -352,7 +352,7 @@ class GeneratedSymbolsTest(unittest.TestCase):
 
   def testGeneratedSymbols(self):
     cheese = "Parmesan"
-    unused_f = acceptor(f"[{cheese}]")
+    unused_f = accep(f"[{cheese}]")
     syms = generated_symbols()
     self.assertTrue(syms.member(cheese))
 
@@ -428,16 +428,16 @@ class StringTest(unittest.TestCase):
     cls.cheese = "Red Leicester"
     cls.reply = "I'm afraid we're fresh out of Red Leicester sir"
     cls.imported_cheese = "Pont l'Evêque"
-    cls.acceptor_props = (
+    cls.accep_props = (
         ACCEPTOR | I_DETERMINISTIC | O_DETERMINISTIC | I_LABEL_SORTED
         | O_LABEL_SORTED | UNWEIGHTED | ACYCLIC | INITIAL_ACYCLIC | TOP_SORTED
         | ACCESSIBLE | COACCESSIBLE | STRING | UNWEIGHTED_CYCLES)
 
   def testUnbracketedBytestringUnweightedAcceptorCompilation(self):
-    cheese = acceptor(self.cheese)
+    cheese = accep(self.cheese)
     self.assertEqual(cheese, self.cheese)
     self.assertEqual(
-        cheese.properties(self.acceptor_props, True), self.acceptor_props)
+        cheese.properties(self.accep_props, True), self.accep_props)
 
   def testUnbracketedBytestringUnweightedTransducerCompilation(self):
     exchange = cross(self.cheese, self.reply)
@@ -446,10 +446,10 @@ class StringTest(unittest.TestCase):
     self.assertEqual(exchange, self.cheese)
 
   def testUnbracketedBytestringWeightedAcceptorCompilation(self):
-    cheese = acceptor(self.cheese, weight=Weight.one("tropical"))
+    cheese = accep(self.cheese, weight=Weight.one("tropical"))
     self.assertEqual(cheese, self.cheese)
     self.assertEqual(
-        cheese.properties(self.acceptor_props, True), self.acceptor_props)
+        cheese.properties(self.accep_props, True), self.accep_props)
 
   def testUnbracketedBytestringWeightedTransducerCompilation(self):
     exchange = cross(self.cheese, self.reply)
@@ -458,91 +458,91 @@ class StringTest(unittest.TestCase):
     self.assertEqual(exchange, self.cheese)
 
   def testUnbracketedBytestringCastingWeightedAcceptorCompilation(self):
-    cheese = acceptor(self.cheese, weight=0)
+    cheese = accep(self.cheese, weight=0)
     self.assertEqual(cheese, self.cheese)
     self.assertEqual(
-        cheese.properties(self.acceptor_props, True), self.acceptor_props)
+        cheese.properties(self.accep_props, True), self.accep_props)
 
   def testBracketedCharsBytestringAcceptorCompilation(self):
-    cheese = acceptor("".join("[{:d}]".format(ord(ch)) for ch in self.cheese))
+    cheese = accep("".join("[{:d}]".format(ord(ch)) for ch in self.cheese))
     self.assertEqual(cheese, self.cheese)
     self.assertEqual(
-        cheese.properties(self.acceptor_props, True), self.acceptor_props)
+        cheese.properties(self.accep_props, True), self.accep_props)
 
   def testUnicodeBytestringAcceptorCompilation(self):
-    cheese = acceptor(self.imported_cheese)
+    cheese = accep(self.imported_cheese)
     self.assertEqual(cheese, self.imported_cheese)
     self.assertEqual(
-        cheese.properties(self.acceptor_props, True), self.acceptor_props)
+        cheese.properties(self.accep_props, True), self.accep_props)
 
   def testAsciiUtf8AcceptorCompilation(self):
-    cheese = acceptor(self.cheese, token_type="utf8")
+    cheese = accep(self.cheese, token_type="utf8")
     self.assertEqual(cheese, self.cheese)
     self.assertEqual(
-        cheese.properties(self.acceptor_props, True), self.acceptor_props)
+        cheese.properties(self.accep_props, True), self.accep_props)
 
   def testEscapedBracketsBytestringAcceptorCompilation(self):
-    ac = acceptor(r"[\[Camembert\] is a]\[cheese\]")
+    ac = accep(r"[\[Camembert\] is a]\[cheese\]")
     # Should have 3 states accepting generated symbols, 8 accepting a byte,
     # and 1 final state.
     self.assertEqual(ac.num_states(), 12)
 
   def testGarbageWeightAcceptorRaisesFstBadWeightError(self):
     with self.assertRaises(FstBadWeightError):
-      unused_ac = acceptor(self.cheese, weight="nonexistent")
+      unused_ac = accep(self.cheese, weight="nonexistent")
 
   def testGarbageArcTypeAcceptorRaisesFstArgError(self):
     with self.assertRaises(FstArgError):
-      unused_ac = acceptor(self.cheese, arc_type="nonexistent")
+      unused_ac = accep(self.cheese, arc_type="nonexistent")
 
   def testUnbalancedBracketsAcceptorRaisesFstStringCompilationError(self):
     with self.assertRaises(FstStringCompilationError):
-      unused_ac = acceptor(self.cheese + "]")
+      unused_ac = accep(self.cheese + "]")
 
   def testUnbalancedBracketsTransducerRaisesFstStringCompilationError(self):
     with self.assertRaises(FstStringCompilationError):
       unused_tr = cross(self.cheese, "[" + self.reply)
 
   def testCrossProductTransducerCompilation(self):
-    cheese = acceptor(self.cheese)
-    reply = acceptor(self.reply)
+    cheese = accep(self.cheese)
+    reply = accep(self.reply)
     exchange = cross(cheese, reply)
     exchange.project("input")
     exchange.rmepsilon()
     self.assertEqual(exchange, self.cheese)
 
   def testAsciiByteStringify(self):
-    self.assertEqual(acceptor(self.cheese).string(), self.cheese)
+    self.assertEqual(accep(self.cheese).string(), self.cheese)
 
   def testAsciiUtf8Stringify(self):
     self.assertEqual(
-        acceptor(self.cheese, token_type="utf8").string("utf8"), self.cheese)
+        accep(self.cheese, token_type="utf8").string("utf8"), self.cheese)
 
   def testUtf8ByteStringify(self):
     self.assertEqual(
-        acceptor(self.imported_cheese).string(), self.imported_cheese)
+        accep(self.imported_cheese).string(), self.imported_cheese)
 
   def testAsciiByteStringifyAfterSymbolTableDeletion(self):
-    ac = acceptor(self.cheese)
+    ac = accep(self.cheese)
     ac.set_output_symbols(None)
     self.assertEqual(ac.string(), self.cheese)
 
   def testUtf8Utf8Stringify(self):
     self.assertEqual(
-        acceptor(self.imported_cheese, token_type="utf8").string("utf8"),
+        accep(self.imported_cheese, token_type="utf8").string("utf8"),
         self.imported_cheese)
 
   def testUnicodeByteStringify(self):
     self.assertEqual(
-        acceptor(self.imported_cheese).string(), self.imported_cheese)
+        accep(self.imported_cheese).string(), self.imported_cheese)
 
   def testUnicodeUtf8Stringify(self):
     self.assertEqual(
-        acceptor(self.imported_cheese, token_type="utf8").string("utf8"),
+        accep(self.imported_cheese, token_type="utf8").string("utf8"),
         self.imported_cheese)
 
   def testUtf8StringifyAfterSymbolTableDeletion(self):
-    ac = acceptor(self.imported_cheese, token_type="utf8")
+    ac = accep(self.imported_cheese, token_type="utf8")
     ac.set_output_symbols(None)
     self.assertEqual(ac.string("utf8"), self.imported_cheese)
 
@@ -552,27 +552,27 @@ class StringTest(unittest.TestCase):
 
   def testCompositionOfStringAndLogArcWorks(self):
     cheese = "Greek Feta"
-    self.assertEqual(cheese @ acceptor(cheese, arc_type="log"), cheese)
+    self.assertEqual(cheese @ accep(cheese, arc_type="log"), cheese)
 
   def testCompositionOfLogArcAndStringWorks(self):
     cheese = "Tilsit"
-    self.assertEqual(acceptor(cheese, arc_type="log") @ cheese, cheese)
+    self.assertEqual(accep(cheese, arc_type="log") @ cheese, cheese)
 
   def testCompositionOfStringAndLog64ArcWorks(self):
     cheese = "Greek Feta"
-    self.assertEqual(cheese @ acceptor(cheese, arc_type="log64"), cheese)
+    self.assertEqual(cheese @ accep(cheese, arc_type="log64"), cheese)
 
   def testCompositionOfLog64ArcAndStringWorks(self):
     cheese = "Tilsit"
-    self.assertEqual(acceptor(cheese, arc_type="log64") @ cheese, cheese)
+    self.assertEqual(accep(cheese, arc_type="log64") @ cheese, cheese)
 
   def testLogWeightToStandardAcceptorRaisesFstStringCompilationError(self):
     with self.assertRaises(FstOpError):
-      unused_ac = acceptor("Sage Derby", weight=Weight.one("log"))
+      unused_ac = accep("Sage Derby", weight=Weight.one("log"))
 
   def testLog64WeightToLogAcceptorRaisesFstStringCompilationError(self):
     with self.assertRaises(FstOpError):
-      unused_ac = acceptor(
+      unused_ac = accep(
           "Wensleydale", arc_type="log", weight=Weight.one("log64"))
 
 
@@ -596,7 +596,7 @@ class StringFileTest(unittest.TestCase):
     self.ContainsMapping("Pont-l'Évêque", mapper, "Camembert")
 
   def testByteToUtf8StringFile(self):
-    utf8 = functools.partial(acceptor, token_type="utf8")
+    utf8 = functools.partial(accep, token_type="utf8")
     mapper = string_file(self.map_file, output_token_type="utf8")
     self.ContainsMapping("[Bel Paese]", mapper, utf8("Sorry"))
     self.ContainsMapping("Cheddar", mapper, utf8("Cheddar"))
@@ -604,7 +604,7 @@ class StringFileTest(unittest.TestCase):
     self.ContainsMapping("Pont-l'Évêque", mapper, utf8("Camembert"))
 
   def testUtf8ToUtf8StringFile(self):
-    utf8 = functools.partial(acceptor, token_type="utf8")
+    utf8 = functools.partial(accep, token_type="utf8")
     mapper = string_file(
         self.map_file, input_token_type="utf8", output_token_type="utf8")
     self.ContainsMapping(utf8("[Bel Paese]"), mapper, utf8("Sorry"))
@@ -618,7 +618,7 @@ class StringFileTest(unittest.TestCase):
     syms.add_symbol("Pont-l'Évêque")
     syms.add_symbol("Camembert")
     mapper = string_file(self.map_file, output_token_type=syms)
-    symc = functools.partial(acceptor, token_type=syms)
+    symc = functools.partial(accep, token_type=syms)
     self.ContainsMapping("[Bel Paese]", mapper, symc("Sorry"))
     self.ContainsMapping("Pont-l'Évêque", mapper, symc("Camembert"))
 
@@ -647,7 +647,7 @@ class StringMapTest(unittest.TestCase):
 
   def testByteToUtf8StringMap(self):
     mapper = string_map(self.lines, output_token_type="utf8")
-    utf8 = functools.partial(acceptor, token_type="utf8")
+    utf8 = functools.partial(accep, token_type="utf8")
     self.ContainsMapping("[Bel Paese]", mapper, utf8("Sorry"))
     self.ContainsMapping("Cheddar", mapper, utf8("Cheddar"))
     self.ContainsMapping("Caithness", mapper, utf8("Pont-l'Évêque"))
@@ -656,7 +656,7 @@ class StringMapTest(unittest.TestCase):
   def testUtf8ToUtf8StringMap(self):
     mapper = string_map(
         self.lines, input_token_type="utf8", output_token_type="utf8")
-    utf8 = functools.partial(acceptor, token_type="utf8")
+    utf8 = functools.partial(accep, token_type="utf8")
     self.ContainsMapping(utf8("[Bel Paese]"), mapper, utf8("Sorry"))
     self.ContainsMapping(utf8("Pont-l'Évêque"), mapper, utf8("Camembert"))
 
@@ -668,7 +668,7 @@ class StringMapTest(unittest.TestCase):
     syms.add_symbol("Pont-l'Évêque")
     syms.add_symbol("Camembert")
     mapper = string_map(self.lines, output_token_type=syms)
-    symc = functools.partial(acceptor, token_type=syms)
+    symc = functools.partial(accep, token_type=syms)
     self.ContainsMapping("[Bel Paese]", mapper, symc("Sorry"))
     self.ContainsMapping("Pont-l'Évêque", mapper, symc("Camembert"))
 
@@ -734,17 +734,17 @@ class SymbolTableTest(unittest.TestCase):
 class TransducerTest(unittest.TestCase):
 
   def testPrecompiledLogCrossProduct(self):
-    upper = acceptor("Smoked Austrian", arc_type="log")
-    lower = acceptor("No", arc_type="log")
+    upper = accep("Smoked Austrian", arc_type="log")
+    lower = accep("No", arc_type="log")
     tr = cross(upper, lower)
     self.assertEqual(tr.arc_type(), "log")
 
   def testImplicitLeftLogCrossProducts(self):
-    tr = cross("Smoked Austrian", acceptor("No", arc_type="log"))
+    tr = cross("Smoked Austrian", accep("No", arc_type="log"))
     self.assertEqual(tr.arc_type(), "log")
 
   def testImplicitRightLogCrossProducts(self):
-    tr = cross(acceptor("Smoked Austrian", arc_type="log"), "No")
+    tr = cross(accep("Smoked Austrian", arc_type="log"), "No")
     self.assertEqual(tr.arc_type(), "log")
 
 

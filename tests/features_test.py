@@ -1,15 +1,30 @@
 # Lint as: python3
+# Copyright 2016-2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 """Tests for Features, Categories and FeatureVectors."""
 
-import unittest
+from absl.testing import absltest
 
 import pynini
 from pynini.lib import features
 
 
-class FeaturesTest(unittest.TestCase):
+class FeaturesTest(absltest.TestCase):
   case: features.Feature
   number: features.Feature
   gender: features.Feature
@@ -27,7 +42,7 @@ class FeaturesTest(unittest.TestCase):
 
   def testFeature(self):
     self.assertEqual(self.case.name, "case")
-    self.assertCountEqual(self.case.values, ("nom", "gen", "dat", "acc"))
+    self.assertSameElements(self.case.values, ("nom", "gen", "dat", "acc"))
     golden_acceptor = pynini.union("[case=nom]", "[case=gen]", "[case=dat]",
                                    "[case=acc]").optimize()
     self.assertEqual(self.case.acceptor, golden_acceptor)
@@ -49,13 +64,13 @@ class FeaturesTest(unittest.TestCase):
   def testFeatureVector(self):
     fv = features.FeatureVector(self.noun, "num=sg", "case=dat")
     fvm = fv.acceptor @ self.fm
-    self.assertCountEqual(
+    self.assertSameElements(
         fvm.paths().ostrings(),
         ("[case=dat][gen=fem][num=sg]", "[case=dat][gen=mas][num=sg]",
          "[case=dat][gen=neu][num=sg]"))
     fv = features.FeatureVector(self.noun, "gen=fem", "case=nom")
     fvm = fv.acceptor @ self.fm
-    self.assertCountEqual(fvm.paths().ostrings(), (
+    self.assertSameElements(fvm.paths().ostrings(), (
         "[case=nom][gen=fem][num=sg]",
         "[case=nom][gen=fem][num=pl]",
     ))
@@ -86,7 +101,7 @@ class FeaturesTest(unittest.TestCase):
     self.assertFalse(fv.unify(fv_other))
 
 
-class FeatureFillerTest(unittest.TestCase):
+class FeatureFillerTest(absltest.TestCase):
   case: features.Feature
   number: features.Feature
   gender: features.Feature
@@ -111,13 +126,13 @@ class FeatureFillerTest(unittest.TestCase):
     self.assertEqual(cat.string(), "[case=nom][gen=n/a][num=sg]")
     # number has no default so we get all values:
     cat = "[case=nom][gen=mas]" @ self.noun.feature_filler @ self.fm
-    self.assertCountEqual(
+    self.assertSameElements(
         cat.paths().ostrings(),
         ["[case=nom][gen=mas][num=sg]", "[case=nom][gen=mas][num=pl]"])
     # If we specify nothing we get all values for case and number, and n/a for
     # gender:
     cat = "" @ self.noun.feature_filler @ self.fm
-    self.assertCountEqual(cat.paths().ostrings(), [
+    self.assertSameElements(cat.paths().ostrings(), [
         "[case=nom][gen=n/a][num=sg]", "[case=nom][gen=n/a][num=pl]",
         "[case=gen][gen=n/a][num=sg]", "[case=gen][gen=n/a][num=pl]",
         "[case=dat][gen=n/a][num=sg]", "[case=dat][gen=n/a][num=pl]",
@@ -126,5 +141,5 @@ class FeatureFillerTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-  unittest.main()
+  absltest.main()
 

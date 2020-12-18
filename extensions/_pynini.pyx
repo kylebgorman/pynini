@@ -1,4 +1,6 @@
 #cython: c_string_encoding=utf8, c_string_type=unicode, language_level=3, nonecheck=True
+# Copyright 2016-2020 Google LLC
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -11,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Copyright 2016 and onwards Google, Inc.
-#
+
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 """Pynini: finite-state grammar compilation for Python."""
@@ -40,6 +41,7 @@ from cintegral_types cimport uint64
 from cmemory cimport WrapUnique
 
 from cpywrapfst cimport ArcSort
+from cpywrapfst cimport ArcSortType
 from cpywrapfst cimport Closure
 from cpywrapfst cimport CLOSURE_PLUS
 from cpywrapfst cimport CLOSURE_STAR
@@ -47,7 +49,6 @@ from cpywrapfst cimport Compose
 from cpywrapfst cimport ComposeOptions
 from cpywrapfst cimport FstClass
 from cpywrapfst cimport GetTokenType
-from cpywrapfst cimport ILABEL_SORT
 from cpywrapfst cimport kDelta
 from cpywrapfst cimport kError
 from cpywrapfst cimport kNoLabel
@@ -57,7 +58,6 @@ from cpywrapfst cimport kILabelSorted
 from cpywrapfst cimport kOLabelSorted
 from cpywrapfst cimport LabelFstClassPair
 from cpywrapfst cimport MutableFstClass
-from cpywrapfst cimport OLABEL_SORT
 from cpywrapfst cimport VectorFstClass
 from cpywrapfst cimport WeightClass
 
@@ -89,7 +89,6 @@ from cpynini cimport CDRewriteMode as _CDRewriteMode
 from cpynini cimport ConcatRange
 from cpynini cimport Cross
 from cpynini cimport Escape
-from cpynini cimport EXPAND_FILTER
 from cpynini cimport GeneratedSymbols
 from cpynini cimport GetCDRewriteDirection
 from cpynini cimport GetDefaultSymbols
@@ -284,9 +283,9 @@ cdef void _maybe_arcsort(MutableFstClass *fst1, MutableFstClass *fst2):
   # It is probably much quicker to force recomputation of the property (if
   # necessary) to call the underlying sort on a vector of arcs.
   if fst1.Properties(kOLabelSorted, True) != kOLabelSorted:
-    ArcSort(fst1, OLABEL_SORT)
+    ArcSort(fst1, ArcSortType.OLABEL_SORT)
   if fst2.Properties(kILabelSorted, True) != kILabelSorted:
-    ArcSort(fst2, ILABEL_SORT)
+    ArcSort(fst2, ArcSortType.ILABEL_SORT)
 
 
 class default_token_type(contextlib.ContextDecorator):
@@ -424,8 +423,8 @@ cdef class Fst(_VectorFst):
   def __reduce__(self):
     return (_read_from_string, (self.write_to_string(),))
 
-  cpdef StringPathIterator paths(self, input_token_type=None,
-                                 output_token_type=None):
+  cpdef _StringPathIterator paths(self, input_token_type=None,
+                                  output_token_type=None):
     """
     paths(self, input_token_type=None, output_token_type=None)
 
@@ -460,7 +459,7 @@ cdef class Fst(_VectorFst):
       FstArgError: Unknown token type.
       FstOpError: Operation failed.
     """
-    return StringPathIterator(self, input_token_type, output_token_type)
+    return _StringPathIterator(self, input_token_type, output_token_type)
 
   cpdef string string(self, token_type=None) except *:
     """
@@ -645,9 +644,9 @@ cdef class Fst(_VectorFst):
 
     Performs a generic optimization of the FST.
 
-    This operation destructively optimizes the FST using epsilon-removal,
-    arc-sum mapping, determinization, and minimization (where possible). The
-    algorithm is as follows:
+    This operation destructively optimizes the FST, producing an equivalent
+    FST while heuristically reducing the number of states. The algorithm is
+    as follows:
 
     * If the FST is not (known to be) epsilon-free, perform epsilon-removal.
     * Combine identically labeled multi-arcs and sum their weights.
@@ -660,14 +659,15 @@ cdef class Fst(_VectorFst):
         unweighted, encode weights.
       - Determinize the FST.
     * Minimize the FST.
-    * Decode the FST and combine identically-labeled multi-arcs and sum their
-      weights, if the FST was previously encoded.
+    * If the FST was previously encoded, decode it, and combine
+      identically-labeled multi-arcs and sum their weights.
 
-    This optimization may result in a reduction of size (due to epsilon-removal,
-    arc-sum mapping, and minimization) and possibly faster composition, but
-    determinization (a prerequisite of minimization) may result in an
-    exponential blowup in size in the worst case. Judicious use of optimization
-    is a bit of a black art.
+    This optimization generally reduces the number of states and arcs, and may
+    also result in faster composition. However, determinization, a prerequisite
+    for minimization, may in the worst case trigger an exponential blowup in
+    the number of states. Judicious use of optimization is something of a black
+    art, but one is generally encouraged to optimize final forms of rules
+    or cascades thereof.
 
     Args:
       compute_props: Should unknown FST properties be computed to help choose
@@ -694,41 +694,34 @@ cdef class Fst(_VectorFst):
   def __ne__(self, other):
     return not self == other
 
-  # TODO(wolfsonkin): Implement __iadd__ and friends more efficiently with
-  # in-place operations rather than copying operations.
-
   def __add__(self, other):
     return concat(self, other)
+
+  def __iadd__(self, other):
+    return self.concat(other)
 
   def __sub__(self, other):
     return difference(self, other)
 
+  # __isub__ is not implemented separately because difference is not an
+  # in-place operation.
+
   def __pow__(self, other, modulo):
     """Constructively generates the range-concatenation of the FST.
+
     For all natural numbers n, `f ** n` is the same as `f ** (n, n).
     Note that `f ** (0, ...)` is the same as `f.star`,
     `f ** (1, ...)` is `f.plus`,
     `f ** (0, 1)` is the same as `f.ques`.
     and `f ** (5, ...)` is the obvious generalization.
-
-    Args:
-      self: An FST object
-      other: Either an integer, an (integer, integer) tuple, or an
-             (integer, ellipsis) tuple.
-
-    Returns:
-      The FST representing self repeated the number of times, or range of times
-      indicated by other.
-
     """
     if not isinstance(self, Fst) or modulo is not None:
       return NotImplemented
     if isinstance(other, int):
       return closure(self, other, other)
-
     if isinstance(other, tuple):
       try:
-        lower, upper = other
+        (lower, upper) = other
       except ValueError:
           raise ValueError("Expected tuple of length two")
       if lower is Ellipsis:
@@ -737,14 +730,25 @@ cdef class Fst(_VectorFst):
         return closure(self, lower)
       else:
         return closure(self, lower, upper)
-
     return NotImplemented
+
+  # TODO(kbg): Cython only has support for two-argument __ipow__; see:
+  #
+  #   http://github.com/cython/cython/commit/829d6
+  #
+  # If this ever changes, implement __ipow__ in the obvious fashion.
 
   def __matmul__(self, other):
     return compose(self, other)
 
+  # __imatmul__ is not implemented separately because composition is not an
+  # in-place operation.
+
   def __or__(self, other):
     return union(self, other)
+
+  def __ior__(self, other):
+    return self.union(other)
 
 
 # Makes a reference-counted copy, if it's already an FST; otherwise, compiles
@@ -753,7 +757,7 @@ cdef class Fst(_VectorFst):
 
 cdef Fst _compile_or_copy_Fst(arg, arc_type="standard"):
   if not isinstance(arg, Fst):
-    return acceptor(arg, arc_type=arc_type)
+    return accep(arg, arc_type=arc_type)
   else:
     return arg.copy()
 
@@ -770,10 +774,10 @@ cdef object _compile_or_copy_two_Fsts(fst1, fst2):
     _fst2 = _compile_or_copy_Fst(fst2, _fst1.arc_type())
   elif isinstance(fst2, Fst):
     _fst2 = fst2.copy()
-    _fst1 = acceptor(fst1, arc_type=_fst2.arc_type())
+    _fst1 = accep(fst1, arc_type=_fst2.arc_type())
   else:
-    _fst1 = acceptor(fst1)
-    _fst2 = acceptor(fst2)
+    _fst1 = accep(fst1)
+    _fst2 = accep(fst2)
   return (_fst1, _fst2)
 
 
@@ -831,12 +835,9 @@ cpdef string escape(data):
 # Functions for FST compilation.
 
 
-cpdef Fst acceptor(astring,
-                   weight=None,
-                   arc_type="standard",
-                   token_type=None):
+cpdef Fst accep(astring, weight=None, arc_type="standard", token_type=None):
   """
-  acceptor(astring, weight=None, arc_type=None, token_type=None)
+  accep(astring, weight=None, arc_type=None, token_type=None)
 
   Creates an acceptor from a string.
 
@@ -851,7 +852,7 @@ cpdef Fst acceptor(astring,
         This argument is silently ignored if istring and/or ostring is already
         compiled.
     token_type: An optional string indicating how the input string is to be
-        encoded as arc labels---one of: utf8" (encodes the strings as UTF-8
+        encoded as arc labels---one of: "utf8" (encodes the strings as UTF-8
         encoded Unicode string), "byte" (encodes the string as raw bytes)---or
         a SymbolTable to be used to encode the string. If not set, or set to
         None, the value is set to the default token_type, which begins as
@@ -924,29 +925,24 @@ cpdef Fst cross(fst1, fst2):
   return result
 
 
-cpdef Fst cdrewrite(tau,
-                    lambda_,
-                    rho,
-                    sigma,
-                    direction="ltr",
-                    mode="obl"):
+cpdef Fst cdrewrite(tau, l, r, sigstar, direction="ltr", mode="obl"):
   """
-  cdrewrite(tau, lambda, rho, sigma, direction="ltr", mode="obl")
+  cdrewrite(tau, l, r, sigstar, direction="ltr", mode="obl")
 
   Compiles a transducer expressing a context-dependent rewrite rule.
 
   This operation compiles a transducer representing a context-dependent
   rewrite rule of the form
 
-      phi -> psi / lambda __ rho
+      a -> b / c __ d
 
   over a finite vocabulary.
 
   Args:
-    tau: A transducer representing phi -> psi.
-    lambda: An unweighted acceptor representing the left context.
-    rho: An unweighted acceptor representing the right context.
-    sigma: A cyclic, unweighted acceptor representing the closure over the
+    tau: A transducer representing a -> b.
+    l: An unweighted acceptor representing the left context.
+    r: An unweighted acceptor representing the right context.
+    sigstar: A cyclic, unweighted acceptor representing the closure over the
         alphabet.
     direction: A string specifying the direction of rule application; one of:
         "ltr" (left-to-right application), "rtl" (right-to-left application),
@@ -962,20 +958,19 @@ cpdef Fst cdrewrite(tau,
     FstArgError: Unknown cdrewrite mode type.
     FstOpError: Operation failed.
   """
-  cdef Fst _sigma = _compile_or_copy_Fst(sigma)
-  cdef string arc_type = _sigma.arc_type()
+  cdef Fst _sigstar = _compile_or_copy_Fst(sigstar)
+  cdef string arc_type = _sigstar.arc_type()
   cdef Fst _tau = _compile_or_copy_Fst(tau, arc_type)
-  # NB: "lambda_" with final underscore to avoid clash with Python keyword.
-  cdef Fst _lambda = _compile_or_copy_Fst(lambda_, arc_type)
-  cdef Fst _rho = _compile_or_copy_Fst(rho, arc_type)
+  cdef Fst _l = _compile_or_copy_Fst(l, arc_type)
+  cdef Fst _r = _compile_or_copy_Fst(r, arc_type)
   cdef Fst result = Fst(arc_type)
   cdef _CDRewriteDirection _direction = _get_cdrewrite_direction(tostring(
       direction))
   cdef _CDRewriteMode _mode = _get_cdrewrite_mode(tostring(mode))
   CDRewriteCompile(deref(_tau._fst),
-                   deref(_lambda._fst),
-                   deref(_rho._fst),
-                   deref(_sigma._fst),
+                   deref(_l._fst),
+                   deref(_r._fst),
+                   deref(_sigstar._fst),
                    result._mfst.get(),
                    _direction,
                    _mode,
@@ -985,10 +980,10 @@ cpdef Fst cdrewrite(tau,
   return result
 
 
-cpdef Fst leniently_compose(fst1, fst2, sigma, compose_filter="auto",
+cpdef Fst leniently_compose(mu, nu, sigstar, compose_filter="auto",
                             bool connect=True):
   """
-  leniently_compose(fst1, fst2, sigma, compose_filter="auto", connect=True)
+  leniently_compose(mu, nu, sigstar, compose_filter="auto", connect=True)
 
   Constructively leniently-composes two FSTs.
 
@@ -999,9 +994,9 @@ cpdef Fst leniently_compose(fst1, fst2, sigma, compose_filter="auto",
   argument's relations.
 
   Args:
-    fst1: The first input FST.
-    fst2: The second input FST.
-    sigma: A cyclic, unweighted acceptor representing the closure over the
+    mu: The first input FST, taking higher priority.
+    nu: The second input FST, taking lower priority.
+    sigstar: A cyclic, unweighted acceptor representing the closure over the
         alphabet.
     compose_filter: A string matching a known composition filter; one of:
         "alt_sequence", "auto", "match", "no_match", "null", "sequence",
@@ -1014,18 +1009,18 @@ cpdef Fst leniently_compose(fst1, fst2, sigma, compose_filter="auto",
   Raises:
     FstOpError: Operation failed.
   """
-  cdef Fst _fst1
-  cdef Fst _fst2
-  (_fst1, _fst2) = _compile_or_copy_two_Fsts(fst1, fst2)
-  cdef Fst _sigma = _compile_or_copy_Fst(sigma, _fst1.arc_type())
+  cdef Fst _mu
+  cdef Fst _nu
+  (_mu, _nu) = _compile_or_copy_two_Fsts(mu, nu)
+  cdef Fst _sigstar = _compile_or_copy_Fst(sigstar, _mu.arc_type())
   cdef unique_ptr[ComposeOptions] _opts
   _opts.reset(
       new ComposeOptions(connect,
                          _get_compose_filter(tostring(compose_filter))))
-  cdef Fst result = Fst(_fst1.arc_type())
-  LenientlyCompose(deref(_fst1._fst),
-                   deref(_fst2._fst),
-                   deref(_sigma._fst),
+  cdef Fst result = Fst(_mu.arc_type())
+  LenientlyCompose(deref(_mu._fst),
+                   deref(_nu._fst),
+                   deref(_sigstar._fst),
                    result._mfst.get(),
                    deref(_opts))
   result._check_mutating_imethod()
@@ -1982,10 +1977,10 @@ def mpdt_reverse(fst, MPdtParentheses parens):
 # Class for extracting paths from an acyclic FST.
 
 
-cdef class StringPathIterator:
+cdef class _StringPathIterator:
 
   """
-  StringPathIterator(fst, input_token_type=None, output_token_type=None)
+  _StringPathIterator(fst, input_token_type=None, output_token_type=None)
 
   Iterator for string paths in acyclic FST.
 
@@ -2068,10 +2063,10 @@ cdef class StringPathIterator:
     """
     error(self)
 
-    Indicates whether the StringPathIterator has encountered an error.
+    Indicates whether the _StringPathIterator has encountered an error.
 
     Returns:
-      True if the StringPathIterator is in an errorful state, False otherwise.
+      True if the _StringPathIterator is in an errorful state, False otherwise.
     """
     return self._paths.get().Error()
 
@@ -2507,13 +2502,13 @@ cdef class Far:
 
 
 from _pywrapfst import Arc
-from _pywrapfst import ArcIterator
 from _pywrapfst import EncodeMapper
-from _pywrapfst import MutableArcIterator
-from _pywrapfst import StateIterator
 from _pywrapfst import SymbolTable
 from _pywrapfst import SymbolTableView
 from _pywrapfst import Weight
+from _pywrapfst import _ArcIterator
+from _pywrapfst import _MutableArcIterator
+from _pywrapfst import _StateIterator
 
 
 # Exceptions not yet imported.

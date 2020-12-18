@@ -1,3 +1,5 @@
+# Copyright 2016-2020 Google LLC
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -10,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Copyright 2016 and onwards Google, Inc.
-#
+
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 
@@ -85,7 +86,7 @@ class Fst(_VectorFst):
   def paths(self,
             input_token_type: Optional[TokenType] = ...,
             output_token_type: Optional[TokenType] = ...
-  ) -> StringPathIterator: ...
+  ) -> _StringPathIterator: ...
   def string(self, token_type: Optional[TokenType] = ...) -> str: ...
   # The following all override their definition in MutableFst.
   def copy(self: T) -> T: ...
@@ -121,10 +122,10 @@ def escape(string: str) -> str: ...
 
 # Core functions for FST creation.
 
-def acceptor(astring: str,
-             weight: Optional[WeightLike] = ...,
-             arc_type: _ArcTypeFlag = ...,
-             token_type: Optional[TokenType] = ...) -> Fst: ...
+def accep(astring: str,
+          weight: Optional[WeightLike] = ...,
+          arc_type: _ArcTypeFlag = ...,
+          token_type: Optional[TokenType] = ...) -> Fst: ...
 def cross(fst1: FstLike,
           fst2: FstLike,
           weight: Optional[WeightLike] = ...) -> Fst: ...
@@ -329,7 +330,7 @@ def mpdt_expand(fst: FstLike,
 def mpdt_reverse(fst: FstLike,
                  parens: MPdtParentheses) -> Tuple[Fst, MPdtParentheses]: ...
 
-class StringPathIterator:
+class _StringPathIterator:
   def __repr__(self) -> str: ...
   def __init__(self,
                fst: FstLike,
@@ -359,10 +360,7 @@ class Far:
   # TODO(wolfsonkin): Maybe just return string.
   def arc_type(self) -> _ArcTypeFlag: ...
   def closed(self) -> bool: ...
-  # TODO(wolfsonkin): Maybe just return string.
-  # TODO(wolfsonkin): If we switch to typing.Literal, take into account that
-  # this can return the literal "closed".
-  def far_type(self) -> FarType: ...
+  def far_type(self) -> Union[FarType, Literal["closed"]]: ...
   def mode(self) -> FarFileMode: ...
   def name(self) -> str: ...
   def done(self) -> bool: ...
@@ -389,12 +387,12 @@ class Far:
 # Classes from _pywrapfst.
 
 from _pywrapfst import Arc
-from _pywrapfst import ArcIterator
 from _pywrapfst import EncodeMapper
-from _pywrapfst import MutableArcIterator
-from _pywrapfst import StateIterator
 from _pywrapfst import SymbolTable
 from _pywrapfst import Weight
+from _pywrapfst import _ArcIterator
+from _pywrapfst import _MutableArcIterator
+from _pywrapfst import _StateIterator
 
 # Exceptions not yet imported.
 from _pywrapfst import FstBadWeightError

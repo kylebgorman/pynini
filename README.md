@@ -35,7 +35,7 @@ conda install -c conda-forge pynini
 
 Pynini depends on:
 
--   A standards-compliant C++ 11 compiler (GCC \>= 4.8 or Clang \>= 700)
+-   A standards-compliant C++17 compiler (GCC \>= 7 or Clang \>= 700)
 -   The compatible recent version of [OpenFst](http://openfst.org) (see
     [`NEWS`](NEWS) for this) built with the `far`, `pdt`, `mpdt`, and `script`
     extensions (i.e., built with `./configure --enable-grm`) and headers
@@ -47,11 +47,11 @@ Once these are installed, issue the following command:
 python setup.py install
 ```
 
-To confirm successful installation, run `python pynini_test.py`; if all tests
-succeed, the final line will read `OK`.
+To confirm successful installation, run `python test/pynini_test.py`; if all
+tests pass, the final line will read `OK`.
 
 Pynini source installation for the current version has been tested on Debian
-Linux 5.2.17-1 on x86\_64, GCC 7.3.0, and Python 3.7.6.
+Linux 5.7.17-1 on x86\_64, GCC 10.2.0, and Python 3.8.5.
 
 # Python version support
 

@@ -1,16 +1,31 @@
 # Lint as: python3
+# Copyright 2016-2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 """Tests edit transducer classes (specifically, the Levenshtein automaton)."""
 
 import string
 
-import unittest
+from absl.testing import absltest
 
 from pynini.lib import edit_transducer
 
 
-class LevenshteinAutomatonTest(unittest.TestCase):
+class LevenshteinAutomatonTest(absltest.TestCase):
   automaton: edit_transducer.LevenshteinAutomaton
   distance: edit_transducer.LevenshteinDistance
 
@@ -54,11 +69,11 @@ class LevenshteinAutomatonTest(unittest.TestCase):
 
   def testClosestMatchFindsExactMatch(self):
     res = self.automaton.closest_matches("cheddar")
-    self.assertCountEqual(("cheddar",), res)
+    self.assertSameElements(("cheddar",), res)
 
   def testClosestMatchReturnsMultiple(self):
     res = self.automaton.closest_matches("cheese")
-    self.assertCountEqual(("cheddar", "cheshire"), res)
+    self.assertSameElements(("cheddar", "cheshire"), res)
 
   def testOutOfAlphabetQueryRaisesError(self):
     with self.assertRaises(edit_transducer.Error):
@@ -66,5 +81,5 @@ class LevenshteinAutomatonTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-  unittest.main()
+  absltest.main()
 

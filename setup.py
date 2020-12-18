@@ -1,3 +1,5 @@
+# Copyright 2016-2020 Google LLC
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -10,11 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Copyright 2016 and onwards Google, Inc.
-#
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
-
 
 from io import open
 from os import path
@@ -29,6 +28,7 @@ from Cython.Build import cythonize
 COMPILE_ARGS = [
     "-std=c++17",
     "-Wno-register",
+    "-Wno-deprecated-declarations",
     "-Wno-unused-function",
     "-Wno-unused-local-typedefs",
     "-funsigned-char",
@@ -79,7 +79,7 @@ with open(path.join(this_directory, "README.md"), encoding="utf8") as source:
   long_description = source.read()
 
 
-__version__ = "2.1.2"
+__version__ = "2.1.3"
 
 
 def main() -> None:
@@ -118,6 +118,8 @@ def main() -> None:
       package_data={
           "pywrapfst": ["__init__.pyi", "py.typed"],
           "pynini": ["__init__.pyi", "py.typed"],
+          "pynini.examples": ["py.typed"],
+          "pynini.export": ["py.typed"],
           "pynini.lib": ["py.typed"],
       },
       zip_safe=False,

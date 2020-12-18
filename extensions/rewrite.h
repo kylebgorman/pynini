@@ -1,3 +1,5 @@
+// Copyright 2016-2020 Google LLC
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -10,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// Copyright 2016 and onwards Google, Inc.
-//
+
 
 #ifndef PYNINI_REWRITE_H_
 #define PYNINI_REWRITE_H_
@@ -84,7 +85,7 @@ bool RewriteLattice(
     const Fst<Arc> &input, const Fst<Arc> &rule, MutableFst<Arc> *lattice,
     const std::vector<std::pair<typename Arc::Label, typename Arc::Label>>
         &pdt_parens) {
-  static const PdtComposeOptions opts(true, EXPAND_FILTER);
+  static const PdtComposeOptions opts(true, PdtComposeFilter::EXPAND);
   Compose(input, rule, pdt_parens, lattice, opts);
   return internal::CheckNonEmptyAndCleanup(lattice);
 }
@@ -96,7 +97,7 @@ bool RewriteLattice(
     const std::vector<std::pair<typename Arc::Label, typename Arc::Label>>
         &pdt_parens,
     const std::vector<typename Arc::Label> &mpdt_assignments) {
-  static const MPdtComposeOptions opts(true, EXPAND_FILTER);
+  static const MPdtComposeOptions opts(true, PdtComposeFilter::EXPAND);
   Compose(input, rule, pdt_parens, mpdt_assignments, lattice, opts);
   return internal::CheckNonEmptyAndCleanup(lattice);
 }

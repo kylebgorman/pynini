@@ -1,3 +1,5 @@
+// Copyright 2016-2020 Google LLC
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -10,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// Copyright 2016 and onwards Google, Inc.
-//
+
 
 #ifndef PYNINI_CDREWRITE_H_
 #define PYNINI_CDREWRITE_H_
@@ -129,26 +130,22 @@ class CDRewriteRule {
   static Label MaxLabel(const Fst<Arc> &fst);
 
   // Constructs transducer that either inserts or deletes boundary markers.
-  void HandleBoundaryMarkers(const Fst<Arc>& sigma,
-                             VectorFst<Arc>* final_fst,
-                             bool del,
-                             bool add_initial_boundary_marker,
+  void HandleBoundaryMarkers(const Fst<Arc> &sigma, VectorFst<Arc> *final_fst,
+                             bool del, bool add_initial_boundary_marker,
                              bool add_final_boundary_marker);
 
   // Constructs epsilon:initial sigma* epsilon:final_fst
-  void BoundaryInserter(const Fst<Arc>& sigma,
-                        VectorFst<Arc>* final_fst,
+  void BoundaryInserter(const Fst<Arc> &sigma, VectorFst<Arc> *final_fst,
                         bool add_initial_boundary_marker,
                         bool add_final_boundary_marker);
 
   // Constructs initial:epsilon sigma* final_fst:epsilon
-  void BoundaryDeleter(const Fst<Arc>& sigma,
-                       VectorFst<Arc>* final_fst,
+  void BoundaryDeleter(const Fst<Arc> &sigma, VectorFst<Arc> *final_fst,
                        bool add_initial_boundary_marker,
                        bool add_final_boundary_marker);
 
   // Does the FST have this label on some arc?
-  static bool HasArcWithLabel(const Fst<Arc>& fst, Label label);
+  static bool HasArcWithLabel(const Fst<Arc> &fst, Label label);
 
   std::unique_ptr<Fst<Arc>> phi_;
   std::unique_ptr<Fst<Arc>> psi_;
@@ -186,7 +183,7 @@ void CDRewriteRule<Arc>::MakeMarker(
   using StateId = StdArc::StateId;
   using Weight = StdArc::Weight;
   if (fst->Properties(kAcceptor, true) != kAcceptor) {
-    FSTERROR() << "Marker: input FST must be an acceptor";
+    FSTERROR() << "CDRewriteRule::MakeMarker: input FST must be an acceptor";
     fst->SetProperties(kError, kError);
     return;
   }
@@ -312,7 +309,7 @@ void CDRewriteRule<Arc>::AppendMarkers(
   temp_fst.SetStart(start_state);
   temp_fst.SetFinal(final_state);
   for (const auto &marker : markers) {
-    temp_fst.AddArc(start_state, Arc(marker.first, marker.second, final_state));
+    temp_fst.EmplaceArc(start_state, marker.first, marker.second, final_state);
   }
   Concat(fst, temp_fst);
 }
@@ -713,10 +710,9 @@ void CDRewriteRule<Arc>::Compile(const Fst<Arc> &sigma, MutableFst<Arc> *fst,
   ArcSort(fst, icomp);
 }
 
-
 template <class Arc>
-void CDRewriteRule<Arc>::HandleBoundaryMarkers(const Fst<Arc>& sigma,
-                                               VectorFst<Arc>* final_fst,
+void CDRewriteRule<Arc>::HandleBoundaryMarkers(const Fst<Arc> &sigma,
+                                               VectorFst<Arc> *final_fst,
                                                bool del,
                                                bool add_initial_boundary_marker,
                                                bool add_final_boundary_marker) {
@@ -766,7 +762,7 @@ void CDRewriteRule<Arc>::HandleBoundaryMarkers(const Fst<Arc>& sigma,
   // it would have before. It's not clear this is a bad result.
   if (del && (add_initial_boundary_marker || add_final_boundary_marker)) {
     VectorFst<Arc> del_sigma(sigma);
-    // Creates the sigma* deletion fst.
+    // Creates the sigma^* deletion FST.
     for (StateIterator<VectorFst<Arc>> siter(del_sigma);
          !siter.Done();
          siter.Next()) {
@@ -801,10 +797,10 @@ void CDRewriteRule<Arc>::HandleBoundaryMarkers(const Fst<Arc>& sigma,
 }
 
 template <class Arc>
-void CDRewriteRule<Arc>::BoundaryInserter(
-    const Fst<Arc>& sigma, VectorFst<Arc>* final_fst,
-    bool add_initial_boundary_marker,
-    bool add_final_boundary_marker) {
+void CDRewriteRule<Arc>::BoundaryInserter(const Fst<Arc> &sigma,
+                                          VectorFst<Arc> *final_fst,
+                                          bool add_initial_boundary_marker,
+                                          bool add_final_boundary_marker) {
   HandleBoundaryMarkers(sigma, final_fst, false,
                         add_initial_boundary_marker,
                         add_final_boundary_marker);
@@ -813,10 +809,10 @@ void CDRewriteRule<Arc>::BoundaryInserter(
 }
 
 template <class Arc>
-void CDRewriteRule<Arc>::BoundaryDeleter(
-    const Fst<Arc>& sigma, VectorFst<Arc>* final_fst,
-    bool add_initial_boundary_marker,
-    bool add_final_boundary_marker) {
+void CDRewriteRule<Arc>::BoundaryDeleter(const Fst<Arc> &sigma,
+                                         VectorFst<Arc> *final_fst,
+                                         bool add_initial_boundary_marker,
+                                         bool add_final_boundary_marker) {
   HandleBoundaryMarkers(sigma, final_fst, true,
                         add_initial_boundary_marker,
                         add_final_boundary_marker);
@@ -825,7 +821,7 @@ void CDRewriteRule<Arc>::BoundaryDeleter(
 }
 
 template <class Arc>
-bool CDRewriteRule<Arc>::HasArcWithLabel(const Fst<Arc>& fst, Label label) {
+bool CDRewriteRule<Arc>::HasArcWithLabel(const Fst<Arc> &fst, Label label) {
   if (label == kNoLabel) return false;
   for (StateIterator<Fst<Arc>> siter(fst); !siter.Done(); siter.Next()) {
     for (ArcIterator<Fst<Arc>> aiter(fst, siter.Value());

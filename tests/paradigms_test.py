@@ -1,187 +1,226 @@
 # Lint as: python3
+# Copyright 2016-2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 """Tests for Paradigms."""
 
-from typing import List
-
-import unittest
+from absl.testing import absltest
 
 import pynini
-from pynini.lib import byte
 from pynini.lib import features
 from pynini.lib import paradigms
 from pynini.lib import pynutil
+from pynini.lib import rewrite
 
 
-class ParadigmsTestFirstDeclension(unittest.TestCase):
-  case: features.Feature
-  number: features.Feature
-  noun: features.Category
-  slots: List[paradigms.ParadigmSlot]
-  steps: List[str]
+class LatinFirstDeclensionNounTest(absltest.TestCase):
   paradigm: paradigms.Paradigm
 
   @classmethod
   def setUpClass(cls):
     super().setUpClass()
-    cls.case = features.Feature("case", "nom", "gen", "dat", "acc", "abl")
-    cls.number = features.Feature("num", "sg", "pl")
+    case = features.Feature("case", "nom", "gen", "dat", "acc", "abl")
+    num = features.Feature("num", "sg", "pl")
     # Ignoring gender since gender is a property of the stem rather than the
     # ending.
-    cls.noun = features.Category(cls.case, cls.number)
-    stem = paradigms.make_byte_star_except_boundary("+")
-    cls.slots = [(paradigms.suffix("+a", stem),
-                  features.FeatureVector(cls.noun, "case=nom", "num=sg")),
-                 (paradigms.suffix("+ae", stem),
-                  features.FeatureVector(cls.noun, "case=gen", "num=sg")),
-                 (paradigms.suffix("+ae", stem),
-                  features.FeatureVector(cls.noun, "case=dat", "num=sg")),
-                 (paradigms.suffix("+am", stem),
-                  features.FeatureVector(cls.noun, "case=acc", "num=sg")),
-                 (paradigms.suffix("+ā", stem),
-                  features.FeatureVector(cls.noun, "case=abl", "num=sg")),
-                 (paradigms.suffix("+ae", stem),
-                  features.FeatureVector(cls.noun, "case=nom", "num=pl")),
-                 (paradigms.suffix("+ārum", stem),
-                  features.FeatureVector(cls.noun, "case=gen", "num=pl")),
-                 (paradigms.suffix("+īs", stem),
-                  features.FeatureVector(cls.noun, "case=dat", "num=pl")),
-                 (paradigms.suffix("+ās", stem),
-                  features.FeatureVector(cls.noun, "case=acc", "num=pl")),
-                 (paradigms.suffix("+īs", stem),
-                  features.FeatureVector(cls.noun, "case=abl", "num=pl"))]
-    cls.stems = ("aqu", "bell", "caus", "cicād", "mens", "naut", "puell")
+    noun = features.Category(case, num)
+    nomsg = features.FeatureVector(noun, "case=nom", "num=sg")
+    stem = paradigms.make_byte_star_except_boundary()
+    slots = [(paradigms.suffix("+a", stem), nomsg),
+             (paradigms.suffix("+ae", stem),
+              features.FeatureVector(noun, "case=gen", "num=sg")),
+             (paradigms.suffix("+ae", stem),
+              features.FeatureVector(noun, "case=dat", "num=sg")),
+             (paradigms.suffix("+am", stem),
+              features.FeatureVector(noun, "case=acc", "num=sg")),
+             (paradigms.suffix("+ā", stem),
+              features.FeatureVector(noun, "case=abl", "num=sg")),
+             (paradigms.suffix("+ae", stem),
+              features.FeatureVector(noun, "case=nom", "num=pl")),
+             (paradigms.suffix("+ārum", stem),
+              features.FeatureVector(noun, "case=gen", "num=pl")),
+             (paradigms.suffix("+īs", stem),
+              features.FeatureVector(noun, "case=dat", "num=pl")),
+             (paradigms.suffix("+ās", stem),
+              features.FeatureVector(noun, "case=acc", "num=pl")),
+             (paradigms.suffix("+īs", stem),
+              features.FeatureVector(noun, "case=abl", "num=pl"))]
     cls.paradigm = paradigms.Paradigm(
-        category=cls.noun,
-        name="Declension I",
-        slots=cls.slots,
-        lemma_feature_vector=features.FeatureVector(cls.noun, "case=nom",
-                                                    "num=sg"))
-    cls.paradigm.set_stems_to_forms(cls.stems)
+        category=noun,
+        slots=slots,
+        lemma_feature_vector=nomsg,
+        stems=["aqu", "bell", "caus", "cicād", "mens", "naut", "puell"])
 
-  def testSetStemToForms(self):
-    form = ("aqu" @ self.paradigm.stems_to_forms
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual([
+  def testGenerator(self):
+    generator = (
+        self.paradigm.stems_to_forms @ self.paradigm.feature_label_rewriter)
+    forms = rewrite.rewrites("aqu", generator)
+    self.assertSameElements([
         "aqu+a[case=nom][num=sg]", "aqu+ae[case=gen][num=sg]",
         "aqu+ae[case=dat][num=sg]", "aqu+am[case=acc][num=sg]",
         "aqu+ā[case=abl][num=sg]", "aqu+ae[case=nom][num=pl]",
         "aqu+ārum[case=gen][num=pl]", "aqu+īs[case=dat][num=pl]",
         "aqu+ās[case=acc][num=pl]", "aqu+īs[case=abl][num=pl]"
-    ],
-                            form.paths().ostrings())
+    ], forms)
 
   def testAnalyzer(self):
-    form = ("aquārum" @ self.paradigm.analyzer
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["aqu+ārum[case=gen][num=pl]"],
-                            form.paths().ostrings())
-    form = ("puellīs" @ self.paradigm.analyzer
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(
-        ("puell+īs[case=dat][num=pl]", "puell+īs[case=abl][num=pl]"),
-        form.paths().ostrings())
+    analyzer = self.paradigm.analyzer @ self.paradigm.feature_label_rewriter
+    forms = rewrite.rewrites("aquārum", analyzer)
+    self.assertSameElements(["aqu+ārum[case=gen][num=pl]"], forms)
+    forms = rewrite.rewrites("puellīs", analyzer)
+    self.assertSameElements(
+        ["puell+īs[case=dat][num=pl]", "puell+īs[case=abl][num=pl]"], forms)
 
   def testTagger(self):
-    form = (
-        "aquārum" @ self.paradigm.tagger @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["aquārum[case=gen][num=pl]"],
-                            form.paths().ostrings())
-    form = (
-        "puellīs" @ self.paradigm.tagger @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(
-        ["puellīs[case=dat][num=pl]", "puellīs[case=abl][num=pl]"],
-        form.paths().ostrings())
+    tagger = self.paradigm.tagger @ self.paradigm.feature_label_rewriter
+    forms = rewrite.rewrites("aquārum", tagger)
+    self.assertSameElements(["aquārum[case=gen][num=pl]"], forms)
+    forms = rewrite.rewrites("puellīs", tagger)
+    self.assertSameElements(
+        ["puellīs[case=dat][num=pl]", "puellīs[case=abl][num=pl]"], forms)
 
   def testLemmatizer(self):
-    form = ("aquārum" @ self.paradigm.lemmatizer
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["aqua[case=gen][num=pl]"], form.paths().ostrings())
-    form = ("puellīs" @ self.paradigm.lemmatizer
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(
-        ["puella[case=dat][num=pl]", "puella[case=abl][num=pl]"],
-        form.paths().ostrings())
+    lemmatizer = self.paradigm.lemmatizer @ self.paradigm.feature_label_rewriter
+    forms = rewrite.rewrites("aquārum", lemmatizer)
+    self.assertSameElements(["aqua[case=gen][num=pl]"], forms)
+    forms = rewrite.rewrites("puellīs", lemmatizer)
+    self.assertSameElements(
+        ["puella[case=dat][num=pl]", "puella[case=abl][num=pl]"], forms)
 
   def testInflector(self):
-    form = "aqua[case=gen][num=pl]" @ self.paradigm.inflector
-    self.assertCountEqual(["aquārum"], form.paths().ostrings())
-    form = "puella[case=dat][num=pl]" @ self.paradigm.inflector
-    self.assertCountEqual(["puellīs"], form.paths().ostrings())
+    forms = rewrite.rewrites("aqua[case=gen][num=pl]", self.paradigm.inflector)
+    self.assertSameElements(["aquārum"], forms)
+    forms = rewrite.rewrites("puella[case=dat][num=pl]",
+                             self.paradigm.inflector)
+    self.assertSameElements(["puellīs"], forms)
 
 
-class ParadigmsTestThirdDeclension(unittest.TestCase):
-  """Or more specifically a few 3rd declension consonant-final stems."""
-  case: features.Feature
-  number: features.Feature
-  noun: features.Category
-  stem: pynini.Fst
-  slots: List[paradigms.ParadigmSlot]
-  stems: List[str]
-  sigma: pynini.Fst
-  vowels: pynini.Fst
-  paradigm: paradigms.Paradigm
-  rules: List[pynini.Fst]
+class LatinFirstDeclensionNounWildcardTest(absltest.TestCase):
+  r"""An example of using \Sigma^* as a stem definition."""
 
   @classmethod
   def setUpClass(cls):
     super().setUpClass()
-    cls.case = features.Feature("case", "nom", "gen", "dat", "acc", "abl")
-    cls.number = features.Feature("num", "sg", "pl")
+    case = features.Feature("case", "nom", "gen", "dat", "acc", "abl")
+    number = features.Feature("num", "sg", "pl")
     # Ignoring gender since gender is a property of the stem rather than the
     # ending.
-    cls.noun = features.Category(cls.case, cls.number)
-    cls.stem = paradigms.make_byte_star_except_boundary("+")
-    cls.slots = [(paradigms.suffix("+s", cls.stem),
-                  features.FeatureVector(cls.noun, "case=nom", "num=sg")),
-                 (paradigms.suffix("+is", cls.stem),
-                  features.FeatureVector(cls.noun, "case=gen", "num=sg")),
-                 (paradigms.suffix("+ī", cls.stem),
-                  features.FeatureVector(cls.noun, "case=dat", "num=sg")),
-                 (paradigms.suffix("+em", cls.stem),
-                  features.FeatureVector(cls.noun, "case=acc", "num=sg")),
-                 (paradigms.suffix("+e", cls.stem),
-                  features.FeatureVector(cls.noun, "case=abl", "num=sg")),
-                 (paradigms.suffix("+ēs", cls.stem),
-                  features.FeatureVector(cls.noun, "case=nom", "num=pl")),
-                 (paradigms.suffix("+um", cls.stem),
-                  features.FeatureVector(cls.noun, "case=gen", "num=pl")),
-                 (paradigms.suffix("+ibus", cls.stem),
-                  features.FeatureVector(cls.noun, "case=dat", "num=pl")),
-                 (paradigms.suffix("+ēs", cls.stem),
-                  features.FeatureVector(cls.noun, "case=acc", "num=pl")),
-                 (paradigms.suffix("+ibus", cls.stem),
-                  features.FeatureVector(cls.noun, "case=abl", "num=pl"))]
-    cls.stems = ("noct", "ōs", "pac", "rēg")
-    cls.sigma = (pynini.project(cls.noun.feature_mapper, "input")
-                 | byte.BYTES).closure()
-    velars = pynini.union("c", "ct", "g")
-    cls.vowels = pynini.union("a", "i", "ī", "e", "ē", "u")
-    cls.rules = [
+    noun = features.Category(case, number)
+    nomsg = features.FeatureVector(noun, "case=nom", "num=sg")
+    stem = paradigms.make_byte_star_except_boundary()
+    slots = [(paradigms.suffix("+a", stem), nomsg),
+             (paradigms.suffix("+ae", stem),
+              features.FeatureVector(noun, "case=gen", "num=sg")),
+             (paradigms.suffix("+ae", stem),
+              features.FeatureVector(noun, "case=dat", "num=sg")),
+             (paradigms.suffix("+am", stem),
+              features.FeatureVector(noun, "case=acc", "num=sg")),
+             (paradigms.suffix("+ā", stem),
+              features.FeatureVector(noun, "case=abl", "num=sg")),
+             (paradigms.suffix("+ae", stem),
+              features.FeatureVector(noun, "case=nom", "num=pl")),
+             (paradigms.suffix("+ārum", stem),
+              features.FeatureVector(noun, "case=gen", "num=pl")),
+             (paradigms.suffix("+īs", stem),
+              features.FeatureVector(noun, "case=dat", "num=pl")),
+             (paradigms.suffix("+ās", stem),
+              features.FeatureVector(noun, "case=acc", "num=pl")),
+             (paradigms.suffix("+īs", stem),
+              features.FeatureVector(noun, "case=abl", "num=pl"))]
+    v = pynini.union("a", "i", "e", "o", "u")
+    c = pynini.union("b", "c", "d", "f", "g", "h", "l", "m", "n", "p", "q", "r",
+                     "s", "t")
+    cls.paradigm = paradigms.Paradigm(
+        category=noun,
+        slots=slots,
+        lemma_feature_vector=nomsg,
+        stems=[(v | c).closure(1)])
+
+  def testGenerator(self):
+    generator = (
+        self.paradigm.stems_to_forms @ self.paradigm.feature_label_rewriter)
+    forms = rewrite.rewrites("aqu", generator)
+    self.assertSameElements([
+        "aqu+a[case=nom][num=sg]", "aqu+ae[case=gen][num=sg]",
+        "aqu+ae[case=dat][num=sg]", "aqu+am[case=acc][num=sg]",
+        "aqu+ā[case=abl][num=sg]", "aqu+ae[case=nom][num=pl]",
+        "aqu+ārum[case=gen][num=pl]", "aqu+īs[case=dat][num=pl]",
+        "aqu+ās[case=acc][num=pl]", "aqu+īs[case=abl][num=pl]"
+    ], forms)
+
+
+class LatinThirdDeclensionNounTest(absltest.TestCase):
+  """Certain consonant-final non-neuter stems."""
+  paradigm: paradigms.Paradigm
+
+  @classmethod
+  def setUpClass(cls):
+    super().setUpClass()
+    case = features.Feature("case", "nom", "gen", "dat", "acc", "abl")
+    num = features.Feature("num", "sg", "pl")
+    # Ignoring gender since gender is a property of the stem rather than the
+    # ending.
+    noun = features.Category(case, num)
+    nomsg = features.FeatureVector(noun, "case=nom", "num=sg")
+    stem = paradigms.make_byte_star_except_boundary()
+    slots = [(paradigms.suffix("+s", stem), nomsg),
+             (paradigms.suffix("+is", stem),
+              features.FeatureVector(noun, "case=gen", "num=sg")),
+             (paradigms.suffix("+ī", stem),
+              features.FeatureVector(noun, "case=dat", "num=sg")),
+             (paradigms.suffix("+em", stem),
+              features.FeatureVector(noun, "case=acc", "num=sg")),
+             (paradigms.suffix("+e", stem),
+              features.FeatureVector(noun, "case=abl", "num=sg")),
+             (paradigms.suffix("+ēs", stem),
+              features.FeatureVector(noun, "case=nom", "num=pl")),
+             (paradigms.suffix("+um", stem),
+              features.FeatureVector(noun, "case=gen", "num=pl")),
+             (paradigms.suffix("+ibus", stem),
+              features.FeatureVector(noun, "case=dat", "num=pl")),
+             (paradigms.suffix("+ēs", stem),
+              features.FeatureVector(noun, "case=acc", "num=pl")),
+             (paradigms.suffix("+ibus", stem),
+              features.FeatureVector(noun, "case=abl", "num=pl"))]
+    velar = pynini.union("c", "ct", "g")
+    v = pynini.union("a", "i", "ī", "e", "ē", "u")
+    rules = [
         # c, ct, g -> x in nominative singular. Note the spelling of "cs" as "x"
         # in Latin breaks the segmentation. One might also consider representing
         # this as "c+s".
-        pynini.cdrewrite(pynini.cross(velars + "+s", "x+"), "", "", cls.sigma),
-        # Rhotacize /s/ prevocalically: a non-Gorman theory of this alternation.
         pynini.cdrewrite(
-            pynini.cross("s", "r"), "", "+" + cls.vowels, cls.sigma),
+            pynini.cross(velar + "+s", "x+"), "", "", noun.sigma_star),
+        # Rhotacize /s/ prevocalically: a non-Gorman theory of this alternation.
+        pynini.cdrewrite(pynini.cross("s", "r"), "", "+" + v, noun.sigma_star),
         # s+s -> s.
-        pynini.cdrewrite(pynini.cross("s+s", "s+"), "", "", cls.sigma)
+        pynini.cdrewrite(pynini.cross("s+s", "s+"), "", "", noun.sigma_star)
     ]
     cls.paradigm = paradigms.Paradigm(
-        category=cls.noun,
-        name="Declension III",
-        slots=cls.slots,
-        lemma_feature_vector=features.FeatureVector(cls.noun, "case=nom",
-                                                    "num=sg"),
-        rules=cls.rules)
-    cls.paradigm.set_stems_to_forms(cls.stems)
+        category=noun,
+        slots=slots,
+        lemma_feature_vector=nomsg,
+        stems=["noct", "ōs", "pac", "rēg"],
+        rules=rules)
 
-  def testSetStemToForms(self):
-    form = ("noct" @ self.paradigm.stems_to_forms
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(
+  def testGenerator(self):
+    generator = (
+        self.paradigm.stems_to_forms @ self.paradigm.feature_label_rewriter)
+    forms = rewrite.rewrites("noct", generator)
+    self.assertSameElements(
         [
             "nox+[case=nom][num=sg]",
             "noct+is[case=gen][num=sg]",
@@ -194,399 +233,121 @@ class ParadigmsTestThirdDeclension(unittest.TestCase):
             "noct+ēs[case=acc][num=pl]",  # Also -īs for /i/ stems.
             "noct+ibus[case=abl][num=pl]"
         ],
-        form.paths().ostrings())
-    form = ("rēg" @ self.paradigm.stems_to_forms
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual([
+        forms)
+    forms = rewrite.rewrites("rēg", generator)
+    self.assertSameElements([
         "rēx+[case=nom][num=sg]", "rēg+is[case=gen][num=sg]",
         "rēg+ī[case=dat][num=sg]", "rēg+em[case=acc][num=sg]",
         "rēg+e[case=abl][num=sg]", "rēg+ēs[case=nom][num=pl]",
         "rēg+um[case=gen][num=pl]", "rēg+ibus[case=dat][num=pl]",
         "rēg+ēs[case=acc][num=pl]", "rēg+ibus[case=abl][num=pl]"
-    ],
-                            form.paths().ostrings())
-    form = ("ōs" @ self.paradigm.stems_to_forms
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual([
+    ], forms)
+    forms = rewrite.rewrites("ōs", generator)
+    self.assertSameElements([
         "ōs+[case=nom][num=sg]", "ōr+is[case=gen][num=sg]",
         "ōr+ī[case=dat][num=sg]", "ōr+em[case=acc][num=sg]",
         "ōr+e[case=abl][num=sg]", "ōr+ēs[case=nom][num=pl]",
         "ōr+um[case=gen][num=pl]", "ōr+ibus[case=dat][num=pl]",
         "ōr+ēs[case=acc][num=pl]", "ōr+ibus[case=abl][num=pl]"
-    ],
-                            form.paths().ostrings())
+    ], forms)
 
   def testAnalyzer(self):
-    form = (
-        "ōs" @ self.paradigm.analyzer @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["ōs+[case=nom][num=sg]"], form.paths().ostrings())
-    form = (
-        "rēge" @ self.paradigm.analyzer @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["rēg+e[case=abl][num=sg]"],
-                            form.paths().ostrings())
+    analyzer = self.paradigm.analyzer @ self.paradigm.feature_label_rewriter
+    forms = rewrite.rewrites("ōs", analyzer)
+    self.assertSameElements(["ōs+[case=nom][num=sg]"], forms)
+    forms = rewrite.rewrites("rēge", analyzer)
+    self.assertSameElements(["rēg+e[case=abl][num=sg]"], forms)
 
   def testTagger(self):
-    form = ("ōs" @ self.paradigm.tagger @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["ōs[case=nom][num=sg]"], form.paths().ostrings())
-    form = (
-        "rēge" @ self.paradigm.tagger @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["rēge[case=abl][num=sg]"], form.paths().ostrings())
+    tagger = self.paradigm.tagger @ self.paradigm.feature_label_rewriter
+    forms = rewrite.rewrites("ōs", tagger)
+    self.assertSameElements(["ōs[case=nom][num=sg]"], forms)
+    forms = rewrite.rewrites("rēge", tagger)
+    self.assertSameElements(["rēge[case=abl][num=sg]"], forms)
 
   def testLemmatizer(self):
-    form = ("pacem" @ self.paradigm.lemmatizer
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["pax[case=acc][num=sg]"], form.paths().ostrings())
-    form = ("noctibus" @ self.paradigm.lemmatizer
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["nox[case=dat][num=pl]", "nox[case=abl][num=pl]"],
-                            form.paths().ostrings())
+    lemmatizer = self.paradigm.lemmatizer @ self.paradigm.feature_label_rewriter
+    forms = rewrite.rewrites("pacem", lemmatizer)
+    self.assertSameElements(["pax[case=acc][num=sg]"], forms)
+    forms = rewrite.rewrites("noctibus", lemmatizer)
+    self.assertSameElements(["nox[case=dat][num=pl]", "nox[case=abl][num=pl]"],
+                            forms)
 
   def testInflector(self):
-    form = "pax[case=acc][num=sg]" @ self.paradigm.inflector
-    self.assertCountEqual(["pacem"], form.paths().ostrings())
-    form = "nox[case=dat][num=pl]" @ self.paradigm.inflector
-    self.assertCountEqual(["noctibus"], form.paths().ostrings())
-
-  def testInheritance(self):
-    # Not necessarily the best way to handle neuter third declension nouns, but
-    # just for illustrative purposes.
-    slots = [(paradigms.suffix("+", self.stem),
-              features.FeatureVector(self.noun, "case=nom", "num=sg")),
-             (paradigms.suffix("+", self.stem),
-              features.FeatureVector(self.noun, "case=acc", "num=sg")),
-             (paradigms.suffix("+a", self.stem),
-              features.FeatureVector(self.noun, "case=nom", "num=pl")),
-             (paradigms.suffix("+a", self.stem),
-              features.FeatureVector(self.noun, "case=acc", "num=pl"))]
-    only_features = pynini.project(self.noun.feature_mapper, "input")
-    new_rules = [
-        # Deletes final "t" in "lact".
-        pynini.cdrewrite(
-            pynini.cross("t", ""), "c", "+" + only_features + "[EOS]",
-            self.sigma),
-        # Stem alternation in "tempus"/"tempor"; /r/ is already taken care of.
-        pynini.cdrewrite(
-            pynini.cross("ur", "or"), "", "+" + self.vowels, self.sigma)
-    ]
-    neuter_third = paradigms.Paradigm(
-        category=self.noun,
-        name="Declension III Neuter",
-        slots=slots,
-        lemma_feature_vector=features.FeatureVector(self.noun, "case=nom",
-                                                    "num=sg"),
-        rules=self.rules + new_rules,
-        parent_paradigm=self.paradigm)
-    stems = ["lact", "tempus"]  # lac doesn't really have a plural...
-    neuter_third.set_stems_to_forms(stems)
-    form = ("lac" @ neuter_third.tagger @ neuter_third.feature_label_rewriter)
-    self.assertCountEqual(["lac[case=nom][num=sg]", "lac[case=acc][num=sg]"],
-                            form.paths().ostrings())
-    form = ("lactibus" @ neuter_third.lemmatizer
-            @ neuter_third.feature_label_rewriter)
-    self.assertCountEqual(["lac[case=abl][num=pl]", "lac[case=dat][num=pl]"],
-                            form.paths().ostrings())
-    form = ("temporibus" @ neuter_third.lemmatizer
-            @ neuter_third.feature_label_rewriter)
-    self.assertCountEqual(
-        ["tempus[case=abl][num=pl]", "tempus[case=dat][num=pl]"],
-        form.paths().ostrings())
-    form = ("tempora" @ neuter_third.lemmatizer
-            @ neuter_third.feature_label_rewriter)
-    self.assertCountEqual(
-        ["tempus[case=acc][num=pl]", "tempus[case=nom][num=pl]"],
-        form.paths().ostrings())
-    form = "tempus[case=acc][num=pl]" @ neuter_third.inflector
-    self.assertCountEqual(("tempora",), form.paths().ostrings())
+    forms = rewrite.rewrites("pax[case=acc][num=sg]", self.paradigm.inflector)
+    self.assertSameElements(["pacem"], forms)
+    forms = rewrite.rewrites("nox[case=dat][num=pl]", self.paradigm.inflector)
+    self.assertSameElements(["noctibus"], forms)
 
 
-class ParadigmsTestInfix(unittest.TestCase):
-  """Tagalog data from https://unilang.org/course.php?res=79."""
-  finite: features.Feature
-  verb: features.Category
-  slots: List[paradigms.ParadigmSlot]
-  stems: List[str]
-  paradigm: paradigms.Paradigm
-
-  @classmethod
-  def setUpClass(cls):
-    super().setUpClass()
-    cls.finite = features.Feature("finite", "+", "-")
-    cls.verb = features.Category(cls.finite)
-    consonant = pynini.union("k", "b", "g", "r")
-    vowel = pynini.union("a", "i")
-    stem = paradigms.make_byte_star_except_boundary("+")
-    um_infixation = ((pynini.closure(consonant, 1) + pynutil.insert("+um+") +
-                      vowel + stem) | (pynutil.insert("um+") + vowel + stem))
-    cls.slots = [(stem, features.FeatureVector(cls.verb, "finite=+")),
-                 (um_infixation, features.FeatureVector(cls.verb, "finite=-"))]
-    cls.stems = ["alis", " kain", "bili", "inom", "gawa", "graduet"]
-    cls.paradigm = paradigms.Paradigm(
-        category=cls.verb,
-        name="Finiteness",
-        slots=cls.slots,
-        lemma_feature_vector=features.FeatureVector(cls.verb, "finite=+"))
-    cls.paradigm.set_stems_to_forms(cls.stems)
-
-  def testSetStemToForms(self):
-    form = ("alis" @ self.paradigm.stems_to_forms
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["alis[finite=+]", "um+alis[finite=-]"],
-                            form.paths().ostrings())
-    form = ("bili" @ self.paradigm.stems_to_forms
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["bili[finite=+]", "b+um+ili[finite=-]"],
-                            form.paths().ostrings())
-    form = ("graduet" @ self.paradigm.stems_to_forms
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["graduet[finite=+]", "gr+um+aduet[finite=-]"],
-                            form.paths().ostrings())
-
-  def testAnalyzer(self):
-    form = ("grumaduet" @ self.paradigm.analyzer
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["gr+um+aduet[finite=-]"], form.paths().ostrings())
-
-  def testTagger(self):
-    form = ("grumaduet" @ self.paradigm.tagger
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["grumaduet[finite=-]"], form.paths().ostrings())
-
-  def testLemmatizer(self):
-    form = ("grumaduet" @ self.paradigm.lemmatizer
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["graduet[finite=-]"], form.paths().ostrings())
-
-  def testInflector(self):
-    form = "graduet[finite=-]" @ self.paradigm.inflector
-    self.assertCountEqual(["grumaduet"], form.paths().ostrings())
-
-
-class ParadigmsTestTemplaticMorphology(unittest.TestCase):
-  """Yowlumne data from Roark & Sproat, 2007, p.
-
-  32.
-
-  Data originally from Newman (1944) via Archangeli (1984).
-
-  Archangeli, D. 1984. Underspecification in Yawelmani Phonology and
-  Morphology. PhD Thesis, MIT.
-
-  Newman, S. 1944. Yokuts Language of California. Viking Fund Publications in
-  Anthropology. New York.
-  """
-  aspect: features.Feature
-  verb: features.Category
-  stems: List[str]
-  slots: List[paradigms.ParadigmSlot]
-  paradigm: paradigms.Paradigm
-
-  @classmethod
-  def setUpClass(cls):
-    super().setUpClass()
-    # Not clear "aspect" is exactly the right concept.
-    cls.aspect = features.Feature("aspect", "root", "dubitative", "gerundial",
-                                  "durative")
-    cls.verb = features.Category(cls.aspect)
-    stem = paradigms.make_byte_star_except_boundary("+")
-    # Naming these with short names for space reasons.
-    vowels = ("a", "i", "o", "u")
-    v = pynini.union(*vowels)
-    c = pynini.union("c", "m", "h", "l", "y", "k", "ʔ", "d", "n", "w", "t")
-    # First template: apply Procrustean transformation to CVCC?
-    cvcc = (c + v + pynutil.delete(v).ques + c + pynutil.delete(v).star +
-            c.ques).optimize()
-    # Second template: apply Procrustean transformation to CVCVVC?.  The CVCVVC?
-    # case involves copying vowels, which is most easily achieved by iterating
-    # over the vowels in the construction.
-    cvcvvc = pynini.cross("", "")
-    for vo in vowels:
-      cvcvvc |= (
-          c + vo + pynutil.delete(vo).ques + c + pynutil.delete(vo).star +
-          pynutil.insert(vo + vo) + c.ques)
-    cvcvvc.optimize()
-    cls.stems = ("caw", "cuum", "hoyoo", "diiyl", "ʔilk", "hiwiit")
-    cls.slots = [(stem, features.FeatureVector(cls.verb, "aspect=root")),
-                 (paradigms.suffix("+al", stem),
-                  features.FeatureVector(cls.verb, "aspect=dubitative")),
-                 (paradigms.suffix("+inay", stem @ cvcc),
-                  features.FeatureVector(cls.verb, "aspect=gerundial")),
-                 (paradigms.suffix("+ʔaa", stem @ cvcvvc),
-                  features.FeatureVector(cls.verb, "aspect=durative"))]
-    cls.paradigm = paradigms.Paradigm(
-        category=cls.verb,
-        name="Yowlumne Verb Forms",
-        slots=cls.slots,
-        lemma_feature_vector=features.FeatureVector(cls.verb, "aspect=root"))
-    cls.paradigm.set_stems_to_forms(cls.stems)
-
-  # In the interests of brevity we just test the basic functionality of mapping
-  # from stems to forms.
-  def testSetStemToForms(self):
-    stems_and_forms = [
-        ("caw", ("caw+al[aspect=dubitative]", "caw+inay[aspect=gerundial]",
-                 "cawaa+ʔaa[aspect=durative]", "caw[aspect=root]")),
-        ("cuum", ("cuum+al[aspect=dubitative]", "cum+inay[aspect=gerundial]",
-                  "cumuu+ʔaa[aspect=durative]", "cuum[aspect=root]")),
-        ("diiyl", ("diiyl+al[aspect=dubitative]", "diyl+inay[aspect=gerundial]",
-                   "diyiil+ʔaa[aspect=durative]", "diiyl[aspect=root]")),
-        ("hiwiit",
-         ("hiwiit+al[aspect=dubitative]", "hiwt+inay[aspect=gerundial]",
-          "hiwiit+ʔaa[aspect=durative]", "hiwiit[aspect=root]")),
-        ("hoyoo", ("hoyoo+al[aspect=dubitative]", "hoy+inay[aspect=gerundial]",
-                   "hoyoo+ʔaa[aspect=durative]", "hoyoo[aspect=root]")),
-        ("ʔilk", ("ʔilk+al[aspect=dubitative]", "ʔilk+inay[aspect=gerundial]",
-                  "ʔiliik+ʔaa[aspect=durative]", "ʔilk[aspect=root]"))
-    ]
-    for (stem, forms) in stems_and_forms:
-      stem = (
-          stem @ self.paradigm.stems_to_forms
-          @ self.paradigm.feature_label_rewriter)
-      self.assertCountEqual(forms, stem.paths().ostrings())
-
-
-class ParadigmsTestWildCardStem(unittest.TestCase):
-  """Uses Latin first declension again to test an acceptor as a stem."""
-  case: features.Feature
-  number: features.Feature
-  noun: features.Feature
-  slots: List[paradigms.ParadigmSlot]
-  stems: List[pynini.Fst]
-  paradigm: paradigms.Paradigm
-
-  @classmethod
-  def setUpClass(cls):
-    super().setUpClass()
-    cls.case = features.Feature("case", "nom", "gen", "dat", "acc", "abl")
-    cls.number = features.Feature("num", "sg", "pl")
-    # Ignoring gender since gender is a property of the stem rather than the
-    # ending.
-    cls.noun = features.Category(cls.case, cls.number)
-    stem = paradigms.make_byte_star_except_boundary("+")
-    cls.slots = [(paradigms.suffix("+a", stem),
-                  features.FeatureVector(cls.noun, "case=nom", "num=sg")),
-                 (paradigms.suffix("+ae", stem),
-                  features.FeatureVector(cls.noun, "case=gen", "num=sg")),
-                 (paradigms.suffix("+ae", stem),
-                  features.FeatureVector(cls.noun, "case=dat", "num=sg")),
-                 (paradigms.suffix("+am", stem),
-                  features.FeatureVector(cls.noun, "case=acc", "num=sg")),
-                 (paradigms.suffix("+ā", stem),
-                  features.FeatureVector(cls.noun, "case=abl", "num=sg")),
-                 (paradigms.suffix("+ae", stem),
-                  features.FeatureVector(cls.noun, "case=nom", "num=pl")),
-                 (paradigms.suffix("+ārum", stem),
-                  features.FeatureVector(cls.noun, "case=gen", "num=pl")),
-                 (paradigms.suffix("+īs", stem),
-                  features.FeatureVector(cls.noun, "case=dat", "num=pl")),
-                 (paradigms.suffix("+ās", stem),
-                  features.FeatureVector(cls.noun, "case=acc", "num=pl")),
-                 (paradigms.suffix("+īs", stem),
-                  features.FeatureVector(cls.noun, "case=abl", "num=pl"))]
-    v = pynini.union("a", "i", "e", "o", "u")
-    c = pynini.union("b", "c", "d", "f", "g", "h", "l", "m", "n", "p", "q", "r",
-                     "s", "t")
-    cls.stems = [(v | c).closure(1)]
-    cls.paradigm = paradigms.Paradigm(
-        category=cls.noun,
-        name="Declension I",
-        slots=cls.slots,
-        lemma_feature_vector=features.FeatureVector(cls.noun, "case=nom",
-                                                    "num=sg"))
-    cls.paradigm.set_stems_to_forms(cls.stems)
-
-  def testSetStemToForms(self):
-    form = ("aqu" @ self.paradigm.stems_to_forms
-            @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual([
-        "aqu+a[case=nom][num=sg]", "aqu+ae[case=gen][num=sg]",
-        "aqu+ae[case=dat][num=sg]", "aqu+am[case=acc][num=sg]",
-        "aqu+ā[case=abl][num=sg]", "aqu+ae[case=nom][num=pl]",
-        "aqu+ārum[case=gen][num=pl]", "aqu+īs[case=dat][num=pl]",
-        "aqu+ās[case=acc][num=pl]", "aqu+īs[case=abl][num=pl]"
-    ],
-                            form.paths().ostrings())
-
-
-class ParadigmsTestThirdDeclensionWithStemIds(unittest.TestCase):
-  """Or more specifically a few 3rd declension consonant-final stems.
-
-  Shows an example of how to use stem IDs.
-  """
-  case: features.Feature
-  number: features.Feature
+class LatinThirdDeclensionNounStemIdsTest(absltest.TestCase):
+  """Shows an example of how to use stem IDs."""
   noun: features.Category
-  stem: pynini.Fst
-  slots: List[paradigms.ParadigmSlot]
-  sigma: pynini.Fst
-  rules: List[pynini.Fst]
   paradigm: paradigms.Paradigm
   delete_stem_ids: pynini.Fst
 
   @classmethod
   def setUpClass(cls):
     super().setUpClass()
-    cls.case = features.Feature("case", "nom", "gen", "dat", "acc", "abl")
-    cls.number = features.Feature("num", "sg", "pl")
-    cls.noun = features.Category(cls.case, cls.number)
-    cls.stem = paradigms.make_byte_star_except_boundary("+")
-    cls.slots = [(paradigms.suffix("+s", cls.stem),
-                  features.FeatureVector(cls.noun, "case=nom", "num=sg")),
-                 (paradigms.suffix("+is", cls.stem),
-                  features.FeatureVector(cls.noun, "case=gen", "num=sg")),
-                 (paradigms.suffix("+ī", cls.stem),
-                  features.FeatureVector(cls.noun, "case=dat", "num=sg")),
-                 (paradigms.suffix("+em", cls.stem),
-                  features.FeatureVector(cls.noun, "case=acc", "num=sg")),
-                 (paradigms.suffix("+e", cls.stem),
-                  features.FeatureVector(cls.noun, "case=abl", "num=sg")),
-                 (paradigms.suffix("+ēs", cls.stem),
-                  features.FeatureVector(cls.noun, "case=nom", "num=pl")),
-                 (paradigms.suffix("+um", cls.stem),
-                  features.FeatureVector(cls.noun, "case=gen", "num=pl")),
-                 (paradigms.suffix("+ibus", cls.stem),
-                  features.FeatureVector(cls.noun, "case=dat", "num=pl")),
-                 (paradigms.suffix("+ēs", cls.stem),
-                  features.FeatureVector(cls.noun, "case=acc", "num=pl")),
-                 (paradigms.suffix("+ibus", cls.stem),
-                  features.FeatureVector(cls.noun, "case=abl", "num=pl"))]
-    stems = ["noct__1000__", "ōs__1001__", "pac__1002__", "rēg__1003__"]
-    velars = pynini.union("c", "ct", "g")
-    vowels = pynini.union("a", "i", "ī", "e", "ē", "u")
-    cls.sigma = pynini.project(cls.noun.feature_mapper, "input") | byte.BYTES
-    cls.sigma.closure()
+    case = features.Feature("case", "nom", "gen", "dat", "acc", "abl")
+    number = features.Feature("num", "sg", "pl")
+    cls.noun = features.Category(case, number)
+    cls.noun = features.Category(case, number)
+    nomsg = features.FeatureVector(cls.noun, "case=nom", "num=sg")
+    stem = paradigms.make_byte_star_except_boundary()
+    slots = [(paradigms.suffix("+s", stem), nomsg),
+             (paradigms.suffix("+is", stem),
+              features.FeatureVector(cls.noun, "case=gen", "num=sg")),
+             (paradigms.suffix("+ī", stem),
+              features.FeatureVector(cls.noun, "case=dat", "num=sg")),
+             (paradigms.suffix("+em", stem),
+              features.FeatureVector(cls.noun, "case=acc", "num=sg")),
+             (paradigms.suffix("+e", stem),
+              features.FeatureVector(cls.noun, "case=abl", "num=sg")),
+             (paradigms.suffix("+ēs", stem),
+              features.FeatureVector(cls.noun, "case=nom", "num=pl")),
+             (paradigms.suffix("+um", stem),
+              features.FeatureVector(cls.noun, "case=gen", "num=pl")),
+             (paradigms.suffix("+ibus", stem),
+              features.FeatureVector(cls.noun, "case=dat", "num=pl")),
+             (paradigms.suffix("+ēs", stem),
+              features.FeatureVector(cls.noun, "case=acc", "num=pl")),
+             (paradigms.suffix("+ibus", stem),
+              features.FeatureVector(cls.noun, "case=abl", "num=pl"))]
+    velar = pynini.union("c", "ct", "g")
+    v = pynini.union("a", "i", "ī", "e", "ē", "u")
     # Builds way more stem IDs than we need to show that that this is efficient.
     stem_ids = paradigms.build_stem_ids(1000, 101000)
-    cls.rules = [
+    rules = [
         # c, ct, g -> x in nominative singular. Note the spelling of "cs" as "x"
         # in Latin breaks the segmentation. One might also consider representing
         # this as "c+s".
         pynini.cdrewrite(
-            pynini.cross(velars, "x") + stem_ids + pynini.cross("+s", "+"), "",
-            "", cls.sigma),
-        # s -> r intervocalically.
+            pynini.cross(velar, "x") + stem_ids + pynini.cross("+s", "+"), "",
+            "", cls.noun.sigma_star),
+        # s -> r / V __ V.
         pynini.cdrewrite(
-            pynini.cross("s", "r"), "", stem_ids + "+" + vowels, cls.sigma),
-        # s -> r intervocalically.
+            pynini.cross("s", "r"), "", stem_ids + "+" + v,
+            cls.noun.sigma_star),
+        # s+s -> s.
         pynini.cdrewrite(
-            pynini.cross("s", "r"), "", stem_ids + "+" + vowels, cls.sigma),
-        pynini.cdrewrite(
-            pynini.cross("s", ""), "s" + stem_ids + "+", "", cls.sigma)
+            pynini.cross("s", ""), "s" + stem_ids + "+", "",
+            cls.noun.sigma_star)
     ]
     cls.paradigm = paradigms.Paradigm(
         category=cls.noun,
-        name="Declension III",
-        slots=cls.slots,
-        lemma_feature_vector=features.FeatureVector(cls.noun, "case=nom",
-                                                    "num=sg"),
-        rules=cls.rules)
-    cls.paradigm.set_stems_to_forms(stems)
+        slots=slots,
+        lemma_feature_vector=nomsg,
+        stems=["noct__1000__", "ōs__1001__", "pac__1002__", "rēg__1003__"],
+        rules=rules)
     cls.delete_stem_ids = pynini.cdrewrite(
-        pynini.cross(stem_ids, ""), "", "", cls.sigma)
+        pynutil.delete(stem_ids), "", "", cls.noun.sigma_star)
 
-  def testSetStemToForms(self):
-    forms = ("noct__1000__" @ self.paradigm.stems_to_forms
-             @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(
+  def testGenerator(self):
+    generator = (
+        self.paradigm.stems_to_forms @ self.paradigm.feature_label_rewriter)
+    forms = rewrite.rewrites("noct__1000__", generator)
+    self.assertSameElements(
         [
             "nox__1000__+[case=nom][num=sg]",
             "noct__1000__+is[case=gen][num=sg]",
@@ -599,54 +360,330 @@ class ParadigmsTestThirdDeclensionWithStemIds(unittest.TestCase):
             "noct__1000__+ēs[case=acc][num=pl]",  # Also -īs for /i/ stems.
             "noct__1000__+ibus[case=abl][num=pl]"
         ],
-        forms.paths().ostrings())
-    forms = ("rēg__1003__" @ self.paradigm.stems_to_forms
-             @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual([
+        forms)
+    forms = rewrite.rewrites("rēg__1003__", generator)
+    self.assertSameElements([
         "rēx__1003__+[case=nom][num=sg]", "rēg__1003__+is[case=gen][num=sg]",
         "rēg__1003__+ī[case=dat][num=sg]", "rēg__1003__+em[case=acc][num=sg]",
         "rēg__1003__+e[case=abl][num=sg]", "rēg__1003__+ēs[case=nom][num=pl]",
         "rēg__1003__+um[case=gen][num=pl]",
         "rēg__1003__+ibus[case=dat][num=pl]",
         "rēg__1003__+ēs[case=acc][num=pl]", "rēg__1003__+ibus[case=abl][num=pl]"
-    ],
-                            forms.paths().ostrings())
-    forms = ("ōs__1001__" @ self.paradigm.stems_to_forms
-             @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual([
+    ], forms)
+    forms = rewrite.rewrites("ōs__1001__", generator)
+    self.assertSameElements([
         "ōs__1001__+[case=nom][num=sg]", "ōr__1001__+is[case=gen][num=sg]",
         "ōr__1001__+ī[case=dat][num=sg]", "ōr__1001__+em[case=acc][num=sg]",
         "ōr__1001__+e[case=abl][num=sg]", "ōr__1001__+ēs[case=nom][num=pl]",
         "ōr__1001__+um[case=gen][num=pl]", "ōr__1001__+ibus[case=dat][num=pl]",
         "ōr__1001__+ēs[case=acc][num=pl]", "ōr__1001__+ibus[case=abl][num=pl]"
-    ],
-                            forms.paths().ostrings())
-    forms = ("ōs__1001__" @ self.paradigm.stems_to_forms @ self.delete_stem_ids
-             @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual([
-        "ōs+[case=nom][num=sg]", "ōr+is[case=gen][num=sg]",
-        "ōr+ī[case=dat][num=sg]", "ōr+em[case=acc][num=sg]",
-        "ōr+e[case=abl][num=sg]", "ōr+ēs[case=nom][num=pl]",
-        "ōr+um[case=gen][num=pl]", "ōr+ibus[case=dat][num=pl]",
-        "ōr+ēs[case=acc][num=pl]", "ōr+ibus[case=abl][num=pl]"
-    ],
-                            forms.optimize().paths().ostrings())
+    ], forms)
 
   def testFindForm(self):
-    filt = self.sigma + "__1001__" + self.sigma + "[case=acc][num=sg]"
+    filt = self.noun.sigma_star + "__1001__" + self.noun.sigma_star + "[case=acc][num=sg]"
     forms = (
         self.paradigm.stems_to_forms @ filt @ self.delete_stem_ids
         @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["ōr+em[case=acc][num=sg]"],
+    self.assertSameElements(["ōr+em[case=acc][num=sg]"],
                             forms.optimize().paths().ostrings())
-    filt = self.sigma + "__1002__" + self.sigma + "[case=gen][num=pl]"
+    filt = self.noun.sigma_star + "__1002__" + self.noun.sigma_star + "[case=gen][num=pl]"
     forms = (
         self.paradigm.stems_to_forms @ filt @ self.delete_stem_ids
         @ self.paradigm.feature_label_rewriter)
-    self.assertCountEqual(["pac+um[case=gen][num=pl]"],
+    self.assertSameElements(["pac+um[case=gen][num=pl]"],
                             forms.optimize().paths().ostrings())
+
+
+class TagalogUmInfixationTest(absltest.TestCase):
+  """Tagalog data from https://unilang.org/course.php?res=79."""
+  paradigm: paradigms.Paradigm
+
+  @classmethod
+  def setUpClass(cls):
+    super().setUpClass()
+    focus = features.Feature("focus", "none", "actor")
+    verb = features.Category(focus)
+    none = features.FeatureVector(verb, "focus=none")
+    v = pynini.union("a", "e", "i", "o", "u")
+    c = pynini.union("b", "d", "f", "g", "h", "k", "l", "ly", "k", "m", "n",
+                     "ng", "ny", "p", "r", "s", "t", "ts", "w", "y", "z")
+    stem = paradigms.make_byte_star_except_boundary()
+    um = pynini.union(c.plus + pynutil.insert("+um+") + v + stem,
+                      pynutil.insert("um+") + v + stem)
+    slots = [(stem, none), (um, features.FeatureVector(verb, "focus=actor"))]
+    cls.paradigm = paradigms.Paradigm(
+        category=verb,
+        slots=slots,
+        lemma_feature_vector=none,
+        stems=["bilang", "ibig", "lipad", "kopya", "punta"])
+
+  def testSetStemToForms(self):
+    form = ("bilang" @ self.paradigm.stems_to_forms
+            @ self.paradigm.feature_label_rewriter)
+    self.assertSameElements(["bilang[focus=none]", "b+um+ilang[focus=actor]"],
+                            form.paths().ostrings())
+    form = ("ibig" @ self.paradigm.stems_to_forms
+            @ self.paradigm.feature_label_rewriter)
+    self.assertSameElements(["ibig[focus=none]", "um+ibig[focus=actor]"],
+                            form.paths().ostrings())
+
+  def testAnalyzer(self):
+    form = ("lumipad" @ self.paradigm.analyzer
+            @ self.paradigm.feature_label_rewriter)
+    self.assertSameElements(["l+um+ipad[focus=actor]"], form.paths().ostrings())
+
+  def testTagger(self):
+    form = (
+        "lumipad" @ self.paradigm.tagger @ self.paradigm.feature_label_rewriter)
+    self.assertSameElements(["lumipad[focus=actor]"], form.paths().ostrings())
+
+  def testLemmatizer(self):
+    form = ("lumipad" @ self.paradigm.lemmatizer
+            @ self.paradigm.feature_label_rewriter)
+    self.assertSameElements(["lipad[focus=actor]"], form.paths().ostrings())
+
+  def testInflector(self):
+    form = "lipad[focus=actor]" @ self.paradigm.inflector
+    self.assertSameElements(["lumipad"], form.paths().ostrings())
+
+
+class YowlumneVerbalAspectTest(absltest.TestCase):
+  """Yowlumne data from Roark & Sproat, 2007:32.
+
+  Data originally from Newman (1944) via Archangeli (1984).
+
+  Archangeli, D. 1984. Underspecification in Yawelmani Phonology and
+  Morphology. PhD Thesis, Massachusetts Institute of Technology.
+
+  Newman, S. 1944. Yokuts Language of California. Viking Fund Publications in
+  Anthropology.
+  """
+  paradigm: paradigms.Paradigm
+
+  @classmethod
+  def setUpClass(cls):
+    super().setUpClass()
+    # Not clear "aspect" is exactly the right concept.
+    aspect = features.Feature("aspect", "root", "dubitative", "gerundial",
+                              "durative")
+    verb = features.Category(aspect)
+    root = features.FeatureVector(verb, "aspect=root")
+    stem = paradigms.make_byte_star_except_boundary()
+    # Naming these with short names for space reasons.
+    vowels = ("a", "i", "o", "u")
+    v = pynini.union(*vowels)
+    c = pynini.union("c", "m", "h", "l", "y", "k", "ʔ", "d", "n", "w", "t")
+    # First template: apply Procrustean transformation to CVCC^?.
+    cvcc = (c + v + pynutil.delete(v).ques + c + pynutil.delete(v).star +
+            c.ques).optimize()
+    # Second template: apply Procrustean transformation to CVCVVC^?. The
+    # CVCVVC^? case involves copying vowels, which is most easily achieved by
+    # iterating over the vowels in the construction.
+    cvcvvc = pynini.Fst()
+    for v in vowels:
+      cvcvvc.union(c + v + pynutil.delete(v).ques + c + pynutil.delete(v).star +
+                   pynutil.insert(v + v) + c.ques)
+    cvcvvc.optimize()
+    slots = [(stem, root),
+             (paradigms.suffix("+al", stem),
+              features.FeatureVector(verb, "aspect=dubitative")),
+             (paradigms.suffix("+inay", stem @ cvcc),
+              features.FeatureVector(verb, "aspect=gerundial")),
+             (paradigms.suffix("+ʔaa", stem @ cvcvvc),
+              features.FeatureVector(verb, "aspect=durative"))]
+    cls.paradigm = paradigms.Paradigm(
+        category=verb,
+        slots=slots,
+        lemma_feature_vector=root,
+        stems=["caw", "cuum", "hoyoo", "diiyl", "ʔilk", "hiwiit"])
+
+  # In the interests of brevity we just test the basic functionality of mapping
+  # from stems to forms.
+  def testSetStemToForms(self):
+    stems_and_forms = [
+        ("caw", [
+            "caw+al[aspect=dubitative]", "caw+inay[aspect=gerundial]",
+            "cawaa+ʔaa[aspect=durative]", "caw[aspect=root]"
+        ]),
+        ("cuum", [
+            "cuum+al[aspect=dubitative]", "cum+inay[aspect=gerundial]",
+            "cumuu+ʔaa[aspect=durative]", "cuum[aspect=root]"
+        ]),
+        ("diiyl", [
+            "diiyl+al[aspect=dubitative]", "diyl+inay[aspect=gerundial]",
+            "diyiil+ʔaa[aspect=durative]", "diiyl[aspect=root]"
+        ]),
+        ("hiwiit", [
+            "hiwiit+al[aspect=dubitative]", "hiwt+inay[aspect=gerundial]",
+            "hiwiit+ʔaa[aspect=durative]", "hiwiit[aspect=root]"
+        ]),
+        ("hoyoo", [
+            "hoyoo+al[aspect=dubitative]", "hoy+inay[aspect=gerundial]",
+            "hoyoo+ʔaa[aspect=durative]", "hoyoo[aspect=root]"
+        ]),
+        ("ʔilk", [
+            "ʔilk+al[aspect=dubitative]", "ʔilk+inay[aspect=gerundial]",
+            "ʔiliik+ʔaa[aspect=durative]", "ʔilk[aspect=root]"
+        ])
+    ]
+    generate = (
+        self.paradigm.stems_to_forms @ self.paradigm.feature_label_rewriter)
+    for (stem, expected) in stems_and_forms:
+      predicted = rewrite.rewrites(stem, generate)
+      self.assertSameElements(expected, predicted)
+
+
+class RussianHardStemMasculine(absltest.TestCase):
+  """Accent A and B hard stem masculine nouns in Russian.
+
+  This also serves as a test of paradigm inheritance.
+  """
+  paradigm_a: paradigms.Paradigm
+  paradigm_b: paradigms.Paradigm
+
+  @classmethod
+  def setUpClass(cls):
+    super().setUpClass()
+    case = features.Feature("case", "nom", "gen", "dat", "acc", "ins", "prp")
+    num = features.Feature("num", "sg", "pl")
+    noun = features.Category(case, num)
+    stem = paradigms.make_byte_star_except_boundary()
+    nomsg = features.FeatureVector(noun, "case=nom", "num=sg")
+    # Accent A has stem stress.
+    slots_a = [
+        (stem, nomsg),
+        (paradigms.suffix("+a", stem),
+         features.FeatureVector(noun, "case=gen", "num=sg")),
+        (paradigms.suffix("+u", stem),
+         features.FeatureVector(noun, "case=dat", "num=sg")),
+        (stem, features.FeatureVector(noun, "case=acc", "num=sg")),
+        (paradigms.suffix("+om", stem),
+         features.FeatureVector(noun, "case=ins", "num=sg")),
+        (paradigms.suffix("+e", stem),
+         features.FeatureVector(noun, "case=prp", "num=sg")),
+        (paradigms.suffix("+y", stem),
+         features.FeatureVector(noun, "case=nom", "num=pl")),
+        (paradigms.suffix("+ov", stem),
+         features.FeatureVector(noun, "case=gen", "num=pl")),
+        (paradigms.suffix("+am", stem),
+         features.FeatureVector(noun, "case=dat", "num=pl")),
+        (paradigms.suffix("+y", stem),
+         features.FeatureVector(noun, "case=acc", "num=pl")),
+        (paradigms.suffix("+ami", stem),
+         features.FeatureVector(noun, "case=ins", "num=pl")),
+        (paradigms.suffix("+ax", stem),
+         features.FeatureVector(noun, "case=prp", "num=pl")),
+    ]
+    cls.paradigm_a = paradigms.Paradigm(
+        category=noun,
+        name="hard stem masculine accent A",
+        slots=slots_a,
+        lemma_feature_vector=nomsg,
+        stems=["grádus", "žurnál"],
+    )
+    # Accent B has stress-shift to the desinence except in the nom./acc.
+    deaccentuation_map = pynini.string_map([
+        ("á", "a"),
+        ("é", "e"),
+        ("í", "i"),
+        ("ó", "o"),
+        ("ú", "u"),
+        ("ý", "y"),
+    ])
+    acc_v = pynini.project(deaccentuation_map, "input")
+    deaccentuation = pynini.cdrewrite(deaccentuation_map, "",
+                                      noun.sigma_star + acc_v,
+                                      noun.sigma_star).optimize()
+    slots_b = [
+        (paradigms.suffix("+á", stem),
+         features.FeatureVector(noun, "case=gen", "num=sg")),
+        (paradigms.suffix("+ú", stem),
+         features.FeatureVector(noun, "case=dat", "num=sg")),
+        (paradigms.suffix("+óm", stem),
+         features.FeatureVector(noun, "case=ins", "num=sg")),
+        (paradigms.suffix("+é", stem),
+         features.FeatureVector(noun, "case=prp", "num=sg")),
+        (paradigms.suffix("+ý", stem),
+         features.FeatureVector(noun, "case=nom", "num=pl")),
+        (paradigms.suffix("+óv", stem),
+         features.FeatureVector(noun, "case=gen", "num=pl")),
+        (paradigms.suffix("+ám", stem),
+         features.FeatureVector(noun, "case=dat", "num=pl")),
+        (paradigms.suffix("+ý", stem),
+         features.FeatureVector(noun, "case=acc", "num=pl")),
+        (paradigms.suffix("+ámi", stem),
+         features.FeatureVector(noun, "case=ins", "num=pl")),
+        (paradigms.suffix("+áx", stem),
+         features.FeatureVector(noun, "case=prp", "num=pl")),
+    ]
+    cls.paradigm_b = paradigms.Paradigm(
+        category=noun,
+        name="hard stem masculine accent B",
+        slots=slots_b,
+        parent_paradigm=cls.paradigm_a,
+        lemma_feature_vector=nomsg,
+        stems=["górb", "stól"],
+        rules=[deaccentuation])
+
+  def testGenerator(self):
+    generator = (
+        self.paradigm_a.stems_to_forms @ self.paradigm_a.feature_label_rewriter)
+    forms = rewrite.rewrites("grádus", generator)
+    self.assertSameElements([
+        "grádus[case=nom][num=sg]", "grádus+a[case=gen][num=sg]",
+        "grádus+u[case=dat][num=sg]", "grádus[case=acc][num=sg]",
+        "grádus+om[case=ins][num=sg]", "grádus+e[case=prp][num=sg]",
+        "grádus+y[case=nom][num=pl]", "grádus+ov[case=gen][num=pl]",
+        "grádus+am[case=dat][num=pl]", "grádus+y[case=acc][num=pl]",
+        "grádus+ami[case=ins][num=pl]", "grádus+ax[case=prp][num=pl]"
+    ], forms)
+    generator = (
+        self.paradigm_b.stems_to_forms @ self.paradigm_b.feature_label_rewriter)
+    forms = rewrite.rewrites("stól", generator)
+    self.assertSameElements([
+        "stól[case=nom][num=sg]", "stol+á[case=gen][num=sg]",
+        "stol+ú[case=dat][num=sg]", "stól[case=acc][num=sg]",
+        "stol+óm[case=ins][num=sg]", "stol+é[case=prp][num=sg]",
+        "stol+óv[case=gen][num=pl]", "stol+ý[case=acc][num=pl]",
+        "stol+ý[case=nom][num=pl]", "stol+ám[case=dat][num=pl]",
+        "stol+ámi[case=ins][num=pl]", "stol+áx[case=prp][num=pl]"
+    ], forms)
+
+  def testAnalyzer(self):
+    analyzer = self.paradigm_a.analyzer @ self.paradigm_a.feature_label_rewriter
+    forms = rewrite.rewrites("grádusov", analyzer)
+    self.assertSameElements(["grádus+ov[case=gen][num=pl]"], forms)
+    analyzer = self.paradigm_b.analyzer @ self.paradigm_b.feature_label_rewriter
+    forms = rewrite.rewrites("stolóv", analyzer)
+    self.assertSameElements(["stol+óv[case=gen][num=pl]"], forms)
+
+  def testTagger(self):
+    tagger = self.paradigm_a.tagger @ self.paradigm_a.feature_label_rewriter
+    forms = rewrite.rewrites("grádusov", tagger)
+    self.assertSameElements(["grádusov[case=gen][num=pl]"], forms)
+    tagger = self.paradigm_b.tagger @ self.paradigm_b.feature_label_rewriter
+    forms = rewrite.rewrites("stolóv", tagger)
+    self.assertSameElements(["stolóv[case=gen][num=pl]"], forms)
+
+  def testLemmatizer(self):
+    lemmatizer = (
+        self.paradigm_a.lemmatizer @ self.paradigm_a.feature_label_rewriter)
+    forms = rewrite.rewrites("grádusov", lemmatizer)
+    self.assertSameElements(["grádus[case=gen][num=pl]"], forms)
+    lemmatizer = (
+        self.paradigm_b.lemmatizer @ self.paradigm_b.feature_label_rewriter)
+    forms = rewrite.rewrites("stolóv", lemmatizer)
+    self.assertSameElements(["stól[case=gen][num=pl]"], forms)
+
+  def testInflector(self):
+    forms = rewrite.rewrites("grádus[case=gen][num=pl]",
+                             self.paradigm_a.inflector)
+    self.assertSameElements(["grádusov"], forms)
+    forms = rewrite.rewrites("stól[case=gen][num=pl]",
+                             self.paradigm_b.inflector)
+    self.assertSameElements(["stolóv"], forms)
 
 
 if __name__ == "__main__":
-  unittest.main()
+  absltest.main()
 

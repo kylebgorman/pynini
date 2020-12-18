@@ -7,4 +7,3 @@ include extensions/*
 include pynini/*
 include pywrapfst/*
 include tests/*
-include tests/testdata/*

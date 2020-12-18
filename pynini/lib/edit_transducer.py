@@ -1,4 +1,19 @@
 # Lint as: python3
+# Copyright 2016-2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 """Edit transducer classes.
@@ -68,10 +83,9 @@ class EditTransducer(object):
     match = pynini.union(*alphabet).optimize()
     i_insert = pynutil.insert(f"[{self.INSERT}]", weight=insert_cost / 2)
     i_delete = pynini.cross(
-        match, pynini.acceptor(f"[{self.DELETE}]", weight=delete_cost / 2))
+        match, pynini.accep(f"[{self.DELETE}]", weight=delete_cost / 2))
     i_substitute = pynini.cross(
-        match,
-        pynini.acceptor(f"[{self.SUBSTITUTE}]", weight=substitute_cost / 2))
+        match, pynini.accep(f"[{self.SUBSTITUTE}]", weight=substitute_cost / 2))
     i_ops = pynini.union(match, i_insert, i_delete, i_substitute).optimize()
     # Right factor; this is constructed by inverting the left factor (i.e.,
     # swapping the input and output labels), then swapping the insert and delete
@@ -99,8 +113,8 @@ class EditTransducer(object):
     if lattice.start() == pynini.NO_STATE_ID:
       raise Error("Lattice is empty")
 
-  def _create_lattice(self, iexpr: pynini.FstLike,
-                      oexpr: pynini.FstLike) -> pynini.Fst:
+  def create_lattice(self, iexpr: pynini.FstLike,
+                     oexpr: pynini.FstLike) -> pynini.Fst:
     """Creates edit lattice for a pair of input/output strings or acceptors.
 
     Args:
@@ -131,7 +145,7 @@ class LevenshteinDistance(EditTransducer):
     Returns:
       Minimum edit distance according to the edit transducer.
     """
-    lattice = self._create_lattice(iexpr, oexpr)
+    lattice = self.create_lattice(iexpr, oexpr)
     # The shortest cost from all final states to the start state is
     # equivalent to the cost of the shortest path.
     return float(
