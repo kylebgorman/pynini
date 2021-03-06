@@ -21,9 +21,12 @@ licenses(["notice"])
 py_library(
     name = "pynini",
     srcs = ["__init__.py"],
-    srcs_version = "PY3ONLY",
     # The Cython shared objects are generated in `extensions` directory.
-    imports = [".", "../extensions"],
+    imports = [
+        ".",
+        "../extensions",
+    ],
+    srcs_version = "PY3ONLY",
     deps = [
         "//extensions:_pynini",
     ],

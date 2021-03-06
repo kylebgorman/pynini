@@ -22,6 +22,7 @@
 // are optimized (e.g., with epsilon-removal and pruned determinization) so
 // that the output strings are unique.
 
+#include <cstdint>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -134,7 +135,7 @@ void LatticeToDfa(MutableFst<Arc> *lattice, bool optimal_only,
 // RewriteLattice), extracts n-shortest unique strings. This is only valid in a
 // semiring with the path property.
 template <class Arc>
-void LatticeToShortest(MutableFst<Arc> *lattice, int32 nshortest = 1) {
+void LatticeToShortest(MutableFst<Arc> *lattice, int32_t nshortest = 1) {
   VectorFst<Arc> shortest;
   // By requesting unique solutions we request on-the-fly determinization.
   ShortestPath(*lattice, &shortest, nshortest, /*unique=*/true);
@@ -259,7 +260,7 @@ bool TopRewrites(const Fst<Arc> &input, const Fst<Arc> &rule,
 // The same, but with repeated string fields.
 // The top n rewrites.
 template <class Arc>
-bool TopRewrites(const Fst<Arc> &input, const Fst<Arc> &rule, int32 nshortest,
+bool TopRewrites(const Fst<Arc> &input, const Fst<Arc> &rule, int32_t nshortest,
                  std::vector<std::string> *output,
                  TokenType ttype = TokenType::BYTE,
                  const SymbolTable *syms = nullptr) {

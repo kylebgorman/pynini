@@ -130,7 +130,14 @@ from cpynini cimport kBosIndex
 from cpynini cimport kEosIndex
 
 
+# Version number; increment after each release.
+
+
+__version__ = "2.1.4"
+
+
 # Python imports needed for implementation.
+
 
 import contextlib
 import functools
@@ -925,24 +932,29 @@ cpdef Fst cross(fst1, fst2):
   return result
 
 
-cpdef Fst cdrewrite(tau, l, r, sigstar, direction="ltr", mode="obl"):
+cpdef Fst cdrewrite(tau, l, r, sigma_star, direction="ltr", mode="obl"):
   """
-  cdrewrite(tau, l, r, sigstar, direction="ltr", mode="obl")
+  cdrewrite(tau, l, r, sigma_star, direction="ltr", mode="obl")
 
   Compiles a transducer expressing a context-dependent rewrite rule.
 
   This operation compiles a transducer representing a context-dependent
   rewrite rule of the form
 
-      a -> b / c __ d
+      tau / L __ R
 
   over a finite vocabulary.
 
+  There are two reserved symbols: "[BOS]" denotes the left edge of a string
+  within L, and "[EOS]" (end of string) denotes the right edge of a string
+  within R. Note that these reserved symbols do not have any special
+  interpretation anywhere else within this library.
+  
   Args:
-    tau: A transducer representing a -> b.
-    l: An unweighted acceptor representing the left context.
-    r: An unweighted acceptor representing the right context.
-    sigstar: A cyclic, unweighted acceptor representing the closure over the
+    tau: A transducer representing the desired transduction tau.
+    l: An unweighted acceptor representing the left context L.
+    r: An unweighted acceptor representing the right context R.
+    sigma_star: A cyclic, unweighted acceptor representing the closure over the
         alphabet.
     direction: A string specifying the direction of rule application; one of:
         "ltr" (left-to-right application), "rtl" (right-to-left application),
@@ -958,8 +970,8 @@ cpdef Fst cdrewrite(tau, l, r, sigstar, direction="ltr", mode="obl"):
     FstArgError: Unknown cdrewrite mode type.
     FstOpError: Operation failed.
   """
-  cdef Fst _sigstar = _compile_or_copy_Fst(sigstar)
-  cdef string arc_type = _sigstar.arc_type()
+  cdef Fst _sigma_star = _compile_or_copy_Fst(sigma_star)
+  cdef string arc_type = _sigma_star.arc_type()
   cdef Fst _tau = _compile_or_copy_Fst(tau, arc_type)
   cdef Fst _l = _compile_or_copy_Fst(l, arc_type)
   cdef Fst _r = _compile_or_copy_Fst(r, arc_type)
@@ -970,7 +982,7 @@ cpdef Fst cdrewrite(tau, l, r, sigstar, direction="ltr", mode="obl"):
   CDRewriteCompile(deref(_tau._fst),
                    deref(_l._fst),
                    deref(_r._fst),
-                   deref(_sigstar._fst),
+                   deref(_sigma_star._fst),
                    result._mfst.get(),
                    _direction,
                    _mode,
@@ -980,10 +992,10 @@ cpdef Fst cdrewrite(tau, l, r, sigstar, direction="ltr", mode="obl"):
   return result
 
 
-cpdef Fst leniently_compose(mu, nu, sigstar, compose_filter="auto",
+cpdef Fst leniently_compose(mu, nu, sigma_star, compose_filter="auto",
                             bool connect=True):
   """
-  leniently_compose(mu, nu, sigstar, compose_filter="auto", connect=True)
+  leniently_compose(mu, nu, sigma_star, compose_filter="auto", connect=True)
 
   Constructively leniently-composes two FSTs.
 
@@ -996,7 +1008,7 @@ cpdef Fst leniently_compose(mu, nu, sigstar, compose_filter="auto",
   Args:
     mu: The first input FST, taking higher priority.
     nu: The second input FST, taking lower priority.
-    sigstar: A cyclic, unweighted acceptor representing the closure over the
+    sigma_star: A cyclic, unweighted acceptor representing the closure over the
         alphabet.
     compose_filter: A string matching a known composition filter; one of:
         "alt_sequence", "auto", "match", "no_match", "null", "sequence",
@@ -1012,7 +1024,7 @@ cpdef Fst leniently_compose(mu, nu, sigstar, compose_filter="auto",
   cdef Fst _mu
   cdef Fst _nu
   (_mu, _nu) = _compile_or_copy_two_Fsts(mu, nu)
-  cdef Fst _sigstar = _compile_or_copy_Fst(sigstar, _mu.arc_type())
+  cdef Fst _sigma_star = _compile_or_copy_Fst(sigma_star, _mu.arc_type())
   cdef unique_ptr[ComposeOptions] _opts
   _opts.reset(
       new ComposeOptions(connect,
@@ -1020,7 +1032,7 @@ cpdef Fst leniently_compose(mu, nu, sigstar, compose_filter="auto",
   cdef Fst result = Fst(_mu.arc_type())
   LenientlyCompose(deref(_mu._fst),
                    deref(_nu._fst),
-                   deref(_sigstar._fst),
+                   deref(_sigma_star._fst),
                    result._mfst.get(),
                    deref(_opts))
   result._check_mutating_imethod()
@@ -1441,7 +1453,7 @@ cdef class PdtParentheses:
     Returns:
       A deep copy of the PdtParentheses object.
     """
-    cpdef PdtParentheses result = PdtParentheses.__new__(PdtParentheses)
+    cdef PdtParentheses result = PdtParentheses.__new__(PdtParentheses)
     result._parens = self._parens
     return result
 
@@ -1785,7 +1797,7 @@ cdef class MPdtParentheses:
     Returns:
       A deep copy of the MPdtParentheses object.
     """
-    cpdef MPdtParentheses result = MPdtParentheses.__new__(MPdtParentheses)
+    cdef MPdtParentheses result = MPdtParentheses.__new__(MPdtParentheses)
     result._parens = self._parens
     result._assign = self._assign
     return result
@@ -2208,6 +2220,7 @@ cdef class _StringPathIterator:
       yield self.weight()
       self._paths.get().Next()
 
+
 # Class for FAR reading and/or writing.
 
 
@@ -2495,8 +2508,6 @@ cdef class Far:
     self.close()
 
 
-## PYTHON IMPORTS.
-
 
 # Classes from _pywrapfst.
 
@@ -2527,6 +2538,7 @@ from _pywrapfst import NO_SYMBOL
 
 
 # FST properties.
+
 
 from _pywrapfst import ACCEPTOR
 from _pywrapfst import ACCESSIBLE
@@ -2658,9 +2670,6 @@ from _pywrapfst import times
 
 # Custom types.
 
-
-import typing
-
 from _pywrapfst import ArcMapType
 from _pywrapfst import ComposeFilter
 from _pywrapfst import DeterminizeType
@@ -2676,6 +2685,11 @@ from _pywrapfst import WeightLike
 
 # These definitions only ensure that these are defined to avoid attribute
 # errors, but don't actually contain the type definitions.
+
+
+import typing
+
+
 CDRewriteDirection = """typing.Literal["ltr", "rtl", "sim"]"""
 CDRewriteMode = """typing.Literal["obl", "opt"]"""
 FarFileMode = """typing.Literal["r", "w"]"""

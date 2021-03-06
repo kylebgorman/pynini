@@ -19,6 +19,7 @@
 
 // Computes the range-based concatenative closure of an FST.
 
+#include <cstdint>
 #include <memory>
 
 #include <fst/types.h>
@@ -81,7 +82,7 @@ void SetStartFinal(MutableFst<Arc> *fst) {
 //     /x{N,}/     ConcatRange(x, N, 0)
 //     /x{,N}/     ConcatRange(x, 0, N)
 template <class Arc>
-void ConcatRange(MutableFst<Arc> *fst, int32 lower = 0, int32 upper = 0) {
+void ConcatRange(MutableFst<Arc> *fst, int32_t lower = 0, int32_t upper = 0) {
   if (fst->Start() == kNoStateId) return;
   if (lower < 0 || upper < 0) {
     fst->SetProperties(kError, kError);

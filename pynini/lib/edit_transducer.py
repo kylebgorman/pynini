@@ -1,4 +1,3 @@
-# Lint as: python3
 # Copyright 2016-2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,12 +22,12 @@ distance and approximate string matches.
 
 Here, we provide three concrete classes:
 
-* EditTransducer(object): Constructs the transducer from an input alphabet and
+* EditTransducer: Constructs the transducer from an input alphabet and
   cost matrix. Provides a protected `_create_lattice` method for lattice
   construction, which may be overridden by derived classes.
-* LevenshteinDistance(EditTransducer): Also adds a method for computing
+* LevenshteinDistance: Also adds a method for computing
   Levenshtein distance from the lattice.
-* LevenshteinAutomaton(LevenshteinDistance): Uses the edit transducer and an
+* LevenshteinAutomaton: Uses the edit transducer and an
   input vocabulary to construct a right-factored lexicon from which one can
   compute the closest matches.
 """
@@ -37,6 +36,7 @@ from typing import Iterable, List
 
 import pynini
 from pynini.lib import pynutil
+
 
 DEFAULT_INSERT_COST = 1.
 DEFAULT_DELETE_COST = 1.
@@ -49,7 +49,7 @@ class Error(Exception):
   pass
 
 
-class EditTransducer(object):
+class EditTransducer:
   """Factored edit transducer.
 
   This class stores the two factors of an finite-alphabet edit transducer and
@@ -58,6 +58,10 @@ class EditTransducer(object):
 
   Note that the cost of substitution must be less than the cost of insertion
   plus the cost of deletion or no optimal path will include substitution.
+
+  One can impose an upper bound on the number of permissible edits by
+  setting a non-zero value for `bound`. This often results in substantial
+  improvements in performance.
   """
 
   # Reserved labels for edit operations.
@@ -69,7 +73,8 @@ class EditTransducer(object):
                alphabet: Iterable[str],
                insert_cost: float = DEFAULT_INSERT_COST,
                delete_cost: float = DEFAULT_DELETE_COST,
-               substitute_cost: float = DEFAULT_SUBSTITUTE_COST):
+               substitute_cost: float = DEFAULT_SUBSTITUTE_COST,
+               bound: int = 0):
     """Constructor.
 
     Args:
@@ -77,28 +82,40 @@ class EditTransducer(object):
       insert_cost: the cost for the insertion operation.
       delete_cost: the cost for the deletion operation.
       substitute_cost: the cost for the substitution operation.
+      bound: the number of permissible edits, or `0` (the default) if there
+          is no upper bound.
     """
     # Left factor; note that we divide the edit costs by two because they also
     # will be incurred when traversing the right factor.
-    match = pynini.union(*alphabet).optimize()
-    i_insert = pynutil.insert(f"[{self.INSERT}]", weight=insert_cost / 2)
-    i_delete = pynini.cross(
-        match, pynini.accep(f"[{self.DELETE}]", weight=delete_cost / 2))
-    i_substitute = pynini.cross(
-        match, pynini.accep(f"[{self.SUBSTITUTE}]", weight=substitute_cost / 2))
-    i_ops = pynini.union(match, i_insert, i_delete, i_substitute).optimize()
-    # Right factor; this is constructed by inverting the left factor (i.e.,
-    # swapping the input and output labels), then swapping the insert and delete
-    # labels on what is now the input side.
-    o_ops = pynini.invert(i_ops)
+    sigma = pynini.union(*alphabet).optimize()
+    insert = pynutil.insert(f"[{self.INSERT}]", weight=insert_cost / 2)
+    delete = pynini.cross(
+        sigma, pynini.accep(f"[{self.DELETE}]", weight=delete_cost / 2))
+    substitute = pynini.cross(
+        sigma, pynini.accep(f"[{self.SUBSTITUTE}]", weight=substitute_cost / 2))
+    edit = pynini.union(insert, delete, substitute).optimize()
+    if bound:
+      sigma_star = pynini.closure(sigma)
+      self._e_i = sigma_star.copy()
+      for _ in range(bound):
+        self._e_i.concat(edit.ques).concat(sigma_star)
+    else:
+      self._e_i = edit.union(sigma).closure()
+    self._e_i.optimize()
+    self._e_o = EditTransducer._right_factor(self._e_i)
+
+  @staticmethod
+  def _right_factor(ifst: pynini.Fst) -> pynini.Fst:
+    """Constructs the right factor from the left factor."""
+    # Ts constructed by inverting the left factor (i.e., swapping the input and
+    # output labels), then swapping the insert and delete labels on what is now
+    # the input side.
+    ofst = pynini.invert(ifst)
     syms = pynini.generated_symbols()
-    insert_label = syms.find(self.INSERT)
-    delete_label = syms.find(self.DELETE)
+    insert_label = syms.find(EditTransducer.INSERT)
+    delete_label = syms.find(EditTransducer.DELETE)
     pairs = [(insert_label, delete_label), (delete_label, insert_label)]
-    o_ops.relabel_pairs(ipairs=pairs)
-    # Computes the closure for both sets of ops.
-    self._e_i = i_ops.closure().optimize()
-    self._e_o = o_ops.closure().optimize()
+    return ofst.relabel_pairs(ipairs=pairs)
 
   @staticmethod
   def check_wellformed_lattice(lattice: pynini.Fst) -> None:
@@ -148,8 +165,8 @@ class LevenshteinDistance(EditTransducer):
     lattice = self.create_lattice(iexpr, oexpr)
     # The shortest cost from all final states to the start state is
     # equivalent to the cost of the shortest path.
-    return float(
-        pynini.shortestdistance(lattice, reverse=True)[lattice.start()])
+    start = lattice.start()
+    return float(pynini.shortestdistance(lattice, reverse=True)[start])
 
 
 class LevenshteinAutomaton(LevenshteinDistance):
@@ -160,9 +177,11 @@ class LevenshteinAutomaton(LevenshteinDistance):
                lexicon: Iterable[str],
                insert_cost: float = DEFAULT_INSERT_COST,
                delete_cost: float = DEFAULT_DELETE_COST,
-               substitute_cost: float = DEFAULT_SUBSTITUTE_COST):
-    super(LevenshteinAutomaton, self).__init__(alphabet, insert_cost,
-                                               delete_cost, substitute_cost)
+               substitute_cost: float = DEFAULT_SUBSTITUTE_COST,
+               bound: int = 0):
+    super(LevenshteinAutomaton,
+          self).__init__(alphabet, insert_cost, delete_cost, substitute_cost,
+                         bound)
     # Compiles lexicon and composes the right factor with it.
     compiled_lexicon = pynini.union(*lexicon)
     self._l_o = self._e_o @ compiled_lexicon
@@ -178,7 +197,7 @@ class LevenshteinAutomaton(LevenshteinDistance):
     Returns:
       A lattice FST.
     """
-    lattice = query @ self._e_i @ self._l_o
+    lattice = (query @ self._e_i) @ self._l_o
     EditTransducer.check_wellformed_lattice(lattice)
     return lattice
 

@@ -1,4 +1,3 @@
-# Lint as: python3
 # Copyright 2016-2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +31,7 @@ def add_weight(expr: pynini.FstLike,
   """Attaches a weight to an automaton.
 
   Args:
-    expr: an acceptor or string.
+    expr: an automaton or string.
     weight: a weight or string.
 
   Returns:
@@ -81,7 +80,7 @@ def join(expr: pynini.FstLike, sep: pynini.FstLike) -> pynini.Fst:
   """Creates the automaton expr (sep expr)^*.
 
   Args:
-    expr: an acceptor or string.
+    expr: an automaton or string.
     sep: a separator acceptor or string.
 
   Returns:

@@ -22,10 +22,10 @@ IO:
 
 
 Compilation:
-    acceptor("Do you have Camembert?", ...)
-    transducer("Do you have Camembert?", "No.", ...)
-    string_map(((f, g), (h, i), ...))
-    cdrewrite(transducer("s", "z"), "", "[EOS]", sigma_star)
+    accep("Do you have Camembert?", ...)
+    cross("Do you have Camembert?", "No.", ...)
+    string_map([(f, g), (h, i), ...])
+    cdrewrite(cross("s", "z"), "", "[EOS]", sigma_star)
 
 Sample operations:
     closure(f, ...)                       f.closure(...)

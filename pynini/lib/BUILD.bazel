@@ -1,0 +1,103 @@
+# Copyright 2015-2020 Google LLC. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
+
+py_library(
+    name = "byte",
+    srcs = ["byte.py"],
+    srcs_version = "PY3ONLY",
+    deps = ["//pynini"],
+)
+
+py_library(
+    name = "utf8",
+    srcs = ["utf8.py"],
+    srcs_version = "PY3ONLY",
+    deps = ["//pynini"],
+)
+
+py_library(
+    name = "pynutil",
+    srcs = ["pynutil.py"],
+    srcs_version = "PY3ONLY",
+    deps = ["//pynini"],
+)
+
+py_library(
+    name = "edit_transducer",
+    srcs = ["edit_transducer.py"],
+    srcs_version = "PY3",
+    deps = [
+        ":pynutil",
+        "//pynini",
+    ],
+)
+
+py_library(
+    name = "features",
+    srcs = ["features.py"],
+    srcs_version = "PY3",
+    deps = [
+        ":byte",
+        ":pynutil",
+        "//pynini",
+    ],
+)
+
+py_library(
+    name = "paradigms",
+    srcs = ["paradigms.py"],
+    srcs_version = "PY3",
+    deps = [
+        ":byte",
+        ":features",
+        ":pynutil",
+        "//pynini",
+    ],
+)
+
+py_library(
+    name = "rewrite",
+    srcs = ["rewrite.py"],
+    srcs_version = "PY3",
+    deps = ["//pynini"],
+)
+
+py_library(
+    name = "rule_cascade",
+    srcs = ["rule_cascade.py"],
+    srcs_version = "PY3",
+    deps = [
+        ":rewrite",
+        "//pynini",
+    ],
+)
+
+py_library(
+    name = "tagger",
+    srcs = ["tagger.py"],
+    srcs_version = "PY3",
+    deps = [
+        ":pynutil",
+        ":rewrite",
+        "//pynini",
+    ],
+)
+
+# Local Variables:
+# mode: bazel-build
+# End:

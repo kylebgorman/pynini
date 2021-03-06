@@ -17,6 +17,7 @@
 #ifndef PYNINI_STRINGCOMPILE_H_
 #define PYNINI_STRINGCOMPILE_H_
 
+#include <cstdint>
 #include <iterator>
 #include <map>
 #include <string>
@@ -30,7 +31,7 @@
 #include <fst/string.h>
 #include <fst/symbol-table.h>
 
-#include "gtl.h"
+#include <fst/compat.h>
 
 // This module contains a singleton class which can compile strings into string
 // FSTs, keeping track of so-called generated labels.
@@ -61,8 +62,8 @@ constexpr char kGeneratedSymbolsName[] = "**Generated symbols";
 constexpr char kEpsilonString[] = "<epsilon>";
 
 // Special handling for BOS and EOS markers in CDRewrite.
-constexpr int64 kBosIndex = 0xF8FE;
-constexpr int64 kEosIndex = 0xF8FF;
+constexpr int64_t kBosIndex = 0xF8FE;
+constexpr int64_t kEosIndex = 0xF8FF;
 constexpr char kBosString[] = "BOS";
 constexpr char kEosString[] = "EOS";
 
@@ -148,7 +149,7 @@ class StringCompiler {
       case TokenType::SYMBOL: {
         // The empty string is valid.
         if (str.empty()) return true;
-        for (const auto token : strings::Split(str, ' ')) {
+        for (const auto token : fst::StringSplit(str, ' ')) {
           const Label label = symbols->Find(token);
           if (label == kNoSymbol) {
             LOG(ERROR) << "SymbolStringToLabels: Symbol \"" << token << "\" "
@@ -193,7 +194,7 @@ class StringCompiler {
   // for future symbol generation. A remapping for FSTs labeled using the given
   // generated SymbolTable will be populated during this run.
   bool MergeIntoGeneratedSymbols(const SymbolTable &symtab,
-                                 std::map<int64, int64> *remap);
+                                 std::map<int64_t, int64_t> *remap);
   // Resets `StringCompiler` to its state at construction.
   void Reset();
 
@@ -204,15 +205,15 @@ class StringCompiler {
   StringCompiler(const StringCompiler &) = delete;
   StringCompiler &operator=(const StringCompiler &) = delete;
 
-  int64 NumericalSymbolToLabel(const std::string &token) const;
-  int64 StringSymbolToLabel(const std::string &token);
-  int64 NumericalOrStringSymbolToLabel(const std::string &token);
+  int64_t NumericalSymbolToLabel(const std::string &token) const;
+  int64_t StringSymbolToLabel(const std::string &token);
+  int64_t NumericalOrStringSymbolToLabel(const std::string &token);
 
   // Processes a BYTE or a UTF8 span inside brackets.
   template <class Label>
   bool ProcessBracketedSpan(const std::string &span,
                             std::vector<Label> *labels) {
-    const std::vector<std::string> tokens(strings::Split(span, ' '));
+    const std::vector<std::string> tokens(fst::StringSplit(span, ' '));
     if (tokens.empty()) {
       LOG(ERROR) << "ProcessBracketedSpan: Empty span";
       return false;
@@ -264,7 +265,7 @@ class StringCompiler {
 
   SymbolTable generated_;
   // The highest-numbered generated symbol currently present.
-  int64 max_generated_;
+  int64_t max_generated_;
 };
 
 }  // namespace internal
@@ -276,7 +277,7 @@ const SymbolTable &GeneratedSymbols();
 namespace thrax_internal {
 
 bool MergeIntoGeneratedSymbols(const SymbolTable &symtab,
-                               std::map<int64, int64> *remap);
+                               std::map<int64_t, int64_t> *remap);
 
 void ResetGeneratedSymbols();
 

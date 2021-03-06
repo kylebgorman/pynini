@@ -131,9 +131,9 @@ def cross(fst1: FstLike,
           weight: Optional[WeightLike] = ...) -> Fst: ...
 def cdrewrite(
     tau: FstLike,
-    lambda_: FstLike,
-    rho: FstLike,
-    sigma: FstLike,
+    l: FstLike,
+    r: FstLike,
+    sigma_star: FstLike,
     direction: CDRewriteDirection = ...,
     mode: CDRewriteMode = ...
 ) -> Fst: ...

@@ -30,7 +30,7 @@ from cintegral_types cimport *
 
 cdef extern from "<fst/util.h>" nogil:
 
-  bool FLAGS_fst_error_fatal
+  bool FST_FLAGS_fst_error_fatal
 
 
 cdef extern from "<fst/fstlib.h>" namespace "fst" nogil:

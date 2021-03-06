@@ -1,4 +1,3 @@
-# Lint as: python3
 # Copyright 2016-2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,35 +77,52 @@ class LatinFirstDeclensionNounTest(absltest.TestCase):
     ], forms)
 
   def testAnalyzer(self):
-    analyzer = self.paradigm.analyzer @ self.paradigm.feature_label_rewriter
-    forms = rewrite.rewrites("aquārum", analyzer)
-    self.assertSameElements(["aqu+ārum[case=gen][num=pl]"], forms)
-    forms = rewrite.rewrites("puellīs", analyzer)
-    self.assertSameElements(
-        ["puell+īs[case=dat][num=pl]", "puell+īs[case=abl][num=pl]"], forms)
+    self.assertSameElements([("aqu+ārum",
+                              features.FeatureVector(self.paradigm.category,
+                                                     "case=gen", "num=pl"))],
+                            self.paradigm.analyze("aquārum"))
+    self.assertSameElements([
+        ("puell+īs",
+         features.FeatureVector(self.paradigm.category, "case=dat", "num=pl")),
+        ("puell+īs",
+         features.FeatureVector(self.paradigm.category, "case=abl", "num=pl"))
+    ], self.paradigm.analyze("puellīs"))
 
   def testTagger(self):
-    tagger = self.paradigm.tagger @ self.paradigm.feature_label_rewriter
-    forms = rewrite.rewrites("aquārum", tagger)
-    self.assertSameElements(["aquārum[case=gen][num=pl]"], forms)
-    forms = rewrite.rewrites("puellīs", tagger)
-    self.assertSameElements(
-        ["puellīs[case=dat][num=pl]", "puellīs[case=abl][num=pl]"], forms)
+    self.assertSameElements([("aquārum",
+                              features.FeatureVector(self.paradigm.category,
+                                                     "case=gen", "num=pl"))],
+                            self.paradigm.tag("aquārum"))
+    self.assertSameElements([
+        ("puellīs",
+         features.FeatureVector(self.paradigm.category, "case=dat", "num=pl")),
+        ("puellīs",
+         features.FeatureVector(self.paradigm.category, "case=abl", "num=pl"))
+    ], self.paradigm.tag("puellīs"))
 
   def testLemmatizer(self):
-    lemmatizer = self.paradigm.lemmatizer @ self.paradigm.feature_label_rewriter
-    forms = rewrite.rewrites("aquārum", lemmatizer)
-    self.assertSameElements(["aqua[case=gen][num=pl]"], forms)
-    forms = rewrite.rewrites("puellīs", lemmatizer)
-    self.assertSameElements(
-        ["puella[case=dat][num=pl]", "puella[case=abl][num=pl]"], forms)
+    self.assertSameElements([("aqua",
+                              features.FeatureVector(self.paradigm.category,
+                                                     "case=gen", "num=pl"))],
+                            self.paradigm.lemmatize("aquārum"))
+    self.assertSameElements([
+        ("puella",
+         features.FeatureVector(self.paradigm.category, "case=dat", "num=pl")),
+        ("puella",
+         features.FeatureVector(self.paradigm.category, "case=abl", "num=pl")),
+    ], self.paradigm.lemmatize("puellīs"))
 
   def testInflector(self):
-    forms = rewrite.rewrites("aqua[case=gen][num=pl]", self.paradigm.inflector)
-    self.assertSameElements(["aquārum"], forms)
-    forms = rewrite.rewrites("puella[case=dat][num=pl]",
-                             self.paradigm.inflector)
-    self.assertSameElements(["puellīs"], forms)
+    self.assertSameElements(["aquārum"],
+                            self.paradigm.inflect(
+                                "aqua",
+                                features.FeatureVector(self.paradigm.category,
+                                                       "case=gen", "num=pl")))
+    self.assertSameElements(["puellīs"],
+                            self.paradigm.inflect(
+                                "puella",
+                                features.FeatureVector(self.paradigm.category,
+                                                       "case=dat", "num=pl")))
 
 
 class LatinFirstDeclensionNounWildcardTest(absltest.TestCase):
@@ -252,32 +268,48 @@ class LatinThirdDeclensionNounTest(absltest.TestCase):
     ], forms)
 
   def testAnalyzer(self):
-    analyzer = self.paradigm.analyzer @ self.paradigm.feature_label_rewriter
-    forms = rewrite.rewrites("ōs", analyzer)
-    self.assertSameElements(["ōs+[case=nom][num=sg]"], forms)
-    forms = rewrite.rewrites("rēge", analyzer)
-    self.assertSameElements(["rēg+e[case=abl][num=sg]"], forms)
+    self.assertSameElements([("ōs+",
+                              features.FeatureVector(self.paradigm.category,
+                                                     "case=nom", "num=sg"))],
+                            self.paradigm.analyze("ōs"))
+    self.assertSameElements([("rēg+e",
+                              features.FeatureVector(self.paradigm.category,
+                                                     "case=abl", "num=sg"))],
+                            self.paradigm.analyze("rēge"))
 
   def testTagger(self):
-    tagger = self.paradigm.tagger @ self.paradigm.feature_label_rewriter
-    forms = rewrite.rewrites("ōs", tagger)
-    self.assertSameElements(["ōs[case=nom][num=sg]"], forms)
-    forms = rewrite.rewrites("rēge", tagger)
-    self.assertSameElements(["rēge[case=abl][num=sg]"], forms)
+    self.assertSameElements([("ōs",
+                              features.FeatureVector(self.paradigm.category,
+                                                     "case=nom", "num=sg"))],
+                            self.paradigm.tag("ōs"))
+    self.assertSameElements([("rēge",
+                              features.FeatureVector(self.paradigm.category,
+                                                     "case=abl", "num=sg"))],
+                            self.paradigm.tag("rēge"))
 
   def testLemmatizer(self):
-    lemmatizer = self.paradigm.lemmatizer @ self.paradigm.feature_label_rewriter
-    forms = rewrite.rewrites("pacem", lemmatizer)
-    self.assertSameElements(["pax[case=acc][num=sg]"], forms)
-    forms = rewrite.rewrites("noctibus", lemmatizer)
-    self.assertSameElements(["nox[case=dat][num=pl]", "nox[case=abl][num=pl]"],
-                            forms)
+    self.assertSameElements([("pax",
+                              features.FeatureVector(self.paradigm.category,
+                                                     "case=acc", "num=sg"))],
+                            self.paradigm.lemmatize("pacem"))
+    self.assertSameElements([
+        ("nox",
+         features.FeatureVector(self.paradigm.category, "case=dat", "num=pl")),
+        ("nox",
+         features.FeatureVector(self.paradigm.category, "case=abl", "num=pl"))
+    ], self.paradigm.lemmatize("noctibus"))
 
   def testInflector(self):
-    forms = rewrite.rewrites("pax[case=acc][num=sg]", self.paradigm.inflector)
-    self.assertSameElements(["pacem"], forms)
-    forms = rewrite.rewrites("nox[case=dat][num=pl]", self.paradigm.inflector)
-    self.assertSameElements(["noctibus"], forms)
+    self.assertSameElements(["pacem"],
+                            self.paradigm.inflect(
+                                "pax",
+                                features.FeatureVector(self.paradigm.category,
+                                                       "case=acc", "num=sg")))
+    self.assertSameElements(["noctibus"],
+                            self.paradigm.inflect(
+                                "nox",
+                                features.FeatureVector(self.paradigm.category,
+                                                       "case=dat", "num=pl")))
 
 
 class LatinThirdDeclensionNounStemIdsTest(absltest.TestCase):
@@ -417,7 +449,7 @@ class TagalogUmInfixationTest(absltest.TestCase):
         lemma_feature_vector=none,
         stems=["bilang", "ibig", "lipad", "kopya", "punta"])
 
-  def testSetStemToForms(self):
+  def testGenerate(self):
     form = ("bilang" @ self.paradigm.stems_to_forms
             @ self.paradigm.feature_label_rewriter)
     self.assertSameElements(["bilang[focus=none]", "b+um+ilang[focus=actor]"],
@@ -428,23 +460,28 @@ class TagalogUmInfixationTest(absltest.TestCase):
                             form.paths().ostrings())
 
   def testAnalyzer(self):
-    form = ("lumipad" @ self.paradigm.analyzer
-            @ self.paradigm.feature_label_rewriter)
-    self.assertSameElements(["l+um+ipad[focus=actor]"], form.paths().ostrings())
+    self.assertSameElements(
+        [("l+um+ipad",
+          features.FeatureVector(self.paradigm.category, "focus=actor"))],
+        self.paradigm.analyze("lumipad"))
 
   def testTagger(self):
-    form = (
-        "lumipad" @ self.paradigm.tagger @ self.paradigm.feature_label_rewriter)
-    self.assertSameElements(["lumipad[focus=actor]"], form.paths().ostrings())
+    self.assertSameElements(
+        [("lumipad",
+          features.FeatureVector(self.paradigm.category, "focus=actor"))],
+        self.paradigm.tag("lumipad"))
 
   def testLemmatizer(self):
-    form = ("lumipad" @ self.paradigm.lemmatizer
-            @ self.paradigm.feature_label_rewriter)
-    self.assertSameElements(["lipad[focus=actor]"], form.paths().ostrings())
+    self.assertSameElements([
+        ("lipad", features.FeatureVector(self.paradigm.category, "focus=actor"))
+    ], self.paradigm.lemmatize("lumipad"))
 
   def testInflector(self):
-    form = "lipad[focus=actor]" @ self.paradigm.inflector
-    self.assertSameElements(["lumipad"], form.paths().ostrings())
+    self.assertSameElements(["lumipad"],
+                            self.paradigm.inflect(
+                                "lipad",
+                                features.FeatureVector(self.paradigm.category,
+                                                       "focus=actor")))
 
 
 class YowlumneVerbalAspectTest(absltest.TestCase):
@@ -499,7 +536,7 @@ class YowlumneVerbalAspectTest(absltest.TestCase):
 
   # In the interests of brevity we just test the basic functionality of mapping
   # from stems to forms.
-  def testSetStemToForms(self):
+  def testStems(self):
     stems_and_forms = [
         ("caw", [
             "caw+al[aspect=dubitative]", "caw+inay[aspect=gerundial]",
@@ -650,38 +687,46 @@ class RussianHardStemMasculine(absltest.TestCase):
     ], forms)
 
   def testAnalyzer(self):
-    analyzer = self.paradigm_a.analyzer @ self.paradigm_a.feature_label_rewriter
-    forms = rewrite.rewrites("grádusov", analyzer)
-    self.assertSameElements(["grádus+ov[case=gen][num=pl]"], forms)
-    analyzer = self.paradigm_b.analyzer @ self.paradigm_b.feature_label_rewriter
-    forms = rewrite.rewrites("stolóv", analyzer)
-    self.assertSameElements(["stol+óv[case=gen][num=pl]"], forms)
+    self.assertSameElements([("grádus+ov",
+                              features.FeatureVector(self.paradigm_a.category,
+                                                     "case=gen", "num=pl"))],
+                            self.paradigm_a.analyze("grádusov"))
+    self.assertSameElements([("stol+óv",
+                              features.FeatureVector(self.paradigm_b.category,
+                                                     "case=gen", "num=pl"))],
+                            self.paradigm_b.analyze("stolóv"))
 
   def testTagger(self):
-    tagger = self.paradigm_a.tagger @ self.paradigm_a.feature_label_rewriter
-    forms = rewrite.rewrites("grádusov", tagger)
-    self.assertSameElements(["grádusov[case=gen][num=pl]"], forms)
-    tagger = self.paradigm_b.tagger @ self.paradigm_b.feature_label_rewriter
-    forms = rewrite.rewrites("stolóv", tagger)
-    self.assertSameElements(["stolóv[case=gen][num=pl]"], forms)
+    self.assertSameElements([("grádusov",
+                              features.FeatureVector(self.paradigm_a.category,
+                                                     "case=gen", "num=pl"))],
+                            self.paradigm_a.tag("grádusov"))
+    self.assertSameElements([("stolóv",
+                              features.FeatureVector(self.paradigm_b.category,
+                                                     "case=gen", "num=pl"))],
+                            self.paradigm_b.tag("stolóv"))
 
   def testLemmatizer(self):
-    lemmatizer = (
-        self.paradigm_a.lemmatizer @ self.paradigm_a.feature_label_rewriter)
-    forms = rewrite.rewrites("grádusov", lemmatizer)
-    self.assertSameElements(["grádus[case=gen][num=pl]"], forms)
-    lemmatizer = (
-        self.paradigm_b.lemmatizer @ self.paradigm_b.feature_label_rewriter)
-    forms = rewrite.rewrites("stolóv", lemmatizer)
-    self.assertSameElements(["stól[case=gen][num=pl]"], forms)
+    self.assertSameElements([("grádus",
+                              features.FeatureVector(self.paradigm_a.category,
+                                                     "case=gen", "num=pl"))],
+                            self.paradigm_a.lemmatize("grádusov"))
+    self.assertSameElements([("stól",
+                              features.FeatureVector(self.paradigm_b.category,
+                                                     "case=gen", "num=pl"))],
+                            self.paradigm_b.lemmatize("stolóv"))
 
   def testInflector(self):
-    forms = rewrite.rewrites("grádus[case=gen][num=pl]",
-                             self.paradigm_a.inflector)
-    self.assertSameElements(["grádusov"], forms)
-    forms = rewrite.rewrites("stól[case=gen][num=pl]",
-                             self.paradigm_b.inflector)
-    self.assertSameElements(["stolóv"], forms)
+    self.assertSameElements(["grádusov"],
+                            self.paradigm_a.inflect(
+                                "grádus",
+                                features.FeatureVector(self.paradigm_a.category,
+                                                       "case=gen", "num=pl")))
+    self.assertSameElements(["stolóv"],
+                            self.paradigm_b.inflect(
+                                "stól",
+                                features.FeatureVector(self.paradigm_b.category,
+                                                       "case=gen", "num=pl")))
 
 
 if __name__ == "__main__":

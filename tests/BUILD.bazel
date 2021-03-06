@@ -44,7 +44,7 @@ py_test(
     name = "chatspeak_test",
     size = "small",
     srcs = ["chatspeak_test.py"],
-    data = [":testdata/chatspeak_lexicon.tsv"],
+    data = ["//tests/testdata:chatspeak_lexicon.tsv"],
     python_version = "PY3",
     deps = [
         "//pynini",
@@ -196,7 +196,7 @@ py_test(
     name = "pynini_test",
     size = "small",
     srcs = ["pynini_test.py"],
-    data = ["testdata/str.map"],
+    data = ["//tests/testdata:str.map"],
     python_version = "PY3",
     srcs_version = "PY3ONLY",
     deps = [

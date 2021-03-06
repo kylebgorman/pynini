@@ -1,4 +1,3 @@
-# Lint as: python3
 # Copyright 2016-2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,9 +45,10 @@ class ChatspeakTest(absltest.TestCase):
     cls.deduplicator = chatspeak.Deduplicator(lexicon)
     cls.deabbreviator = chatspeak.Deabbreviator(lexicon)
     cls.regexps = chatspeak.Regexps()
+    # Set the directory to org_opengrm_pynini/tests/testdata" for Bazel testing.
     cls.lexicon = chatspeak.Lexicon(
         os.path.join(
-            FLAGS.test_srcdir, "org_opengrm_pynini/tests/"
+            FLAGS.test_srcdir, "tests/"
             "testdata/chatspeak_lexicon.tsv"))
 
   def testDeduplicator(self):

@@ -17,6 +17,7 @@
 #ifndef PYNINI_CONCATRANGESCRIPT_H_
 #define PYNINI_CONCATRANGESCRIPT_H_
 
+#include <cstdint>
 #include <utility>
 
 #include <fst/script/fst-class.h>
@@ -25,7 +26,7 @@
 namespace fst {
 namespace script {
 
-using ConcatRangeArgs = std::tuple<MutableFstClass *, int32, int32>;
+using ConcatRangeArgs = std::tuple<MutableFstClass *, int32_t, int32_t>;
 
 template <class Arc>
 void ConcatRange(ConcatRangeArgs *args) {
@@ -33,7 +34,7 @@ void ConcatRange(ConcatRangeArgs *args) {
   ConcatRange(fst, std::get<1>(*args), std::get<2>(*args));
 }
 
-void ConcatRange(MutableFstClass *fst, int32 lower = 0, int32 upper = 0);
+void ConcatRange(MutableFstClass *fst, int32_t lower = 0, int32_t upper = 0);
 
 }  // namespace script
 }  // namespace fst

@@ -1,11 +1,21 @@
+v. 2.1.4 (compatible with OpenFst 1.8.1)
+========================================
+
+* Adds LM generation script to `scripts/`
+* Adds rewriting methods to `Paradigms` class
+* Nonexistent `string_file`s now raise FstIOError
+* Adds optional bound on number of edits to `EditTransducer`
+* Cython fix for building with Bazel on macOS.
+
 v. 2.1.3 (compatible with OpenFst 1.8.0)
 =========================================
 
+* Adds `export` submodule
 * Adds `examples` submodule
 * Renames `acceptor` to `accep`
 * Adds `join` operator to `pynutil`
 * Iterator classes are now protected (e.g., `_StateIterator`); use
-  `arcs`, `mutable_arcs`, `paths`, and `states` methods instead.
+  `arcs`, `mutable_arcs`, `paths`, and `states` methods instead
 * Renames `byte` lib's `BYTES` to `BYTE`
 
 v. 2.1.2 (compatible with OpenFst 1.7.9)
@@ -52,7 +62,7 @@ v. 2.0.9 (compatible with OpenFst 1.7.4)
 * Removes underutilized `epsilon_machine` function
 * Fixes off-by-one allocation bug in string compiler
 * Fixes arc-type bug with cross-product of precompiled acceptors
-* Merges `input_token_type` and `output_token_type` (as `token_type`) and 
+* Merges `input_token_type` and `output_token_type` (as `token_type`) and
   `attach_input_symbols` and `attach_output_symbols` (as `attach_symbols`)
   in `transducer`
 
@@ -208,12 +218,12 @@ v. 1.0
 ======
 
 * Weight objects now support semiring arithmetic
-* Fixes bug whereby using an incompatible weight argument to `acceptor` or 
+* Fixes bug whereby using an incompatible weight argument to `acceptor` or
   `transducer` would result in segmentation fault
 * In any binary operation with a string and an FST, the FST's arc type is used
   to compile the string, rather than assuming the string is a standard arc FST
 * Extensive low-level improvements to all string libraries
-* Adds traditional getter methods in place of Python properties in nearly all 
+* Adds traditional getter methods in place of Python properties in nearly all
   ases
 * Adds `containment` and `leniently_compose` methods
 * Adds `epsilon_machine` function

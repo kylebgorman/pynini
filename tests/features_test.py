@@ -1,4 +1,3 @@
-# Lint as: python3
 # Copyright 2016-2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,12 +39,22 @@ class FeaturesTest(absltest.TestCase):
     cls.noun = features.Category(cls.case, cls.number, cls.gender)
     cls.fm = cls.noun.feature_mapper
 
+  def testFeatureRepr(self):
+    self.assertEqual(
+        repr(self.case), "Feature('case', 'nom', 'gen', 'dat', 'acc')")
+
   def testFeature(self):
     self.assertEqual(self.case.name, "case")
     self.assertSameElements(self.case.values, ("nom", "gen", "dat", "acc"))
     golden_acceptor = pynini.union("[case=nom]", "[case=gen]", "[case=dat]",
                                    "[case=acc]").optimize()
     self.assertEqual(self.case.acceptor, golden_acceptor)
+
+  def testCategoryRepr(self):
+    self.assertEqual(
+        repr(self.noun),
+        "Category(Feature('case', 'nom', 'gen', 'dat', 'acc'), "
+        "Feature('gen', 'mas', 'fem', 'neu'), Feature('num', 'sg', 'pl'))")
 
   def testCategory(self):
     cat = "[case=nom][gen=fem][num=sg]" @ self.noun.acceptor @ self.fm
@@ -60,6 +69,20 @@ class FeaturesTest(absltest.TestCase):
     gender = features.Feature("gen", "fem", "mas", "neu")
     noun = features.Category(case, number, gender)
     self.assertEqual(noun, self.noun)
+
+  def testFeatureVectorRepr(self):
+    fv = features.FeatureVector(self.noun, "num=sg", "case=dat")
+    self.assertEqual(
+        repr(fv),
+        "FeatureVector(Category(Feature('case', 'nom', 'gen', 'dat', 'acc'), "
+        "Feature('gen', 'mas', 'fem', 'neu'), Feature('num', 'sg', 'pl')), "
+        "'num=sg', 'case=dat')")
+    fv = features.FeatureVector(self.noun, "gen=fem", "case=nom")
+    self.assertEqual(
+        repr(fv),
+        "FeatureVector(Category(Feature('case', 'nom', 'gen', 'dat', 'acc'), "
+        "Feature('gen', 'mas', 'fem', 'neu'), Feature('num', 'sg', 'pl')), "
+        "'gen=fem', 'case=nom')")
 
   def testFeatureVector(self):
     fv = features.FeatureVector(self.noun, "num=sg", "case=dat")

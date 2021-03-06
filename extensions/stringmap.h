@@ -34,7 +34,7 @@
 #include "stringcompile.h"
 #include "stringfile.h"
 
-#include "gtl.h"
+#include <fst/compat.h>
 
 namespace fst {
 namespace internal {
@@ -178,7 +178,7 @@ bool StringMapCompile(internal::ColumnStringFile *csf, MutableFst<Arc> *fst,
     const auto log_line_compilation_error = [&csf, &line]() {
       LOG(ERROR) << "StringFileCompile: Ill-formed line " << csf->LineNumber()
                  << " in file " << csf->Filename() << ": `"
-                 << strings::Join(line, "\t") << "`";
+                 << fst::StringJoin(line, "\t") << "`";
       return false;
     };
     switch (line.size()) {
@@ -225,7 +225,7 @@ bool StringMapCompile(const std::vector<std::vector<std::string>> &lines,
   for (const auto &line : lines) {
     const auto log_line_compilation_error = [&line]() {
       LOG(ERROR) << "StringMapCompile: Ill-formed line: `"
-                 << strings::Join(line, "\t") << "`";
+                 << fst::StringJoin(line, "\t") << "`";
       return false;
     };
     switch (line.size()) {
@@ -320,7 +320,7 @@ bool StringFileCompile(
     const SymbolTable *input_symbols = nullptr,
     const SymbolTable *output_symbols = nullptr) {
   internal::ColumnStringFile csf(source);
-  if (csf.Bad()) return false;  // File opening failed.
+  if (csf.Error()) return false;  // File opening failed.
   return internal::StringMapCompileWithAcceptorCheck(
       &csf, fst, input_token_type, output_token_type, input_symbols,
       output_symbols);

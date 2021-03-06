@@ -21,7 +21,7 @@
 #include <vector>
 
 #include <fstream>
-#include "gtl.h"
+#include <fst/compat.h>
 
 
 namespace fst {
@@ -34,7 +34,7 @@ class StringFile {
   // Opens a file input stream using the provided filename.
   explicit StringFile(const std::string &source)
       : istrm_(source), linenum_(0), source_(source) {
-    if (!!istrm_) Next();
+    Next();
   }
 
   void Reset();
@@ -49,7 +49,7 @@ class StringFile {
 
   const std::string &Filename() const { return source_; }
 
-  bool Bad() const { return istrm_.bad(); }
+  bool Error() const { return !istrm_.is_open() || istrm_.bad(); }
 
  private:
   std::ifstream istrm_;
@@ -78,10 +78,10 @@ class ColumnStringFile {
 
   const std::string &Filename() const { return sf_.Filename(); }
 
-  bool Bad() const { return sf_.Bad(); }
+  bool Error() const { return sf_.Error(); }
 
  private:
-  void Parse() { row_ = strings::Split(sf_.GetString(), '\t'); }
+  void Parse() { row_ = fst::StringSplit(sf_.GetString(), '\t'); }
 
   StringFile sf_;
   std::vector<std::string> row_;

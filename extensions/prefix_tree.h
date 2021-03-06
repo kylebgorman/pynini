@@ -36,7 +36,7 @@ template <class Label, class StateId, class Node>
 Node *LookupOrInsertChild(std::map<Label, std::unique_ptr<Node>> *children,
                           Label label, StateId *num_states) {
   std::unique_ptr<Node> &value = (*children)[label];
-  if (!value) value = fst::make_unique<Node>((*num_states)++);
+  if (!value) value = std::make_unique<Node>((*num_states)++);
   return value.get();
 }
 
@@ -114,7 +114,7 @@ struct PrefixTreeTransducerPolicy {
 
     void InsertONode(StateId *num_states) {
       using Base = BaseINode<StateId, ONode>;
-      Base::onode_ = fst::make_unique<ONode>((*num_states)++);
+      Base::onode_ = std::make_unique<ONode>((*num_states)++);
     }
 
    private:
@@ -176,7 +176,7 @@ struct PrefixTreeAcceptorPolicy {
       using Base = BaseINode<StateId, ONode>;
       // Make the ONode copy the INode's StateId, and not increment external
       // `num_states`.
-      Base::onode_ = fst::make_unique<ONode>(Base::state_);
+      Base::onode_ = std::make_unique<ONode>(Base::state_);
     }
 
    private:
@@ -217,7 +217,7 @@ class PrefixTree {
            T &&weight) {
     if (!root_) {
       CHECK_EQ(0, num_states_);
-      root_ = fst::make_unique<INode>(num_states_++);
+      root_ = std::make_unique<INode>(num_states_++);
     }
     INode *inode = root_.get();
     for (Label ilabel : fst::make_range(it1, end1)) {
@@ -226,7 +226,7 @@ class PrefixTree {
     }
     if (!inode->Output()) inode->InsertONode(&num_states_);
     ONode *onode = inode->Output();
-    if (!Policy::IsAcceptor()) {
+    if constexpr (!Policy::IsAcceptor()) {
       for (Label olabel : fst::make_range(it2, end2)) {
         if (!olabel) continue;  // Skips over epsilons.
         onode = onode->LookupOrInsertChild(olabel, &num_states_);

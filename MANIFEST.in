@@ -6,4 +6,9 @@ include NEWS
 include extensions/*
 include pynini/*
 include pywrapfst/*
+include scripts/*
 include tests/*
+include tests/testdata/*
+include third_party/bazel/*
+global-include *.bazel
+global-include *.bzl

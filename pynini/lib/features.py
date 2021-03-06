@@ -1,4 +1,3 @@
-# Lint as: python3
 # Copyright 2016-2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,6 +72,11 @@ class Feature:
     self._acceptor = pynini.union(*(f"[{self._name}={v}]"
                                     for v in self._values))
     self._acceptor.optimize()
+
+  def __repr__(self) -> str:
+    return (f"{self.__class__.__name__}("
+            f"{self._name!r}, "
+            f"{', '.join(repr(value) for value in self._values)})")
 
   def __eq__(self, other: "Feature") -> bool:
     return (isinstance(other, self.__class__) and self.name == other.name and
@@ -183,14 +187,9 @@ class Category:
         pairs.append(pynini.cross(f, v))
     return pynini.union(*pairs).closure().optimize()
 
-  def _make_sigma_star(self) -> pynini.Fst:
-    r"""Convenience function generating \Sigma^* including feature labels.
-
-    Returns:
-      A \Sigma^* transducer.
-    """
-    feature_labels = pynini.project(self._feature_mapper, "input")
-    return pynini.union(byte.BYTE, feature_labels).closure().optimize()
+  def __repr__(self) -> str:
+    return (f"{self.__class__.__name__}"
+            f"({', '.join(repr(feature) for feature in self.features)})")
 
   def __eq__(self, other: "Category") -> bool:
     return (isinstance(other, self.__class__) and
@@ -198,6 +197,11 @@ class Category:
 
   def __ne__(self, other: "Category") -> bool:
     return not self.__eq__(other)
+
+  def __lt__(self, other: "Category") -> bool:
+    if not isinstance(other, self.__class__):
+      return NotImplemented
+    return self.features < other.features
 
   @property
   def features(self) -> List[Feature]:
@@ -242,33 +246,42 @@ class FeatureVector:
     if not features_and_values:
       raise Error("No features_and_values provided")
     self._category = category
-    self._feature_settings = {}
+    self._values = {}
     valid_names = frozenset(f.name for f in category.features)
     for feature_and_value in features_and_values:
       (f, v) = feature_and_value.split("=")
       if f not in valid_names:
         raise Error(f"Invalid name: {f}")
-      self._feature_settings[f] = v
+      self._values[f] = v
     acceptors = []
     for feature in category.features:
-      if feature.name in self._feature_settings:
-        if self._feature_settings[feature.name] not in feature.values:
+      if feature.name in self._values:
+        if self._values[feature.name] not in feature.values:
           raise Error(f"Invalid name: {feature.name}")
         acceptors.append(
-            pynini.accep(
-                f"[{feature.name}={self._feature_settings[feature.name]}]"))
+            pynini.accep(f"[{feature.name}={self._values[feature.name]}]"))
       else:
         # If not specified, allows all values.
         acceptors.append(feature.acceptor)
     self._acceptor = _concatstar(acceptors)
 
+  def __repr__(self) -> str:
+    return (
+        f"{self.__class__.__name__}("
+        f"{self._category!r}, "
+        f"""{', '.join(f"'{f}={v}'" for (f, v) in self._values.items())})""")
+
   def __eq__(self, other: "FeatureVector") -> bool:
     return (isinstance(other, self.__class__) and
-            self.category == other.category and
-            self.feature_settings == other.feature_settings)
+            self.category == other.category and self.values == other.values)
 
   def __ne__(self, other: "FeatureVector") -> bool:
     return not self.__eq__(other)
+
+  def __lt__(self, other: "FeatureVector") -> bool:
+    if not isinstance(other, self.__class__):
+      return NotImplemented
+    return self.category < other.category
 
   def unify(self, other: "FeatureVector") -> Optional["FeatureVector"]:
     """Implements (non-reentrant) unification.
@@ -282,26 +295,24 @@ class FeatureVector:
     """
     if self.category != other.category:
       return None
-    feature_settings = set()
-    for f in self.feature_settings:
-      v = self.feature_settings[f]
-      if f in other.feature_settings:
-        if other.feature_settings[f] != v:  # Mismatch failure.
+    values = set()
+    for (f, v) in self.values.items():
+      if f in other.values:
+        if other.values[f] != v:  # Mismatch failure.
           return None
         else:
-          feature_settings.add(f"{f}={v}")
+          values.add(f"{f}={v}")
       else:
-        feature_settings.add(f"{f}={v}")
-    for f in other.feature_settings:
-      v = other.feature_settings[f]
-      if f in self.feature_settings:
-        if self.feature_settings[f] != v:  # Mismatch failure.
+        values.add(f"{f}={v}")
+    for (f, v) in other.values.items():
+      if f in self.values:
+        if self.values[f] != v:  # Mismatch failure.
           return None
         else:
-          feature_settings.add(f"{f}={v}")
+          values.add(f"{f}={v}")
       else:
-        feature_settings.add(f"{f}={v}")
-    return FeatureVector(self.category, *feature_settings)
+        values.add(f"{f}={v}")
+    return FeatureVector(self.category, *values)
 
   @property
   def acceptor(self) -> pynini.Fst:
@@ -312,6 +323,6 @@ class FeatureVector:
     return self._category
 
   @property
-  def feature_settings(self) -> Dict[str, str]:
-    return self._feature_settings
+  def values(self) -> Dict[str, str]:
+    return self._values
 

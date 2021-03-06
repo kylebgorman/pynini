@@ -15,14 +15,14 @@
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 
-from io import open
-from os import path
+import os.path
+import pathlib
+import sys
+
+from Cython.Build import cythonize
 from setuptools import Extension
 from setuptools import find_packages
 from setuptools import setup
-from sys import platform
-
-from Cython.Build import cythonize
 
 
 COMPILE_ARGS = [
@@ -33,7 +33,7 @@ COMPILE_ARGS = [
     "-Wno-unused-local-typedefs",
     "-funsigned-char",
 ]
-if platform.startswith("darwin"):
+if sys.platform.startswith("darwin"):
   COMPILE_ARGS.append("-stdlib=libc++")
   COMPILE_ARGS.append("-mmacosx-version-min=10.7")
 
@@ -60,7 +60,6 @@ pynini = Extension(
         "extensions/crossscript.cc",
         "extensions/defaults.cc",
         "extensions/getters.cc",
-        "extensions/gtl.cc",
         "extensions/lenientlycomposescript.cc",
         "extensions/optimizescript.cc",
         "extensions/pathsscript.cc",
@@ -74,12 +73,24 @@ pynini = Extension(
 )
 
 
-this_directory = path.abspath(path.dirname(__file__))
-with open(path.join(this_directory, "README.md"), encoding="utf8") as source:
+this_directory = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
+with (this_directory / "README.md").open(encoding="utf8") as source:
   long_description = source.read()
 
 
-__version__ = "2.1.3"
+def get_version(rel_path):
+  # Searches through a file to find a `__version__ = "X.Y.Z"` string.
+  # From https://packaging.python.org/guides/single-sourcing-package-version/.
+  with (this_directory / rel_path).open(encoding="utf8") as fp:
+    for line in fp:
+      if line.startswith("__version__"):
+        delim = '"' if '"' in line else "'"
+        return line.split(delim)[1]
+    else:
+      raise RuntimeError("Unable to find version string.")
+
+
+__version__ = get_version("extensions/_pynini.pyx")
 
 
 def main() -> None:
@@ -114,7 +125,7 @@ def main() -> None:
       license="Apache 2.0",
       install_requires=["Cython >= 0.29"],
       ext_modules=cythonize([pywrapfst, pynini]),
-      packages=find_packages(exclude=["tests"]),
+      packages=find_packages(exclude=["scripts", "tests"]),
       package_data={
           "pywrapfst": ["__init__.pyi", "py.typed"],
           "pynini": ["__init__.pyi", "py.typed"],

@@ -1,4 +1,3 @@
-# Lint as: python3
 # Copyright 2016-2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,11 +44,11 @@ class ChatspeakModelTest(absltest.TestCase):
   def setUpClass(cls):
     super().setUpClass()
     chat_lexicon_path = os.path.join(
-        FLAGS.test_srcdir, "org_opengrm_pynini/tests/"
+        FLAGS.test_srcdir, "tests/"
         "testdata/chatspeak_lexicon.tsv")
     lm_path = os.path.join(
         FLAGS.test_srcdir,
-        "org_opengrm_pynini/tests/earnest.lm")
+        "tests/testdata/earnest.fst")
     cls.chatspeak_model = chatspeak_model.ChatspeakModel(
         chat_lexicon_path, lm_path)
 

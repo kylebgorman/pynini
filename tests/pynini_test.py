@@ -198,7 +198,7 @@ class ExceptionsTest(unittest.TestCase):
     cls.exchange = cross("Liptauer", "No")
     cls.f = Fst()
     cls.s = SymbolTable()
-    cls.map_file = "testdata/str.map"
+    cls.map_file = "tests/testdata/str.map"
 
   def testBadDestinationIndexAddArcDoesNotRaiseFstIndexError(self):
     f = self.f.copy()
@@ -271,6 +271,10 @@ class ExceptionsTest(unittest.TestCase):
     with self.assertRaises(FstArgError):
       unused_f = string_file(self.map_file, output_token_type="nonexistent")
 
+  def testNonexistentStringFileRaisesFstIOError(self):
+    with self.assertRaises(FstIOError):
+      unused_f = string_file("nonexistent")
+
   def testGarbageInputTokenTypeStringMapRaisesFstArgError(self):
     with self.assertRaises(FstArgError):
       unused_f = string_map([], input_token_type="nonexistent")
@@ -281,11 +285,11 @@ class ExceptionsTest(unittest.TestCase):
 
   def testGarbageInputTokenTypeStringPathIteratorRaisesFstArgError(self):
     with self.assertRaises(FstArgError):
-      unused_sp = StringPathIterator(self.f, input_token_type="nonexistent")
+      unused_sp = self.f.paths(input_token_type="nonexistent")
 
   def testGarbageOutputTokenTypeStringPathIteratorRaisesFstArgError(self):
     with self.assertRaises(FstArgError):
-      unused_sp = StringPathIterator(self.f, output_token_type="nonexistent")
+      unused_sp = self.f.paths(output_token_type="nonexistent")
 
   def testTransducerDifferenceRaisesFstArgError(self):
     with self.assertRaises(FstOpError):
@@ -580,7 +584,8 @@ class StringFileTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    cls.map_file = "testdata/str.map"
+    # Set the directory to org_opengrm_pynini/tests/testdata" for Bazel testing.
+    cls.map_file = "tests/testdata/str.map"
 
   def ContainsMapping(self, istring, mapper, ostring):
     lattice = compose(istring, mapper, compose_filter="alt_sequence")
@@ -707,7 +712,7 @@ class StringPathIteratorTest(unittest.TestCase):
   def testStringPathsAfterFstDeletion(self):
     cheeses = ("Pipo Crem'", "Fynbo")
     f = union(*cheeses)
-    sp = StringPathIterator(f)
+    sp = f.paths()
     del f  # Should be garbage-collected immediately.
     self.assertCountEqual(sp.ostrings(), cheeses)
 
@@ -717,8 +722,7 @@ class StringPathIteratorTest(unittest.TestCase):
     # epsilon-arc, a fact we take advantage of here.
     cheeses = ("Ilchester", "Limburger")
     f = union(*cheeses)
-    sp = StringPathIterator(f)
-    self.assertCountEqual(cheeses, sp.ostrings())
+    self.assertCountEqual(cheeses, f.paths().ostrings())
 
 
 class SymbolTableTest(unittest.TestCase):

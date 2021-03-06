@@ -18,10 +18,8 @@
 #ifndef PYNINI_GTL_H_
 #define PYNINI_GTL_H_
 
-#include <algorithm>
 #include <string>
 #include <utility>
-#include <vector>
 
 // Prefix tree stuff.
 
@@ -52,19 +50,7 @@ inline void StringReplace(std::string *full, const std::string &before,
     pos += after.size();
   }
 }
-
-inline void StripTrailingAsciiWhitespace(std::string *full) {
-  const auto lambda = [](char ch) { return !std::isspace(ch); };
-  const auto pos = std::find_if(full->rbegin(), full->rend(), lambda).base();
-  full->erase(pos, full->end());
-}
-
 }  // namespace internal
-
-std::string Join(const std::vector<std::string> &elements,
-                 const std::string &delim);
-
-std::vector<std::string> Split(const std::string &full, char delim);
 
 inline std::string StringReplace(const std::string &full,
                                  const std::string &before,
@@ -73,13 +59,6 @@ inline std::string StringReplace(const std::string &full,
   internal::StringReplace(&copy, before, after);
   return copy;
 }
-
-inline std::string StripTrailingAsciiWhitespace(const std::string &full) {
-  std::string copy(full);
-  internal::StripTrailingAsciiWhitespace(&copy);
-  return copy;
-}
-
 }  // namespace strings
 
 #endif  // PYNINI_GTL_H_

@@ -18,6 +18,7 @@
 #define PYNINI_PATHSSCRIPT_H_
 
 #include <algorithm>
+#include <cstdint>
 #include <vector>
 
 #include <fst/script/arg-packs.h>
@@ -32,13 +33,13 @@ class StringPathIteratorImplBase {
  public:
   virtual bool Done() const = 0;
   virtual bool Error() const = 0;
-  virtual void ILabels(std::vector<int64> *labels) const = 0;
-  virtual std::vector<int64> ILabels() const = 0;
+  virtual void ILabels(std::vector<int64_t> *labels) const = 0;
+  virtual std::vector<int64_t> ILabels() const = 0;
   virtual void IString(std::string *result) const = 0;
   virtual std::string IString() const = 0;
   virtual void Next() = 0;
-  virtual void OLabels(std::vector<int64> *labels) const = 0;
-  virtual std::vector<int64> OLabels() const = 0;
+  virtual void OLabels(std::vector<int64_t> *labels) const = 0;
+  virtual std::vector<int64_t> OLabels() const = 0;
   virtual void OString(std::string *result) const = 0;
   virtual std::string OString() const = 0;
   virtual void Reset() = 0;
@@ -65,15 +66,15 @@ class StringPathIteratorImpl : public StringPathIteratorImplBase {
 
   bool Error() const override { return impl_->Error(); }
 
-  void ILabels(std::vector<int64> *labels) const override {
+  void ILabels(std::vector<int64_t> *labels) const override {
     const auto &typed_labels = impl_->ILabels();
     labels->clear();
     labels->resize(typed_labels.size());
     std::copy(typed_labels.begin(), typed_labels.end(), labels->begin());
   }
 
-  std::vector<int64> ILabels() const override {
-    std::vector<int64> labels;
+  std::vector<int64_t> ILabels() const override {
+    std::vector<int64_t> labels;
     ILabels(&labels);
     return labels;
   }
@@ -86,15 +87,15 @@ class StringPathIteratorImpl : public StringPathIteratorImplBase {
 
   void Reset() override { impl_->Reset(); }
 
-  void OLabels(std::vector<int64> *labels) const override {
+  void OLabels(std::vector<int64_t> *labels) const override {
     const auto &typed_labels = impl_->OLabels();
     labels->clear();
     labels->resize(typed_labels.size());
     std::copy(typed_labels.begin(), typed_labels.end(), labels->begin());
   }
 
-  std::vector<int64> OLabels() const override {
-    std::vector<int64> labels;
+  std::vector<int64_t> OLabels() const override {
+    std::vector<int64_t> labels;
     OLabels(&labels);
     return labels;
   }
@@ -134,9 +135,9 @@ class StringPathIteratorClass {
 
   bool Error() const { return impl_->Error(); }
 
-  void ILabels(std::vector<int64> *labels) const { impl_->ILabels(labels); }
+  void ILabels(std::vector<int64_t> *labels) const { impl_->ILabels(labels); }
 
-  std::vector<int64> ILabels() const { return impl_->ILabels(); }
+  std::vector<int64_t> ILabels() const { return impl_->ILabels(); }
 
   template <class Arc>
   friend void InitStringPathIteratorClass(
@@ -150,9 +151,9 @@ class StringPathIteratorClass {
 
   void Reset() { impl_->Reset(); }
 
-  void OLabels(std::vector<int64> *labels) const { impl_->OLabels(labels); }
+  void OLabels(std::vector<int64_t> *labels) const { impl_->OLabels(labels); }
 
-  std::vector<int64> OLabels() const { return impl_->OLabels(); }
+  std::vector<int64_t> OLabels() const { return impl_->OLabels(); }
 
   std::string OString() const { return impl_->OString(); }
 

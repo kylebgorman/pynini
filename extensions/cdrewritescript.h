@@ -17,6 +17,7 @@
 #ifndef PYNINI_CDREWRITESCRIPT_H_
 #define PYNINI_CDREWRITESCRIPT_H_
 
+#include <cstdint>
 #include <utility>
 
 #include <fst/types.h>
@@ -29,7 +30,7 @@ namespace script {
 using CDRewriteCompileArgs1 =
     std::tuple<const FstClass &, const FstClass &, const FstClass &,
                const FstClass &, const FstClass &, MutableFstClass *,
-               CDRewriteDirection, CDRewriteMode, int64, int64>;
+               CDRewriteDirection, CDRewriteMode, int64_t, int64_t>;
 
 template <class Arc>
 void CDRewriteCompile(CDRewriteCompileArgs1 *args) {
@@ -51,13 +52,13 @@ void CDRewriteCompile(const FstClass &phi, const FstClass &psi,
                       const FstClass &lambda, const FstClass &rho,
                       const FstClass &sigma, MutableFstClass *ofst,
                       CDRewriteDirection dir, CDRewriteMode mode,
-                      int64 initial_boundary_marker = kNoLabel,
-                      int64 final_boundary_marker = kNoLabel);
+                      int64_t initial_boundary_marker = kNoLabel,
+                      int64_t final_boundary_marker = kNoLabel);
 
 using CDRewriteCompileArgs2 =
     std::tuple<const FstClass &, const FstClass &, const FstClass &,
                const FstClass &, MutableFstClass *, CDRewriteDirection,
-               CDRewriteMode, int64, int64>;
+               CDRewriteMode, int64_t, int64_t>;
 
 template <class Arc>
 void CDRewriteCompile(CDRewriteCompileArgs2 *args) {
@@ -78,8 +79,8 @@ void CDRewriteCompile(const FstClass &tau, const FstClass &lambda,
                       const FstClass &rho, const FstClass &sigma,
                       MutableFstClass *ofst, CDRewriteDirection dir,
                       CDRewriteMode mode,
-                      int64 initial_boundary_marker = kNoLabel,
-                      int64 final_boundary_marker = kNoLabel);
+                      int64_t initial_boundary_marker = kNoLabel,
+                      int64_t final_boundary_marker = kNoLabel);
 
 }  // namespace script
 }  // namespace fst

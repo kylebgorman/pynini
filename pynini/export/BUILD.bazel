@@ -1,0 +1,83 @@
+# Copyright 2015-2020 Google LLC. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
+
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load(":grm_py_build_defs.bzl", "compile_grm_py", "compile_multi_grm_py")
+
+py_library(
+    name = "export",
+    srcs = ["export.py"],
+    srcs_version = "PY3ONLY",
+    deps = ["//pynini"],
+)
+
+py_library(
+    name = "grm",
+    srcs = ["grm.py"],
+    srcs_version = "PY3ONLY",
+    deps = [
+        ":export",
+        "@io_abseil_py//absl:app",
+        "@io_abseil_py//absl/flags",
+    ],
+)
+
+compile_grm_py(
+    name = "grm_example",
+    deps = ["//pynini"],
+)
+
+build_test(
+    name = "grm_example_test",
+    targets = [":grm_example"],
+)
+
+py_library(
+    name = "multi_grm",
+    srcs = ["multi_grm.py"],
+    srcs_version = "PY3ONLY",
+    deps = [
+        ":export",
+        "@io_abseil_py//absl:app",
+        "@io_abseil_py//absl/flags",
+    ],
+)
+
+compile_multi_grm_py(
+    name = "multi_grm_example",
+    outs = {
+        "a": "a.far",
+        "b": "b.far",
+    },
+    deps = ["//pynini"],
+)
+
+build_test(
+    name = "multi_grm_example_test",
+    targets = [":multi_grm_example"],
+)
+
+bzl_library(
+    name = "grm_py_build_defs_bzl",
+    srcs = ["grm_py_build_defs.bzl"],
+)
+
+# Local Variables:
+# mode: bazel-build
+# End:

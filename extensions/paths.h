@@ -27,6 +27,7 @@
 // StringPathIterator wrapper knows about this and also checks the input FST's
 // properties (e.g., to make sure that it is acyclic).
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -36,8 +37,8 @@
 
 namespace fst {
 
-constexpr int32 kInitialStateIsFinal = -2;
-constexpr int32 kNewState = -1;
+constexpr int32_t kInitialStateIsFinal = -2;
+constexpr int32_t kNewState = -1;
 
 // An iterator to provide a succession of paths from an automaton. Calling
 // Next() gets the next path. Done() returns true if all the paths have been
@@ -106,7 +107,7 @@ class PathIterator {
   // Vector of offsets for each arc iterator for each state, so that we can
   // remember where we left off. Note that -2 (kInitialStateIsFinal) and -1
   // (kNewState) here have special meanings, on which see below.
-  std::vector<int32> arc_iterator_offsets_;
+  std::vector<int32_t> arc_iterator_offsets_;
   bool pop_labels_;
 
   PathIterator(const PathIterator &) = delete;

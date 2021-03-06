@@ -16,6 +16,8 @@
 
 #include "stringcompile.h"
 
+#include <cstdint>
+
 #include <cstdlib>
 
 namespace fst {
@@ -27,14 +29,14 @@ StringCompiler *StringCompiler::Get() {
 }
 
 // Returns kNoLabel on failure.
-int64 StringCompiler::NumericalSymbolToLabel(const std::string &token) const {
+int64_t StringCompiler::NumericalSymbolToLabel(const std::string &token) const {
   const auto *ctoken = token.c_str();
   char *p;
   const auto label = strtol(ctoken, &p, 0);
   return p < ctoken + token.size() ? kNoLabel : label;
 }
 
-int64 StringCompiler::StringSymbolToLabel(const std::string &token) {
+int64_t StringCompiler::StringSymbolToLabel(const std::string &token) {
   // Is a single byte.
   if (token.size() == 1) return *token.c_str();
   // Special handling for BOS and EOS markers in CDRewrite.
@@ -50,8 +52,9 @@ int64 StringCompiler::StringSymbolToLabel(const std::string &token) {
 
 // Tries numerical parsing first, and if that fails, treats it as a generated
 // label.
-int64 StringCompiler::NumericalOrStringSymbolToLabel(const std::string &token) {
-  int64 label = NumericalSymbolToLabel(token);
+int64_t StringCompiler::NumericalOrStringSymbolToLabel(
+    const std::string &token) {
+  int64_t label = NumericalSymbolToLabel(token);
   if (label == kNoLabel) label = StringSymbolToLabel(token);
   return label;
 }
@@ -70,15 +73,15 @@ void StringCompiler::Reset() {
   max_generated_ = 0xF0000;
 }
 
-bool StringCompiler::MergeIntoGeneratedSymbols(const SymbolTable &symtab,
-                                               std::map<int64, int64> *remap) {
+bool StringCompiler::MergeIntoGeneratedSymbols(
+    const SymbolTable &symtab, std::map<int64_t, int64_t> *remap) {
   if (remap == nullptr) {
     LOG(WARNING) << "Must provide a non-null remap";
     return false;
   }
   bool success = true;
   for (const auto &item : symtab) {
-    const int64 label = item.Label();
+    const int64_t label = item.Label();
     const std::string symbol = item.Symbol();
 
     // Checks to see if we already have this label paired with this
@@ -104,7 +107,7 @@ bool StringCompiler::MergeIntoGeneratedSymbols(const SymbolTable &symtab,
     } else if (slx == kNoSymbol) {
       // Case 2: symbol is new, but label is there and therefore mapped to
       // something else.
-      int64 new_label = max_generated_++;
+      int64_t new_label = max_generated_++;
       generated_.AddSymbol(symbol, new_label);
 
       remap->emplace(label, new_label);
@@ -112,13 +115,13 @@ bool StringCompiler::MergeIntoGeneratedSymbols(const SymbolTable &symtab,
     } else if (lsx.empty()) {
       // Case 3: label is new, but symbol is there and therefore mapped to
       // something else.
-      const int64 old_label = slx;
+      const int64_t old_label = slx;
       remap->emplace(label, old_label);
       VLOG(2) << "Remapping " << symbol << " to old label " << old_label;
     } else {
       // Case 4: Both symbol and label already exist.
       const std::string &old_symbol = lsx;
-      const int64 old_label = slx;
+      const int64_t old_label = slx;
       if (symbol == old_symbol && label == old_label) {
         // Same, so ok and nothing to do.
         continue;
@@ -150,7 +153,7 @@ const SymbolTable &GeneratedSymbols() {
 namespace thrax_internal {
 
 bool MergeIntoGeneratedSymbols(const SymbolTable &symtab,
-                               std::map<int64, int64> *remap) {
+                               std::map<int64_t, int64_t> *remap) {
   static auto *compiler = internal::StringCompiler::Get();
   return compiler->MergeIntoGeneratedSymbols(symtab, remap);
 }

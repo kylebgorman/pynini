@@ -17,6 +17,7 @@
 #ifndef PYNINI_STRING_VIEW_FST_H_
 #define PYNINI_STRING_VIEW_FST_H_
 
+#include <cstdint>
 #include <utility>
 
 #include <fst/types.h>
@@ -77,7 +78,7 @@ class UTF8Viewer {
     if ((c & 0x80) == 0) return {c, 1};
     const int size =
         (c >= 0xc0) + (c >= 0xe0) + (c >= 0xf0) + (c >= 0xf8) + (c >= 0xfc);
-    int32 code = c & ((1 << (6 - size)) - 1);
+    int32_t code = c & ((1 << (6 - size)) - 1);
     for (auto count = size; count > 0; --count) {
       if (byte_offset == view.size()) {
         LOG(ERROR) << "Truncated UTF-8 byte sequence";
@@ -118,9 +119,9 @@ class ArcIterator<StringViewFst<Arc, Viewer>> : public ArcIteratorBase<Arc> {
 
   void Reset() final { Seek(0); }
 
-  constexpr uint8 Flags() const final { return kArcValueFlags; }
+  constexpr uint8_t Flags() const final { return kArcValueFlags; }
 
-  constexpr void SetFlags(uint8, uint8) final {}
+  constexpr void SetFlags(uint8_t, uint8_t) final {}
 
   size_t Position() const final { return done_ ? 0 : 1; }
 
@@ -173,7 +174,7 @@ class StringViewFstImpl : public FstImpl<A> {
   absl::string_view view() const { return view_; }
 
  private:
-  static constexpr uint64 kStaticProperties =
+  static constexpr uint64_t kStaticProperties =
       kAcceptor | kExpanded | kIDeterministic | kODeterministic |
       kILabelSorted | kOLabelSorted | kUnweighted | kUnweightedCycles |
       kAcyclic | kInitialAcyclic | kTopSorted |
@@ -185,7 +186,7 @@ class StringViewFstImpl : public FstImpl<A> {
 };
 
 template <class A, class Viewer>
-constexpr uint64 StringViewFstImpl<A, Viewer>::kStaticProperties;
+constexpr uint64_t StringViewFstImpl<A, Viewer>::kStaticProperties;
 
 }  // namespace internal
 
@@ -238,7 +239,7 @@ class StringViewFst
 
   void InitArcIterator(StateId s, ArcIteratorData<Arc> *data) const override {
     data->base =
-        fst::make_unique<ArcIterator<StringViewFst<Arc, Viewer>>>(*this, s);
+        std::make_unique<ArcIterator<StringViewFst<Arc, Viewer>>>(*this, s);
   }
 
  private:

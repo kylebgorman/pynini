@@ -16,12 +16,14 @@
 
 #include "concatrangescript.h"
 
+#include <cstdint>
+
 #include <fst/script/script-impl.h>
 
 namespace fst {
 namespace script {
 
-void ConcatRange(MutableFstClass *fst, int32 lower, int32 upper) {
+void ConcatRange(MutableFstClass *fst, int32_t lower, int32_t upper) {
   ConcatRangeArgs args(fst, lower, upper);
   Apply<Operation<ConcatRangeArgs>>("ConcatRange", fst->ArcType(), &args);
 }

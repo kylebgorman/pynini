@@ -16,6 +16,8 @@
 
 #include "cdrewritescript.h"
 
+#include <cstdint>
+
 #include <fst/script/script-impl.h>
 
 namespace fst {
@@ -25,8 +27,8 @@ void CDRewriteCompile(const FstClass &phi, const FstClass &psi,
                       const FstClass &lambda, const FstClass &rho,
                       const FstClass &sigma, MutableFstClass *ofst,
                       CDRewriteDirection dir, CDRewriteMode mode,
-                      int64 initial_boundary_marker,
-                      int64 final_boundary_marker) {
+                      int64_t initial_boundary_marker,
+                      int64_t final_boundary_marker) {
   if (!internal::ArcTypesMatch(phi, psi, "CDRewriteCompile") ||
       !internal::ArcTypesMatch(psi, lambda, "CDRewriteCompile") ||
       !internal::ArcTypesMatch(lambda, rho, "CDRewriteCompile") ||
@@ -44,8 +46,8 @@ void CDRewriteCompile(const FstClass &phi, const FstClass &psi,
 void CDRewriteCompile(const FstClass &tau, const FstClass &lambda,
                       const FstClass &rho, const FstClass &sigma,
                       MutableFstClass *ofst, CDRewriteDirection dir,
-                      CDRewriteMode mode, int64 initial_boundary_marker,
-                      int64 final_boundary_marker) {
+                      CDRewriteMode mode, int64_t initial_boundary_marker,
+                      int64_t final_boundary_marker) {
   if (!internal::ArcTypesMatch(tau, lambda, "CDRewriteCompile") ||
       !internal::ArcTypesMatch(lambda, rho, "CDRewriteCompile") ||
       !internal::ArcTypesMatch(rho, sigma, "CDRewriteCompile") ||

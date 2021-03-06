@@ -1,4 +1,3 @@
-# Lint as: python3
 # Copyright 2016-2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -91,12 +90,15 @@ This is the inverse of the lemmatizer:
     aqua[case=acc][num=sg] -> aquam
 """
 
-from typing import List, Optional, Sequence, Tuple
+import array
+
+from typing import Iterator, List, Optional, Sequence, Tuple
 
 import pynini
 from pynini.lib import byte
 from pynini.lib import features
 from pynini.lib import pynutil
+from pynini.lib import rewrite
 
 
 class Error(Exception):
@@ -171,6 +173,9 @@ def suffix(affix: pynini.FstLike, stem_form: pynini.FstLike) -> pynini.Fst:
   return stem_form + pynutil.insert(affix)
 
 
+# Type aliases used below.
+
+Analysis = Tuple[str, features.FeatureVector]
 ParadigmSlot = Tuple[pynini.Fst, features.FeatureVector]
 
 
@@ -187,7 +192,7 @@ class Paradigm:
 
   def __init__(self,
                category: features.Category,
-               slots: Sequence[Tuple[pynini.Fst, features.FeatureVector]],
+               slots: Sequence[ParadigmSlot],
                lemma_feature_vector: features.FeatureVector,
                stems: Sequence[pynini.FstLike],
                rules: Optional[Sequence[pynini.Fst]] = None,
@@ -305,18 +310,8 @@ class Paradigm:
         parent_slot for parent_slot in self._parent_paradigm.slots
         if parent_slot[1] not in (slot[1] for slot in self._slots))
 
-  def _flip_lemmatizer_feature_labels(self,
-                                      lemmatizer: pynini.Fst) -> pynini.Fst:
-    """Helper function to flip lemmatizer's feature labels from input to output.
-
-    Destructive operation.
-
-    Args:
-      lemmatizer: FST representing a partially constructed lemmatizer.
-
-    Returns:
-      Modified lemmatizer.
-    """
+  def _flip_lemmatizer_feature_labels(self) -> None:
+    """Destructively flips lemmatizer's feature labels from input to output."""
     feature_labels = set()
     for s in self.category.feature_labels.states():
       aiter = self.category.feature_labels.arcs(s)
@@ -325,22 +320,21 @@ class Paradigm:
         if arc.ilabel:
           feature_labels.add(arc.ilabel)
         aiter.next()
-    lemmatizer.set_input_symbols(lemmatizer.output_symbols())
-    for s in lemmatizer.states():
-      maiter = lemmatizer.mutable_arcs(s)
+    self.lemmatizer.set_input_symbols(self.lemmatizer.output_symbols())
+    for s in self.lemmatizer.states():
+      maiter = self.lemmatizer.mutable_arcs(s)
       while not maiter.done():
         arc = maiter.value()
         if arc.olabel in feature_labels:
           # This assertion should always be true by construction.
           assert arc.ilabel == 0, (
               f"ilabel = "
-              f"{lemmatizer.input_symbols().find(arc.ilabel)},"
+              f"{self.lemmatizer.input_symbols().find(arc.ilabel)},"
               f" olabel = "
-              f"{lemmatizer.output_symbols().find(arc.olabel)}")
+              f"{self.lemmatizer.output_symbols().find(arc.olabel)}")
           arc = pynini.Arc(arc.olabel, arc.ilabel, arc.weight, arc.nextstate)
           maiter.set_value(arc)
         maiter.next()
-    return lemmatizer
 
   def _unconditioned_rewrite(self, tau: pynini.Fst) -> pynini.Fst:
     """Helper function for context-independent cdrewrites.
@@ -353,7 +347,36 @@ class Paradigm:
     """
     return pynini.cdrewrite(tau, "", "", self._category.sigma_star).optimize()
 
-  # The analyzer, tagger, lemmatizer, and inflector are all created lazily.
+  # Helper for parsing strings that contain stems and features.
+
+  def _parse_lattice(self, lattice: pynini.Fst) -> Iterator[Analysis]:
+    """Given a lattice, returns all string and feature vectors.
+
+    Args:
+      lattice: a rewrite lattice FST.
+
+    Yields:
+      Pairs of (string, feature vector).
+    """
+    gensym = pynini.generated_symbols()
+    piter = lattice.paths()
+    while not piter.done():
+      # Mutable byte array for the stem, analysis string, or wordform.
+      wordbuf = array.array("B")  # Mutable byte array.
+      features_and_values = []
+      for label in piter.olabels():
+        if not label:
+          continue
+        if label < 256:
+          wordbuf.append(label)
+        else:
+          features_and_values.append(gensym.find(label))
+      word = wordbuf.tobytes().decode("utf8")
+      vector = features.FeatureVector(self.category, *features_and_values)
+      yield (word, vector)
+      piter.next()
+
+  # The analyzer, inflector, lemmatizer, and tagger are all created lazily.
 
   @property
   def analyzer(self) -> Optional[pynini.Fst]:
@@ -370,6 +393,21 @@ class Paradigm:
     self._analyzer @= self._deleter
     self._analyzer.invert().optimize()
 
+  def analyze(self, word: pynini.FstLike) -> List[Analysis]:
+    """Returns list of possible analyses.
+
+    Args:
+      word: inflected form, the input to the analyzer.
+
+    Returns:
+      A list of possible analyses.
+
+    Raises:
+      rewrite.Error: compostion failure.
+    """
+    return list(
+        self._parse_lattice(rewrite.rewrite_lattice(word, self.analyzer)))
+
   @property
   def tagger(self) -> Optional[pynini.Fst]:
     if self.analyzer is None:
@@ -383,6 +421,20 @@ class Paradigm:
     """Helper function for constructing tagger."""
     self._tagger = self._analyzer @ self._boundary_deleter
     self._tagger.optimize()
+
+  def tag(self, word: pynini.FstLike) -> List[Analysis]:
+    """Returns list of possible taggings.
+
+    Args:
+      word: inflected form, the input to the tagger.
+
+    Returns:
+      A list of possible analysis.
+
+    Raises:
+      rewrite.Error: composition failure.
+    """
+    return list(self._parse_lattice(rewrite.rewrite_lattice(word, self.tagger)))
 
   @property
   def lemmatizer(self) -> Optional[pynini.Fst]:
@@ -400,7 +452,7 @@ class Paradigm:
     self._lemmatizer = self._stems_to_forms.copy()
     # Moves the feature labels to the input side, then invert. By construction
     # the feature labels are always concatenated to the end.
-    self._flip_lemmatizer_feature_labels(self._lemmatizer)
+    self._flip_lemmatizer_feature_labels()
     # Deletes boundary on the analysis side.
     self._lemmatizer @= self._boundary_deleter
     self._lemmatizer.invert()
@@ -408,6 +460,21 @@ class Paradigm:
     # to match the features that are now glommed onto the right-hand side.
     self._lemmatizer @= self._lemma + self.category.feature_labels
     self._lemmatizer.optimize()
+
+  def lemmatize(self, word: pynini.FstLike) -> List[Analysis]:
+    """Returns list of possible lemmatizations.
+
+    Args:
+      word: inflected form, the input to the lemmatizer.
+
+    Returns:
+      A list of possible lemmatizations.
+
+    Raises:
+      rewrite.Error: compostion failure.
+    """
+    return list(
+        self._parse_lattice(rewrite.rewrite_lattice(word, self.lemmatizer)))
 
   @property
   def inflector(self) -> Optional[pynini.Fst]:
@@ -417,6 +484,22 @@ class Paradigm:
       return self._inflector
     self._inflector = pynini.invert(self._lemmatizer)
     return self._inflector
+
+  def inflect(self, lemma: pynini.FstLike,
+              featvec: features.FeatureVector) -> List[str]:
+    """Returns list of possible inflections.
+
+    Args:
+      lemma: lemma string or acceptor.
+      featvec: FeatureVector.
+
+    Returns:
+      A list of possible inflections.
+
+    Raises:
+      rewrite.Error: compostion failure.
+    """
+    return rewrite.rewrites(lemma + featvec.acceptor, self.inflector)
 
   @property
   def category(self) -> features.Category:

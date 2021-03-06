@@ -19,7 +19,6 @@
 
 #include <string>
 
-#include <fst/string.h>
 #include "cdrewrite.h"
 
 namespace fst {
