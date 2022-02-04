@@ -1,4 +1,4 @@
-# Copyright 2015-2020 Google LLC. All Rights Reserved.
+# Copyright 2015-2022 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,11 +27,5 @@ py_library(
         "../extensions",
     ],
     srcs_version = "PY3ONLY",
-    deps = [
-        "//extensions:_pynini",
-    ],
+    deps = ["//extensions:_pynini"],
 )
-
-# Local Variables:
-# mode: bazel-build
-# End:

@@ -28,7 +28,7 @@
 #include <utility>
 #include <vector>
 
-#include <fst/types.h>
+#include <fst/compat.h>
 #include <fst/log.h>
 #include <fst/extensions/mpdt/compose.h>
 #include <fst/extensions/pdt/compose.h>

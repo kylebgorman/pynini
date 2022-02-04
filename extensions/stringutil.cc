@@ -16,36 +16,45 @@
 
 #include "stringutil.h"
 
+#include <string>
+
 #include <fst/compat.h>
-#include "gtl.h"
+#include <string_view>
 
 namespace fst {
 namespace {
 
-std::string StripComment(const std::string &line) {
+void StringReplace(std::string *full, const std::string &before,
+                   const std::string &after) {
+  size_t pos = 0;
+  while ((pos = full->find(before, pos)) != std::string::npos) {
+    full->replace(pos, before.size(), after);
+    pos += after.size();
+  }
+}
+
+std::string_view StripComment(std::string_view line) {
   char prev_char = '\0';
   for (size_t i = 0; i < line.size(); ++i) {
     const char this_char = line[i];
     if (this_char == '#' && prev_char != '\\') {
       // Strips comment and any trailing whitespace.
-      return std::string(fst::StripTrailingAsciiWhitespace(line.substr(0, i)));
+      return fst::StripTrailingAsciiWhitespace(line.substr(0, i));
     }
     prev_char = this_char;
   }
   return line;
 }
 
-std::string RemoveEscape(const std::string &line) {
-  return strings::StringReplace(line, "\\#", "#", true);
-}
-
 }  // namespace
 
-std::string StripCommentAndRemoveEscape(const std::string &line) {
-  return RemoveEscape(StripComment(line));
+std::string StripCommentAndRemoveEscape(std::string_view line) {
+  std::string stripped(StripComment(line));
+  StringReplace(&stripped, "\\#", "#");
+  return stripped;
 }
 
-std::string Escape(const std::string &str) {
+std::string Escape(std::string_view str) {
   std::string result;
   result.reserve(str.size());
   for (char ch : str) {

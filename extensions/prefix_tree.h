@@ -26,6 +26,7 @@
 #include <fst/log.h>
 #include <fst/arc.h>
 #include <fst/vector-fst.h>
+#include <map>
 #include <fst/compat.h>
 #include <fst/compat.h>
 
@@ -33,8 +34,9 @@ namespace fst {
 namespace internal {
 
 template <class Label, class StateId, class Node>
-Node *LookupOrInsertChild(std::map<Label, std::unique_ptr<Node>> *children,
-                          Label label, StateId *num_states) {
+Node *LookupOrInsertChild(
+    std::map<Label, std::unique_ptr<Node>> *children, Label label,
+    StateId *num_states) {
   std::unique_ptr<Node> &value = (*children)[label];
   if (!value) value = std::make_unique<Node>((*num_states)++);
   return value.get();
@@ -284,9 +286,9 @@ class PrefixTree {
         Policy::InputOutputBridge(fst, q, onode);
         oq.push(onode);
       }
-      for (const auto &item : inode->Children()) {
-        fst->AddArc(q, Policy::MakeIArc(item.first, item.second.get()));
-        iq.push(item.second.get());
+      for (const auto &[label, child] : inode->Children()) {
+        fst->AddArc(q, Policy::MakeIArc(label, child.get()));
+        iq.push(child.get());
       }
     }
     while (!oq.empty()) {
@@ -294,9 +296,9 @@ class PrefixTree {
       oq.pop();
       const auto q = onode->State();
       CHECK_NE(kNoStateId, q);
-      for (const auto &item : onode->Children()) {
-        fst->AddArc(q, Policy::MakeOArc(item.first, item.second.get()));
-        oq.push(item.second.get());
+      for (const auto &[label, child] : onode->Children()) {
+        fst->AddArc(q, Policy::MakeOArc(label, child.get()));
+        oq.push(child.get());
       }
       fst->SetFinal(q, onode->Weight());
     }

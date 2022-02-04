@@ -31,14 +31,15 @@
 namespace fst {
 namespace script {
 
-using StringFileCompileInnerArgs =
+using FstStringFileCompileInnerArgs =
     std::tuple<const std::string &, MutableFstClass *, TokenType, TokenType,
                const SymbolTable *, const SymbolTable *>;
 
-using StringFileCompileArgs = WithReturnValue<bool, StringFileCompileInnerArgs>;
+using FstStringFileCompileArgs =
+    WithReturnValue<bool, FstStringFileCompileInnerArgs>;
 
 template <class Arc>
-void StringFileCompile(StringFileCompileArgs *args) {
+void StringFileCompile(FstStringFileCompileArgs *args) {
   MutableFst<Arc> *fst = std::get<1>(args->args)->GetMutableFst<Arc>();
   args->retval =
       StringFileCompile(std::get<0>(args->args), fst, std::get<2>(args->args),
@@ -52,14 +53,15 @@ bool StringFileCompile(const std::string &source, MutableFstClass *fst,
                        const SymbolTable *input_symbols = nullptr,
                        const SymbolTable *output_symbols = nullptr);
 
-using StringMapCompileInnerArgs1 =
+using FstStringMapCompileInnerArgs1 =
     std::tuple<const std::vector<std::vector<std::string>> &, MutableFstClass *,
                TokenType, TokenType, const SymbolTable *, const SymbolTable *>;
 
-using StringMapCompileArgs1 = WithReturnValue<bool, StringMapCompileInnerArgs1>;
+using FstStringMapCompileArgs1 =
+    WithReturnValue<bool, FstStringMapCompileInnerArgs1>;
 
 template <class Arc>
-void StringMapCompile(StringMapCompileArgs1 *args) {
+void StringMapCompile(FstStringMapCompileArgs1 *args) {
   MutableFst<Arc> *fst = std::get<1>(args->args)->GetMutableFst<Arc>();
   args->retval =
       StringMapCompile(std::get<0>(args->args), fst, std::get<2>(args->args),
@@ -67,15 +69,16 @@ void StringMapCompile(StringMapCompileArgs1 *args) {
                        std::get<5>(args->args));
 }
 
-using StringMapCompileInnerArgs2 = std::tuple<
+using FstStringMapCompileInnerArgs2 = std::tuple<
     const std::vector<std::tuple<std::string, std::string, WeightClass>> &,
     MutableFstClass *, TokenType, TokenType, const SymbolTable *,
     const SymbolTable *>;
 
-using StringMapCompileArgs2 = WithReturnValue<bool, StringMapCompileInnerArgs2>;
+using FstStringMapCompileArgs2 =
+    WithReturnValue<bool, FstStringMapCompileInnerArgs2>;
 
 template <class Arc>
-void StringMapCompile(StringMapCompileArgs2 *args) {
+void StringMapCompile(FstStringMapCompileArgs2 *args) {
   std::vector<std::tuple<std::string, std::string, typename Arc::Weight>> lines;
   for (const auto &line : std::get<0>(args->args)) {
     const auto &istring = std::get<0>(line);

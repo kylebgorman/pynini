@@ -20,13 +20,14 @@
 #include <string>
 
 #include "cdrewrite.h"
+#include <string_view>
 
 namespace fst {
 namespace script {
 
-bool GetCDRewriteDirection(const std::string &str, CDRewriteDirection *rd);
+bool GetCDRewriteDirection(std::string_view str, CDRewriteDirection *rd);
 
-bool GetCDRewriteMode(const std::string &str, CDRewriteMode *rm);
+bool GetCDRewriteMode(std::string_view str, CDRewriteMode *rm);
 
 }  // namespace script
 }  // namespace fst

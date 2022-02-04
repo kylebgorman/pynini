@@ -17,15 +17,14 @@
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 
+from libc.stdint cimport int32_t
+from libc.stdint cimport int64_t
 
 from libcpp cimport bool
 from libcpp.memory cimport unique_ptr
 from libcpp.string cimport string
 from libcpp.utility cimport pair
 from libcpp.vector cimport vector
-
-from cintegral_types cimport int32
-from cintegral_types cimport int64
 
 from cpywrapfst cimport ComposeOptions
 from cpywrapfst cimport FstClass
@@ -36,16 +35,16 @@ from cpywrapfst cimport TokenType
 from cpywrapfst cimport WeightClass
 
 
-ctypedef pair[int64, const FstClass *] LabelFstClassPair
+ctypedef pair[int64_t, const FstClass *] LabelFstClassPair
 
 
-cdef extern from "<fst/extensions/mpdt/mpdtlib.h>" namespace "fst" nogil:
-
+cdef extern from "<fst/extensions/mpdt/compose.h>" namespace "fst" nogil:
 
   cdef cppclass MPdtComposeOptions:
 
     MPdtComposeOptions(bool, PdtComposeFilter)
 
+cdef extern from "<fst/extensions/mpdt/expand.h>" namespace "fst" nogil:
 
   cdef cppclass MPdtExpandOptions:
 
@@ -55,24 +54,24 @@ cdef extern from "<fst/extensions/mpdt/mpdtlib.h>" namespace "fst" nogil:
 cdef extern from "<fst/extensions/mpdt/mpdtscript.h>" \
     namespace "fst::script" nogil:
 
-    void MPdtCompose(const FstClass &,
-                     const FstClass &,
-                     const vector[pair[int64, int64]] &,
-                     const vector[int64] &,
-                     MutableFstClass *,
-                     const MPdtComposeOptions &,
-                     bool)
+    void Compose(const FstClass &,
+                 const FstClass &,
+                 const vector[pair[int64_t, int64_t]] &,
+                 const vector[int64_t] &,
+                 MutableFstClass *,
+                 const MPdtComposeOptions &,
+                 bool)
 
-    void MPdtExpand(const FstClass &,
-                    const vector[pair[int64, int64]] &,
-                    const vector[int64] &,
-                    MutableFstClass *,
-                    const MPdtExpandOptions &)
+    void Expand(const FstClass &,
+               const vector[pair[int64_t, int64_t]] &,
+               const vector[int64_t] &,
+               MutableFstClass *,
+               const MPdtExpandOptions &)
 
-    void MPdtReverse(const FstClass &,
-                      const vector[pair[int64, int64]] &,
-                     vector[int64] *,
-                     MutableFstClass *)
+    void Reverse(const FstClass &,
+                 const vector[pair[int64_t, int64_t]] &,
+                 vector[int64_t] *,
+                 MutableFstClass *)
 
 
 cdef extern from "<fst/extensions/mpdt/read_write_utils.h>" \
@@ -91,7 +90,7 @@ cdef extern from "<fst/extensions/mpdt/read_write_utils.h>" \
                             vector[L] &)
 
 
-cdef extern from "<fst/extensions/pdt/pdtlib.h>" namespace "fst" nogil:
+cdef extern from "<fst/extensions/pdt/compose.h>" namespace "fst" nogil:
 
   cdef cppclass PdtComposeOptions:
 
@@ -103,6 +102,8 @@ cdef extern from "<fst/extensions/pdt/pdtlib.h>" namespace "fst" nogil:
     PAREN_FILTER "fst::PdtComposeFilter::PAREN"
     EXPAND_FILTER "fst::PdtComposeFilter::EXPAND"
     EXPAND_PAREN_FILTER "fst::PdtComposeFilter::EXPAND_PAREN"
+
+cdef extern from "<fst/extensions/pdt/replace.h>" namespace "fst" nogil:
 
   # TODO(wolfsonkin): Don't do this hack if Cython gets proper enum class
   # support: https://github.com/cython/cython/issues/1603
@@ -120,45 +121,45 @@ cdef extern from "<fst/extensions/pdt/getters.h>" \
 cdef extern from "<fst/extensions/pdt/pdtscript.h>" \
     namespace "fst::script" nogil:
 
-  void PdtCompose(const FstClass &,
-                  const FstClass &,
-                  const vector[pair[int64, int64]] &,
-                  MutableFstClass *,
-                  const PdtComposeOptions &,
-                  bool)
+  void Compose(const FstClass &,
+               const FstClass &,
+               const vector[pair[int64_t, int64_t]] &,
+               MutableFstClass *,
+               const PdtComposeOptions &,
+               bool)
 
   cdef cppclass PdtExpandOptions:
 
     PdtExpandOptions(bool, bool, const WeightClass &)
 
-  void PdtExpand(const FstClass &,
-                 const vector[pair[int64, int64]] &,
-                 MutableFstClass *,
-                 const PdtExpandOptions &)
+  void Expand(const FstClass &,
+              const vector[pair[int64_t, int64_t]] &,
+              MutableFstClass *,
+              const PdtExpandOptions &)
 
   bool GetPdtParserType(const string &, PdtParserType *)
 
-  void PdtReplace(const vector[LabelFstClassPair] &,
-                  MutableFstClass *,
-                  vector[pair[int64, int64]] *,
-                  int64,
-                  PdtParserType,
-                  int64,
-                  const string &,
-                  const string &)
+  void Replace(const vector[LabelFstClassPair] &,
+               MutableFstClass *,
+               vector[pair[int64_t, int64_t]] *,
+               int64_t,
+               PdtParserType,
+               int64_t,
+               const string &,
+               const string &)
 
-  void PdtReverse(const FstClass &,
-                  const vector[pair[int64, int64]] &,
-                  MutableFstClass *)
+  void Reverse(const FstClass &,
+               const vector[pair[int64_t, int64_t]] &,
+               MutableFstClass *)
 
   cdef cppclass PdtShortestPathOptions:
 
     PdtShortestPathOptions(QueueType, bool, bool)
 
-  void PdtShortestPath(const FstClass &,
-                       const vector[pair[int64, int64]] &,
-                       MutableFstClass *,
-                       const PdtShortestPathOptions &)
+  void ShortestPath(const FstClass &,
+                    const vector[pair[int64_t, int64_t]] &,
+                    MutableFstClass *,
+                    const PdtShortestPathOptions &)
 
 
 cdef extern from "<fst/util.h>" namespace "fst" nogil:
@@ -191,14 +192,14 @@ cdef extern from "cdrewritescript.h" \
                         MutableFstClass *,
                         CDRewriteDirection,
                         CDRewriteMode,
-                        int64,
-                        int64)
+                        int64_t,
+                        int64_t)
 
 
 cdef extern from "concatrangescript.h" \
     namespace "fst::script" nogil:
 
-  void ConcatRange(MutableFstClass *, int32, int32)
+  void ConcatRange(MutableFstClass *, int32_t, int32_t)
 
 
 cdef extern from "getters.h" \
@@ -253,7 +254,7 @@ cdef extern from "pathsscript.h" \
 
     bool Error()
 
-    vector[int64] ILabels()
+    vector[int64_t] ILabels()
 
     string IString()
 
@@ -261,7 +262,7 @@ cdef extern from "pathsscript.h" \
 
     void Reset()
 
-    vector[int64] OLabels()
+    vector[int64_t] OLabels()
 
     string OString()
 
@@ -288,8 +289,8 @@ cdef extern from "stringutil.h" \
 cdef extern from "stringcompile.h" \
     namespace "fst" nogil:
 
-  int64 kBosIndex
-  int64 kEosIndex
+  int64_t kBosIndex
+  int64_t kEosIndex
 
   const SymbolTable &GeneratedSymbols()
 

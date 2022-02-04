@@ -23,26 +23,6 @@
 namespace fst {
 namespace script {
 
-void CDRewriteCompile(const FstClass &phi, const FstClass &psi,
-                      const FstClass &lambda, const FstClass &rho,
-                      const FstClass &sigma, MutableFstClass *ofst,
-                      CDRewriteDirection dir, CDRewriteMode mode,
-                      int64_t initial_boundary_marker,
-                      int64_t final_boundary_marker) {
-  if (!internal::ArcTypesMatch(phi, psi, "CDRewriteCompile") ||
-      !internal::ArcTypesMatch(psi, lambda, "CDRewriteCompile") ||
-      !internal::ArcTypesMatch(lambda, rho, "CDRewriteCompile") ||
-      !internal::ArcTypesMatch(rho, sigma, "CDRewriteCompile") ||
-      !internal::ArcTypesMatch(sigma, *ofst, "CDRewriteCompile")) {
-    ofst->SetProperties(kError, kError);
-    return;
-  }
-  CDRewriteCompileArgs1 args(phi, psi, lambda, rho, sigma, ofst, dir, mode,
-                             initial_boundary_marker, final_boundary_marker);
-  Apply<Operation<CDRewriteCompileArgs1>>("CDRewriteCompile", phi.ArcType(),
-                                          &args);
-}
-
 void CDRewriteCompile(const FstClass &tau, const FstClass &lambda,
                       const FstClass &rho, const FstClass &sigma,
                       MutableFstClass *ofst, CDRewriteDirection dir,
@@ -55,14 +35,20 @@ void CDRewriteCompile(const FstClass &tau, const FstClass &lambda,
     ofst->SetProperties(kError, kError);
     return;
   }
-  CDRewriteCompileArgs2 args(tau, lambda, rho, sigma, ofst, dir, mode,
-                             initial_boundary_marker, final_boundary_marker);
-  Apply<Operation<CDRewriteCompileArgs2>>("CDRewriteCompile", tau.ArcType(),
-                                          &args);
+  FstCDRewriteCompileArgs args{tau,
+                               lambda,
+                               rho,
+                               sigma,
+                               ofst,
+                               dir,
+                               mode,
+                               initial_boundary_marker,
+                               final_boundary_marker};
+  Apply<Operation<FstCDRewriteCompileArgs>>("CDRewriteCompile", tau.ArcType(),
+                                            &args);
 }
 
-REGISTER_FST_OPERATION_3ARCS(CDRewriteCompile, CDRewriteCompileArgs1);
-REGISTER_FST_OPERATION_3ARCS(CDRewriteCompile, CDRewriteCompileArgs2);
+REGISTER_FST_OPERATION_3ARCS(CDRewriteCompile, FstCDRewriteCompileArgs);
 
 }  // namespace script
 }  // namespace fst

@@ -22,7 +22,7 @@
 
 #include <fstream>
 #include <fst/compat.h>
-
+#include <string_view>
 
 namespace fst {
 namespace internal {
@@ -72,7 +72,7 @@ class ColumnStringFile {
   bool Done() const { return sf_.Done(); }
 
   // Access to the underlying row vector.
-  const std::vector<std::string> &Row() const { return row_; }
+  const std::vector<std::string_view> &Row() const { return row_; }
 
   size_t LineNumber() const { return sf_.LineNumber(); }
 
@@ -81,10 +81,10 @@ class ColumnStringFile {
   bool Error() const { return sf_.Error(); }
 
  private:
-  void Parse() { row_ = fst::StringSplit(sf_.GetString(), '\t'); }
+  void Parse() { row_ = fst::StrSplit(sf_.GetString(), '\t'); }
 
   StringFile sf_;
-  std::vector<std::string> row_;
+  std::vector<std::string_view> row_;
 };
 
 }  // namespace internal

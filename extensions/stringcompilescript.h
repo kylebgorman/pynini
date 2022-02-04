@@ -17,6 +17,8 @@
 #ifndef PYNINI_STRINGCOMPILESCRIPT_H_
 #define PYNINI_STRINGCOMPILESCRIPT_H_
 
+#include <string>
+
 #include <fst/script/arg-packs.h>
 #include <fst/script/fst-class.h>
 #include "stringcompile.h"
@@ -24,14 +26,14 @@
 namespace fst {
 namespace script {
 
-using StringCompileInnerArgs =
+using FstStringCompileInnerArgs =
     std::tuple<const std::string &, MutableFstClass *, TokenType,
                const SymbolTable *, const WeightClass &>;
 
-using StringCompileArgs = WithReturnValue<bool, StringCompileInnerArgs>;
+using FstStringCompileArgs = WithReturnValue<bool, FstStringCompileInnerArgs>;
 
 template <class Arc>
-void StringCompile(StringCompileArgs *args) {
+void StringCompile(FstStringCompileArgs *args) {
   MutableFst<Arc> *fst = std::get<1>(args->args)->GetMutableFst<Arc>();
   const typename Arc::Weight weight =
       *(std::get<4>(args->args).GetWeight<typename Arc::Weight>());

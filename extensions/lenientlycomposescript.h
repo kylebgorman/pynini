@@ -17,6 +17,7 @@
 #ifndef PYNINI_LENIENTLYCOMPOSESCRIPT_H_
 #define PYNINI_LENIENTLYCOMPOSESCRIPT_H_
 
+#include <tuple>
 #include <utility>
 
 #include <fst/script/fst-class.h>
@@ -25,12 +26,12 @@
 namespace fst {
 namespace script {
 
-using LenientlyComposeArgs =
+using FstLenientlyComposeArgs =
     std::tuple<const FstClass &, const FstClass &, const FstClass &,
                MutableFstClass *, const ComposeOptions &>;
 
 template <class Arc>
-void LenientlyCompose(LenientlyComposeArgs *args) {
+void LenientlyCompose(FstLenientlyComposeArgs *args) {
   const Fst<Arc> &ifst1 = *(std::get<0>(*args).GetFst<Arc>());
   const Fst<Arc> &ifst2 = *(std::get<1>(*args).GetFst<Arc>());
   const Fst<Arc> &sigma = *(std::get<2>(*args).GetFst<Arc>());

@@ -28,7 +28,7 @@
 
 #include <cstdint>
 
-#include <fst/types.h>
+#include <fst/compat.h>
 #include <fst/arcsort.h>
 #include <fst/determinize.h>
 #include <fst/encode.h>
@@ -36,6 +36,7 @@
 #include <fst/mutable-fst.h>
 #include <fst/rmepsilon.h>
 #include <fst/state-map.h>
+#include <fst/weight.h>
 
 // These functions are generic optimization methods for mutable FSTs, inspired
 // by those originally included in Thrax.
@@ -82,7 +83,7 @@ void OptimizeAcceptor(MutableFst<Arc> *fst, bool compute_props = false) {
   // If the FST is not (known to be) epsilon-free, perform epsilon-removal.
   MaybeRmEpsilon(fst, compute_props);
   if (fst->Properties(kIDeterministic, compute_props) != kIDeterministic) {
-    if constexpr ((Arc::Weight::Properties() & kIdempotent) == kIdempotent) {
+    if constexpr (IsIdempotent<typename Arc::Weight>::value) {
       // If the FST is not known to have no weighted cycles, it is encoded
       // before determinization and minimization.
       if (!fst->Properties(kDoNotEncodeWeights, compute_props)) {
@@ -109,7 +110,7 @@ void OptimizeTransducer(MutableFst<Arc> *fst, bool compute_props = false) {
   // If the FST is not (known to be) epsilon-free, perform epsilon-removal.
   MaybeRmEpsilon(fst, compute_props);
   if (fst->Properties(kIDeterministic, compute_props) != kIDeterministic) {
-    if constexpr ((Arc::Weight::Properties() & kIdempotent) == kIdempotent) {
+    if constexpr (IsIdempotent<typename Arc::Weight>::value) {
       // If the FST is not known to have no weighted cycles, it is encoded
       // before determinization and minimization.
       if (!fst->Properties(kDoNotEncodeWeights, compute_props)) {

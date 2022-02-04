@@ -35,8 +35,8 @@ FROM quay.io/pypa/manylinux2014_x86_64 AS common
 RUN rm -rd /opt/python/cp310-cp310
 
 # The versions we want in the wheels.
-ENV FST_VERSION "1.8.1"
-ENV PYNINI_VERSION "2.1.4"
+ENV FST_VERSION "1.8.2"
+ENV PYNINI_VERSION "2.1.5"
 
 # ***********************************************************************
 # *** Image providing all the requirements for building Pynini wheels ***

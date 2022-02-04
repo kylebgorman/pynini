@@ -35,6 +35,7 @@
 #include "stringfile.h"
 
 #include <fst/compat.h>
+#include <string_view>
 
 namespace fst {
 namespace internal {
@@ -56,12 +57,12 @@ class StringMapCompiler {
         output_symbols_(output_symbols) {}
 
   // One-string version.
-  bool Add(const std::string &iostring) {
+  bool Add(std::string_view iostring) {
     return Add(iostring, iostring, Weight::One());
   }
 
   // Two-string version.
-  bool Add(const std::string &istring, const std::string &ostring,
+  bool Add(std::string_view istring, std::string_view ostring,
            Weight weight = Weight::One()) {
     std::vector<Label> ilabels;
     if (!StringToLabels(istring, &ilabels, input_token_type_, input_symbols_))
@@ -74,9 +75,9 @@ class StringMapCompiler {
   }
 
   // Three-string version, which also requires us to parse the weight.
-  bool Add(const std::string &istring, const std::string &ostring,
-           const std::string &wstring) {
-    std::istringstream strm(wstring);
+  bool Add(std::string_view istring, std::string_view ostring,
+           std::string_view wstring) {
+    std::istringstream strm{std::string(wstring)};
     Weight weight;
     strm >> weight;
     if (!strm) {
@@ -179,26 +180,24 @@ bool StringMapCompile(internal::ColumnStringFile *csf, MutableFst<Arc> *fst,
       LOG(ERROR) << "StringFileCompile: Ill-formed line " << csf->LineNumber()
                  << " in file " << csf->Filename() << ": `"
                  << fst::StringJoin(line, "\t") << "`";
-      return false;
     };
     switch (line.size()) {
       case 1: {
-        if (!compiler.Add(std::string(line[0]))) {
+        if (!compiler.Add(line[0])) {
           log_line_compilation_error();
           return false;
         }
         break;
       }
       case 2: {
-        if (!compiler.Add(std::string(line[0]), std::string(line[1]))) {
+        if (!compiler.Add(line[0], line[1])) {
           log_line_compilation_error();
           return false;
         }
         break;
       }
       case 3: {
-        if (!compiler.Add(std::string(line[0]), std::string(line[1]),
-                          std::string(line[2]))) {
+        if (!compiler.Add(line[0], line[1], line[2])) {
           log_line_compilation_error();
           return false;
         }
@@ -226,7 +225,6 @@ bool StringMapCompile(const std::vector<std::vector<std::string>> &lines,
     const auto log_line_compilation_error = [&line]() {
       LOG(ERROR) << "StringMapCompile: Ill-formed line: `"
                  << fst::StringJoin(line, "\t") << "`";
-      return false;
     };
     switch (line.size()) {
       case 1: {

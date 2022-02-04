@@ -1,4 +1,4 @@
-# Copyright 2016-2020 Google LLC
+# Copyright 2016-2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ def get_version(rel_path):
       raise RuntimeError("Unable to find version string.")
 
 
-__version__ = get_version("extensions/_pynini.pyx")
+__version__ = get_version("pynini/__init__.py")
 
 
 def main() -> None:
@@ -111,6 +111,9 @@ def main() -> None:
       classifiers=[
           "Programming Language :: Python :: 3.6",
           "Programming Language :: Python :: 3.7",
+          "Programming Language :: Python :: 3.8",
+          "Programming Language :: Python :: 3.9",
+          "Programming Language :: Python :: 3.10",
           "Development Status :: 5 - Production/Stable",
           "Environment :: Other Environment",
           "Environment :: Console",

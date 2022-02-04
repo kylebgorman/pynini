@@ -1,4 +1,4 @@
-# Copyright 2015-2020 Google LLC. All Rights Reserved.
+# Copyright 2015-2022 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-package(default_visibility = ["//visibility:public"])
-
-licenses(["notice"])
-
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
 load(":grm_py_build_defs.bzl", "compile_grm_py", "compile_multi_grm_py")
+
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])
 
 py_library(
     name = "export",
@@ -77,7 +77,3 @@ bzl_library(
     name = "grm_py_build_defs_bzl",
     srcs = ["grm_py_build_defs.bzl"],
 )
-
-# Local Variables:
-# mode: bazel-build
-# End:

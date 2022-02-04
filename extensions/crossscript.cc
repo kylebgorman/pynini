@@ -29,11 +29,11 @@ void Cross(const FstClass &ifst1, const FstClass &ifst2,
     ofst->SetProperties(kError, kError);
     return;
   }
-  CrossArgs args(ifst1, ifst2, ofst);
-  Apply<Operation<CrossArgs>>("Cross", ofst->ArcType(), &args);
+  FstCrossArgs args{ifst1, ifst2, ofst};
+  Apply<Operation<FstCrossArgs>>("Cross", ofst->ArcType(), &args);
 }
 
-REGISTER_FST_OPERATION_3ARCS(Cross, CrossArgs);
+REGISTER_FST_OPERATION_3ARCS(Cross, FstCrossArgs);
 
 }  // namespace script
 }  // namespace fst

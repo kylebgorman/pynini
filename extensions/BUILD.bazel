@@ -1,4 +1,4 @@
-# Copyright 2015-2020 Google LLC. All Rights Reserved.
+# Copyright 2015-2022 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
 
 # Bazel build file for Pynini.
 
+load("//third_party/bazel:cython_library.bzl", "pyx_library")
+
 package(default_visibility = [
     "//pynini:__subpackages__",
     "//pywrapfst:__subpackages__",
 ])
 
 licenses(["notice"])
-
-load("//third_party/bazel:cython_library.bzl", "pyx_library")
 
 cc_library(
     name = "pynini_core_cpp",
@@ -51,7 +51,6 @@ cc_library(
         "crossscript.h",
         "defaults.h",
         "getters.h",
-        "gtl.h",
         "lenientlycompose.h",
         "lenientlycomposescript.h",
         "optimize.h",
@@ -89,16 +88,10 @@ pyx_library(
         "_pynini.pyx",
         "_pywrapfst.pxd",
         "_pywrapfst.pyx",
-        "cintegral_types.pxd",
         "cios.pxd",
         "cmemory.pxd",
         "cpynini.pxd",
         "cpywrapfst.pxd",
-        "cutility.pxd",
     ],
     deps = [":pynini_core_cpp"],
 )
-
-# Local Variables:
-# mode: bazel-build
-# End:

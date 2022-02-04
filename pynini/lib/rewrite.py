@@ -207,8 +207,9 @@ def lattice_to_one_top_string(lattice: pynini.Fst,
   output = spaths.ostring()
   spaths.next()
   if not spaths.done():
-    raise Error("Multiple top rewrites found: "
-                f"{output} and {spaths.ostring()} (weight: {spaths.weight()})")
+    raise Error(
+        "Multiple top rewrites found: "
+        f"{output!r} and {spaths.ostring()!r} (weight: {spaths.weight()})")
   return output
 
 

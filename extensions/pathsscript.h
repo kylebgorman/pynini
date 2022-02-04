@@ -19,6 +19,9 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <memory>
+#include <string>
+#include <tuple>
 #include <vector>
 
 #include <fst/script/arg-packs.h>
@@ -157,7 +160,7 @@ class StringPathIteratorClass {
 
   std::string OString() const { return impl_->OString(); }
 
-  WeightClass Weight() const { return WeightClass(impl_->Weight()); }
+  WeightClass Weight() const { return (impl_->Weight()); }
 
  private:
   std::unique_ptr<StringPathIteratorImplBase> impl_;

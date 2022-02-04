@@ -16,6 +16,8 @@
 
 #include "stringprintscript.h"
 
+#include <string>
+
 namespace fst {
 namespace script {
 

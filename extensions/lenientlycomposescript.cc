@@ -30,12 +30,12 @@ void LenientlyCompose(const FstClass &ifst1, const FstClass &ifst2,
     ofst->SetProperties(kError, kError);
     return;
   }
-  LenientlyComposeArgs args(ifst1, ifst2, sigma, ofst, opts);
-  Apply<Operation<LenientlyComposeArgs>>("LenientlyCompose", ifst1.ArcType(),
-                                         &args);
+  FstLenientlyComposeArgs args{ifst1, ifst2, sigma, ofst, opts};
+  Apply<Operation<FstLenientlyComposeArgs>>("LenientlyCompose", ifst1.ArcType(),
+                                            &args);
 }
 
-REGISTER_FST_OPERATION_3ARCS(LenientlyCompose, LenientlyComposeArgs);
+REGISTER_FST_OPERATION_3ARCS(LenientlyCompose, FstLenientlyComposeArgs);
 
 }  // namespace script
 }  // namespace fst

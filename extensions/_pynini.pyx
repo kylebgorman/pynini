@@ -27,16 +27,16 @@ from cython.operator cimport address as addr       # &foo
 from cython.operator cimport dereference as deref  # *foo
 from cython.operator cimport preincrement as inc   # ++foo
 
+from libc.stdint cimport int32_t
+from libc.stdint cimport int64_t
+from libc.stdint cimport uint64_t
+
 from libcpp cimport bool
 from libcpp.memory cimport static_pointer_cast
 from libcpp.memory cimport unique_ptr
 from libcpp.utility cimport pair
 from libcpp.string cimport string
 from libcpp.vector cimport vector
-
-from cintegral_types cimport int32
-from cintegral_types cimport int64
-from cintegral_types cimport uint64
 
 from cmemory cimport WrapUnique
 
@@ -86,9 +86,11 @@ from _pywrapfst cimport path_tostring
 from cpynini cimport CDRewriteCompile
 from cpynini cimport CDRewriteDirection as _CDRewriteDirection
 from cpynini cimport CDRewriteMode as _CDRewriteMode
+from cpynini cimport Compose
 from cpynini cimport ConcatRange
 from cpynini cimport Cross
 from cpynini cimport Escape
+from cpynini cimport Expand
 from cpynini cimport GeneratedSymbols
 from cpynini cimport GetCDRewriteDirection
 from cpynini cimport GetDefaultSymbols
@@ -97,25 +99,20 @@ from cpynini cimport GetCDRewriteMode
 from cpynini cimport GetPdtComposeFilter
 from cpynini cimport GetPdtParserType
 from cpynini cimport LenientlyCompose
-from cpynini cimport MPdtCompose
 from cpynini cimport MPdtComposeOptions
-from cpynini cimport MPdtExpand
 from cpynini cimport MPdtExpandOptions
-from cpynini cimport MPdtReverse
 from cpynini cimport Optimize
 from cpynini cimport OptimizeDifferenceRhs
-from cpynini cimport PdtCompose
 from cpynini cimport PdtComposeFilter
 from cpynini cimport PdtComposeOptions
-from cpynini cimport PdtExpand
 from cpynini cimport PdtExpandOptions
 from cpynini cimport PdtParserType
-from cpynini cimport PdtReplace
-from cpynini cimport PdtReverse
-from cpynini cimport PdtShortestPath
 from cpynini cimport PdtShortestPathOptions
+from cpynini cimport Replace
+from cpynini cimport Reverse
 from cpynini cimport ReadLabelPairs
 from cpynini cimport ReadLabelTriples
+from cpynini cimport ShortestPath
 from cpynini cimport StringCompile
 from cpynini cimport PopDefaults
 from cpynini cimport PushDefaults
@@ -128,12 +125,6 @@ from cpynini cimport WriteLabelPairs
 from cpynini cimport WriteLabelTriples
 from cpynini cimport kBosIndex
 from cpynini cimport kEosIndex
-
-
-# Version number; increment after each release.
-
-
-__version__ = "2.1.4"
 
 
 # Python imports needed for implementation.
@@ -259,7 +250,7 @@ cdef PdtParserType _get_pdt_parser_type(const string &pdt_parser_type) except *:
   """Matches string with the appropriate PdtParserType enum value.
 
   This function takes a string argument and returns the matching PdtParserType
-  enum value used by PyniniPdtReplace.
+  enum value used by PDT Replace.
 
   Args:
     pdt_parser_type: A string matching a known parser type.
@@ -526,7 +517,7 @@ cdef class Fst(_VectorFst):
     """
     return _init_Fst_from_MutableFst(super(_MutableFst, self).copy())
 
-  def closure(self, int32 lower=0, int32 upper=0):
+  def closure(self, int32_t lower=0, int32_t upper=0):
     """
     closure(self, lower)
     closure(self, lower, upper)
@@ -1343,7 +1334,7 @@ cpdef Fst replace(pairs,
                   call_arc_labeling="input",
                   return_arc_labeling="neither",
                   bool epsilon_on_replace=False,
-                  int64 return_label=0):
+                  int64_t return_label=0):
   """
   replace(pairs, call_arc_labeling="input", return_arc_labeling="neither",
           epsilon_on_replace=False, return_label=0)
@@ -1431,7 +1422,7 @@ cdef class PdtParentheses:
   supported PDT operations.
   """
 
-  cdef vector[pair[int64, int64]] _parens
+  cdef vector[pair[int64_t, int64_t]] _parens
 
   def __repr__(self):
     return f"<{self.__class__.__name__} at 0x{id(self):x}>"
@@ -1457,7 +1448,7 @@ cdef class PdtParentheses:
     result._parens = self._parens
     return result
 
-  cpdef void add_pair(self, int64 push, int64 pop):
+  cpdef void add_pair(self, int64_t push, int64_t pop):
     """
     add_pair(self, push, pop)
 
@@ -1467,7 +1458,7 @@ cdef class PdtParentheses:
       push: An arc label to be interpreted as a "push" operation.
       pop: An arc label to be interpreted as a "pop" operation.
     """
-    self._parens.push_back(pair[int64, int64](push, pop))
+    self._parens.push_back(pair[int64_t, int64_t](push, pop))
 
   @classmethod
   def read(cls, filename):
@@ -1489,7 +1480,7 @@ cdef class PdtParentheses:
       FstIOError: Read failed.
     """
     cdef PdtParentheses result = PdtParentheses.__new__(PdtParentheses)
-    if not ReadLabelPairs[int64](path_tostring(filename),
+    if not ReadLabelPairs[int64_t](path_tostring(filename),
                                  addr(result._parens),
                                  False):
       raise FstIOError(f"Read failed: {filename}")
@@ -1509,7 +1500,7 @@ cdef class PdtParentheses:
     Raises:
       FstIOError: Write failed.
     """
-    if not WriteLabelPairs[int64](path_tostring(filename), self._parens):
+    if not WriteLabelPairs[int64_t](path_tostring(filename), self._parens):
       raise FstIOError(f"Write failed: {filename}")
 
 
@@ -1555,12 +1546,12 @@ def pdt_compose(fst1,
       tostring(compose_filter))
   cdef unique_ptr[PdtComposeOptions] _opts
   _opts.reset(new PdtComposeOptions(True, _compose_filter))
-  PdtCompose(deref(_fst1._fst),
-             deref(_fst2._fst),
-             parens._parens,
-             result._mfst.get(),
-             deref(_opts),
-             left_pdt)
+  Compose(deref(_fst1._fst),
+          deref(_fst2._fst),
+          parens._parens,
+          result._mfst.get(),
+          deref(_opts),
+          left_pdt)
   return result
 
 
@@ -1602,7 +1593,7 @@ def pdt_expand(fst,
                                                       weight)
   cdef unique_ptr[PdtExpandOptions] _opts
   _opts.reset(new PdtExpandOptions(connect, keep_parentheses, _weight))
-  PdtExpand(deref(_fst._fst), parens._parens, result._mfst.get(), deref(_opts))
+  Expand(deref(_fst._fst), parens._parens, result._mfst.get(), deref(_opts))
   result._check_mutating_imethod()
   return result
 
@@ -1612,36 +1603,36 @@ def pdt_expand(fst,
 
 cdef object _pdt_replace(pairs,
                          pdt_parser_type="left",
-                         int64 start_paren_labels=kNoLabel,
+                         int64_t start_paren_labels=kNoLabel,
                          left_paren_prefix="(_",
                          right_paren_prefix=")_"):
   cdef vector[LabelFstClassPair] _pairs
-  cdef int64 _label
+  cdef int64_t _label
   cdef _Fst _fst
   for (_label, _fst) in pairs:
     _pairs.push_back(LabelFstClassPair(_label, _fst._fst.get()))
   cdef Fst result_fst = Fst(_pairs[0].second.ArcType())
   cdef PdtParentheses result_parens = PdtParentheses()
-  PdtReplace(_pairs,
-             result_fst._mfst.get(),
-             addr(result_parens._parens),
-             _pairs[0].first,
-             _get_pdt_parser_type(tostring(pdt_parser_type)),
-             start_paren_labels,
-             tostring(left_paren_prefix),
-             tostring(right_paren_prefix))
+  Replace(_pairs,
+          result_fst._mfst.get(),
+          addr(result_parens._parens),
+          _pairs[0].first,
+          _get_pdt_parser_type(tostring(pdt_parser_type)),
+          start_paren_labels,
+          tostring(left_paren_prefix),
+          tostring(right_paren_prefix))
   result_fst._check_mutating_imethod()
   return (result_fst, result_parens)
 
 
 def pdt_replace(pairs,
                 pdt_parser_type="left",
-                int64 start_paren_labels=kNoLabel,
+                int64_t start_paren_labels=kNoLabel,
                 left_paren_prefix="(_",
                 right_paren_prefix=")_"):
   """
   pdt_replace(pairs, pdt_parser_type="left",
-              int64 start_paren_labels=NO_LABEL,
+              int64_t start_paren_labels=NO_LABEL,
               left_paren_prefix="(_",
               right_paren_prefix=")_")
 
@@ -1705,7 +1696,7 @@ cpdef Fst pdt_reverse(fst, PdtParentheses parens):
   """
   cdef Fst _fst = _compile_or_copy_Fst(fst)
   cdef Fst result = Fst(_fst.arc_type())
-  PdtReverse(deref(_fst._fst), parens._parens, result._mfst.get())
+  Reverse(deref(_fst._fst), parens._parens, result._mfst.get())
   result._check_mutating_imethod()
   return result
 
@@ -1746,10 +1737,10 @@ cpdef pdt_shortestpath(fst,
       new PdtShortestPathOptions(_get_queue_type(tostring(queue_type)),
                                  keep_parentheses,
                                  path_gc))
-  PdtShortestPath(deref(_fst._fst),
-                  parens._parens,
-                  result._mfst.get(),
-                  deref(_opts))
+  ShortestPath(deref(_fst._fst),
+               parens._parens,
+               result._mfst.get(),
+               deref(_opts))
   result._check_mutating_imethod()
   return result
 
@@ -1774,8 +1765,8 @@ cdef class MPdtParentheses:
   supported MPDT operations.
   """
 
-  cdef vector[pair[int64, int64]] _parens
-  cdef vector[int64] _assign
+  cdef vector[pair[int64_t, int64_t]] _parens
+  cdef vector[int64_t] _assign
 
   def __repr__(self):
     return f"<{self.__class__.__name__} at 0x{id(self):x}>"
@@ -1802,7 +1793,7 @@ cdef class MPdtParentheses:
     result._assign = self._assign
     return result
 
-  cpdef void add_triple(self, int64 push, int64 pop, int64 assignment):
+  cpdef void add_triple(self, int64_t push, int64_t pop, int64_t assignment):
     """
     add_triple(self, push, pop, assignment)
 
@@ -1815,7 +1806,7 @@ cdef class MPdtParentheses:
       assignment: An arc label indicating what stack the parentheses pair is
           assigned to.
     """
-    self._parens.push_back(pair[int64, int64](push, pop))
+    self._parens.push_back(pair[int64_t, int64_t](push, pop))
     self._assign.push_back(assignment)
 
   @classmethod
@@ -1838,7 +1829,7 @@ cdef class MPdtParentheses:
       FstIOError: Read failed.
     """
     cdef MPdtParentheses result = MPdtParentheses.__new__(MPdtParentheses)
-    if not ReadLabelTriples[int64](path_tostring(filename),
+    if not ReadLabelTriples[int64_t](path_tostring(filename),
                                    addr(result._parens),
                                    addr(result._assign),
                                    False):
@@ -1859,7 +1850,7 @@ cdef class MPdtParentheses:
     Raises:
       FstIOError: Write failed.
     """
-    if not WriteLabelTriples[int64](path_tostring(filename), self._parens,
+    if not WriteLabelTriples[int64_t](path_tostring(filename), self._parens,
                                     self._assign):
       raise FstIOError(f"Write failed: {filename}")
 
@@ -1904,13 +1895,13 @@ cpdef Fst mpdt_compose(fst1, fst2, MPdtParentheses parens,
   _opts.reset(
       new MPdtComposeOptions(True,
                              _get_pdt_compose_filter(tostring(compose_filter))))
-  MPdtCompose(deref(_fst1._fst),
-              deref(_fst2._fst),
-              parens._parens,
-              parens._assign,
-              result._mfst.get(),
-              deref(_opts),
-              left_mpdt)
+  Compose(deref(_fst1._fst),
+          deref(_fst2._fst),
+          parens._parens,
+          parens._assign,
+          result._mfst.get(),
+          deref(_opts),
+          left_mpdt)
   return result
 
 
@@ -1947,11 +1938,11 @@ cpdef Fst mpdt_expand(fst,
   cdef Fst result = Fst(_fst.arc_type())
   cdef unique_ptr[MPdtExpandOptions] _opts
   _opts.reset(new MPdtExpandOptions(connect, keep_parentheses))
-  MPdtExpand(deref(_fst._fst),
-             parens._parens,
-             parens._assign,
-             result._mfst.get(),
-             deref(_opts))
+  Expand(deref(_fst._fst),
+         parens._parens,
+         parens._assign,
+         result._mfst.get(),
+         deref(_opts))
   result._check_mutating_imethod()
   return result
 
@@ -1978,10 +1969,10 @@ def mpdt_reverse(fst, MPdtParentheses parens):
   cdef Fst _fst = _compile_or_copy_Fst(fst)
   cdef Fst result_fst = Fst(_fst.arc_type())
   cdef MPdtParentheses result_parens = parens.copy()
-  MPdtReverse(deref(_fst._fst),
-              result_parens._parens,
-              addr(result_parens._assign),
-              result_fst._mfst.get())
+  Reverse(deref(_fst._fst),
+          result_parens._parens,
+          addr(result_parens._assign),
+          result_fst._mfst.get())
   result_fst._check_mutating_imethod()
   return (result_fst, result_parens)
 
@@ -2673,11 +2664,13 @@ from _pywrapfst import times
 from _pywrapfst import ArcMapType
 from _pywrapfst import ComposeFilter
 from _pywrapfst import DeterminizeType
+from _pywrapfst import EpsNormalizeType
 from _pywrapfst import FarType
 from _pywrapfst import ProjectType
 from _pywrapfst import QueueType
 from _pywrapfst import RandArcSelection
 from _pywrapfst import ReplaceLabelType
+from _pywrapfst import ReweightType
 from _pywrapfst import SortType
 from _pywrapfst import StateMapType
 from _pywrapfst import WeightLike

@@ -24,11 +24,11 @@ namespace fst {
 namespace script {
 
 void ConcatRange(MutableFstClass *fst, int32_t lower, int32_t upper) {
-  ConcatRangeArgs args(fst, lower, upper);
-  Apply<Operation<ConcatRangeArgs>>("ConcatRange", fst->ArcType(), &args);
+  FstConcatRangeArgs args{fst, lower, upper};
+  Apply<Operation<FstConcatRangeArgs>>("ConcatRange", fst->ArcType(), &args);
 }
 
-REGISTER_FST_OPERATION_3ARCS(ConcatRange, ConcatRangeArgs);
+REGISTER_FST_OPERATION_3ARCS(ConcatRange, FstConcatRangeArgs);
 
 }  // namespace script
 }  // namespace fst

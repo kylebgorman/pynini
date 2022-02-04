@@ -16,6 +16,8 @@
 
 #include "stringmapscript.h"
 
+#include <string>
+
 #include <fst/script/script-impl.h>
 
 namespace fst {
@@ -25,48 +27,48 @@ bool StringFileCompile(const std::string &source, MutableFstClass *fst,
                        TokenType input_token_type, TokenType output_token_type,
                        const SymbolTable *input_symbols,
                        const SymbolTable *output_symbols) {
-  StringFileCompileInnerArgs iargs(source, fst, input_token_type,
-                                   output_token_type, input_symbols,
-                                   output_symbols);
-  StringFileCompileArgs args(iargs);
-  Apply<Operation<StringFileCompileArgs>>("StringFileCompile", fst->ArcType(),
-                                          &args);
+  FstStringFileCompileInnerArgs iargs{source,           fst,
+                                      input_token_type, output_token_type,
+                                      input_symbols,    output_symbols};
+  FstStringFileCompileArgs args(iargs);
+  Apply<Operation<FstStringFileCompileArgs>>("StringFileCompile",
+                                             fst->ArcType(), &args);
   return args.retval;
 }
 
-REGISTER_FST_OPERATION_3ARCS(StringFileCompile, StringFileCompileArgs);
+REGISTER_FST_OPERATION_3ARCS(StringFileCompile, FstStringFileCompileArgs);
 
 bool StringMapCompile(const std::vector<std::vector<std::string>> &lines,
                       MutableFstClass *fst, TokenType input_token_type,
                       TokenType output_token_type,
                       const SymbolTable *input_symbols,
                       const SymbolTable *output_symbols) {
-  StringMapCompileInnerArgs1 iargs(lines, fst, input_token_type,
-                                   output_token_type, input_symbols,
-                                   output_symbols);
-  StringMapCompileArgs1 args(iargs);
-  Apply<Operation<StringMapCompileArgs1>>("StringMapCompile", fst->ArcType(),
-                                          &args);
+  FstStringMapCompileInnerArgs1 iargs{
+      lines,         fst,           input_token_type, output_token_type,
+      input_symbols, output_symbols};
+  FstStringMapCompileArgs1 args(iargs);
+  Apply<Operation<FstStringMapCompileArgs1>>("StringMapCompile", fst->ArcType(),
+                                             &args);
   return args.retval;
 }
 
-REGISTER_FST_OPERATION_3ARCS(StringMapCompile, StringMapCompileArgs1);
+REGISTER_FST_OPERATION_3ARCS(StringMapCompile, FstStringMapCompileArgs1);
 
 bool StringMapCompile(
     const std::vector<std::tuple<std::string, std::string, WeightClass>> &lines,
     MutableFstClass *fst, TokenType input_token_type,
     TokenType output_token_type, const SymbolTable *input_symbols,
     const SymbolTable *output_symbols) {
-  StringMapCompileInnerArgs2 iargs(lines, fst, input_token_type,
-                                   output_token_type, input_symbols,
-                                   output_symbols);
-  StringMapCompileArgs2 args(iargs);
-  Apply<Operation<StringMapCompileArgs2>>("StringMapCompile", fst->ArcType(),
-                                          &args);
+  FstStringMapCompileInnerArgs2 iargs{
+      lines,         fst,           input_token_type, output_token_type,
+      input_symbols, output_symbols};
+  FstStringMapCompileArgs2 args(iargs);
+  Apply<Operation<FstStringMapCompileArgs2>>("StringMapCompile", fst->ArcType(),
+                                             &args);
   return args.retval;
 }
 
-REGISTER_FST_OPERATION_3ARCS(StringMapCompile, StringMapCompileArgs2);
+REGISTER_FST_OPERATION_3ARCS(StringMapCompile, FstStringMapCompileArgs2);
 
 }  // namespace script
 }  // namespace fst

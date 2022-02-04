@@ -17,6 +17,8 @@
 #ifndef PYNINI_STRINGPRINTSCRIPT_H_
 #define PYNINI_STRINGPRINTSCRIPT_H_
 
+#include <string>
+
 #include <fst/fst-decl.h>
 #include <fst/script/arg-packs.h>
 #include <fst/script/fstscript.h>

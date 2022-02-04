@@ -39,8 +39,8 @@ void Cross(const Fst<Arc> &ifst1, const Fst<Arc> &ifst2,
                                    /*filter_type=*/MATCH_FILTER);
   static const OutputEpsilonMapper<Arc> oeps;
   static const InputEpsilonMapper<Arc> ieps;
-  Compose(RmEpsilonFst<Arc>(MakeArcMapFst(ifst1, oeps)),
-          RmEpsilonFst<Arc>(MakeArcMapFst(ifst2, ieps)), ofst, opts);
+  Compose(RmEpsilonFst<Arc>(ArcMapFst(ifst1, oeps)),
+          RmEpsilonFst<Arc>(ArcMapFst(ifst2, ieps)), ofst, opts);
   // Copies symbol tables (if present).
   ofst->SetInputSymbols(ifst1.InputSymbols());
   ofst->SetOutputSymbols(ifst2.OutputSymbols());

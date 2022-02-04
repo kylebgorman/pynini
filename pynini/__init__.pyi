@@ -34,11 +34,13 @@ from _pywrapfst import _StateId
 from _pywrapfst import ArcMapType
 from _pywrapfst import ComposeFilter
 from _pywrapfst import DeterminizeType
+from _pywrapfst import EpsNormalizeType
 from _pywrapfst import FarType
 from _pywrapfst import ProjectType
 from _pywrapfst import QueueType
 from _pywrapfst import RandArcSelection
 from _pywrapfst import ReplaceLabelType
+from _pywrapfst import ReweightType
 from _pywrapfst import SortType
 from _pywrapfst import StateMapType
 from _pywrapfst import WeightLike
@@ -127,8 +129,7 @@ def accep(astring: str,
           arc_type: _ArcTypeFlag = ...,
           token_type: Optional[TokenType] = ...) -> Fst: ...
 def cross(fst1: FstLike,
-          fst2: FstLike,
-          weight: Optional[WeightLike] = ...) -> Fst: ...
+        fst2: FstLike) -> Fst: ...
 def cdrewrite(
     tau: FstLike,
     l: FstLike,
@@ -178,7 +179,8 @@ def disambiguate(ifst: FstLike,
                  nstate: _StateId = ...,
                  subsequential_label: _Label = ...,
                  weight: Optional[WeightLike] = ...) -> Fst: ...
-def epsnormalize(ifst: FstLike, eps_norm_output: bool = ...) -> Fst: ...
+def epsnormalize(ifst: FstLike,
+                 eps_norm_type: EpsNormalizeType = ...) -> Fst: ...
 def prune(ifst: FstLike,
           delta: float = ...,
           nstate: _StateId = ...,
@@ -189,7 +191,7 @@ def push(ifst: FstLike,
          push_labels: bool = ...,
          remove_common_affix: bool = ...,
          remove_total_weight: bool = ...,
-         to_final: bool = ...) -> Fst: ...
+         reweight_type: ReweightType = ...) -> Fst: ...
 def randgen(
     ifst: FstLike,
     npath: int = ...,
@@ -507,7 +509,7 @@ def relabel_tables(fst: FstLike,
                    attach_new_osymbols: bool = ...) -> Fst: ...
 def reweight(fst: FstLike,
              potentials: Iterable[WeightLike],
-             to_final: bool = ...) -> Fst: ...
+             reweight_type: ReweightType = ...) -> Fst: ...
 def rmepsilon(fst: FstLike,
               queue_type: QueueType = ...,
               connect: bool = ...,

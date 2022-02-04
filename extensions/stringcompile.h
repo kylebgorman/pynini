@@ -24,7 +24,6 @@
 #include <utility>
 #include <vector>
 
-#include <fst/types.h>
 #include <fst/icu.h>
 #include <fst/mutable-fst.h>
 #include <fst/properties.h>
@@ -32,6 +31,8 @@
 #include <fst/symbol-table.h>
 
 #include <fst/compat.h>
+#include <string_view>
+#include <optional>
 
 // This module contains a singleton class which can compile strings into string
 // FSTs, keeping track of so-called generated labels.
@@ -58,14 +59,14 @@
 
 namespace fst {
 
-constexpr char kGeneratedSymbolsName[] = "**Generated symbols";
-constexpr char kEpsilonString[] = "<epsilon>";
+constexpr std::string_view kGeneratedSymbolsName = "**Generated symbols";
+constexpr std::string_view kEpsilonString = "<epsilon>";
 
 // Special handling for BOS and EOS markers in CDRewrite.
 constexpr int64_t kBosIndex = 0xF8FE;
 constexpr int64_t kEosIndex = 0xF8FF;
-constexpr char kBosString[] = "BOS";
-constexpr char kEosString[] = "EOS";
+constexpr std::string_view kBosString = "BOS";
+constexpr std::string_view kEosString = "EOS";
 
 namespace internal {
 
@@ -78,7 +79,7 @@ class StringCompiler {
   // TokenType::SYMBOL, then the user must pass a symbol table used to label the
   // string.
   template <class Label>
-  bool StringToLabels(const std::string &str, std::vector<Label> *labels,
+  bool StringToLabels(std::string_view str, std::vector<Label> *labels,
                       TokenType token_type = TokenType::BYTE,
                       const SymbolTable *symbols = nullptr) {
     switch (token_type) {
@@ -149,7 +150,7 @@ class StringCompiler {
       case TokenType::SYMBOL: {
         // The empty string is valid.
         if (str.empty()) return true;
-        for (const auto token : fst::StringSplit(str, ' ')) {
+        for (const auto token : fst::StrSplit(str, ' ')) {
           const Label label = symbols->Find(token);
           if (label == kNoSymbol) {
             LOG(ERROR) << "SymbolStringToLabels: Symbol \"" << token << "\" "
@@ -171,7 +172,7 @@ class StringCompiler {
   // If token_type = TokenType::SYMBOL, then the user must pass a symbol table
   // used to label the string.
   template <class Arc>
-  bool Compile(const std::string &str, MutableFst<Arc> *fst,
+  bool Compile(std::string_view str, MutableFst<Arc> *fst,
                TokenType token_type = TokenType::BYTE,
                const SymbolTable *symbols = nullptr,
                typename Arc::Weight weight = Arc::Weight::One()) {
@@ -205,15 +206,15 @@ class StringCompiler {
   StringCompiler(const StringCompiler &) = delete;
   StringCompiler &operator=(const StringCompiler &) = delete;
 
-  int64_t NumericalSymbolToLabel(const std::string &token) const;
-  int64_t StringSymbolToLabel(const std::string &token);
-  int64_t NumericalOrStringSymbolToLabel(const std::string &token);
+  std::optional<int64_t> NumericalSymbolToLabel(std::string_view token) const;
+  int64_t StringSymbolToLabel(std::string_view token);
+  int64_t NumericalOrStringSymbolToLabel(std::string_view token);
 
   // Processes a BYTE or a UTF8 span inside brackets.
   template <class Label>
-  bool ProcessBracketedSpan(const std::string &span,
+  bool ProcessBracketedSpan(std::string_view span,
                             std::vector<Label> *labels) {
-    const std::vector<std::string> tokens(fst::StringSplit(span, ' '));
+    const std::vector<std::string_view> tokens = fst::StrSplit(span, ' ');
     if (tokens.empty()) {
       LOG(ERROR) << "ProcessBracketedSpan: Empty span";
       return false;
@@ -233,7 +234,7 @@ class StringCompiler {
 
   // Processes a BYTE or a UTF8 span outside brackets.
   template <class Label>
-  bool ProcessUnbracketedSpan(const std::string &span,
+  bool ProcessUnbracketedSpan(std::string_view span,
                               std::vector<Label> *labels, bool byte) {
     return byte ? ByteStringToLabels(span, labels)
                 : UTF8StringToLabels(span, labels);
@@ -284,7 +285,7 @@ void ResetGeneratedSymbols();
 }  // namespace thrax_internal
 
 template <class Label>
-bool StringToLabels(const std::string &str,
+bool StringToLabels(std::string_view str,
                                          std::vector<Label> *labels,
                                          TokenType token_type = TokenType::BYTE,
                                          const SymbolTable *symbols = nullptr) {
@@ -294,7 +295,7 @@ bool StringToLabels(const std::string &str,
 
 template <class Arc>
 bool StringCompile(
-    const std::string &str, MutableFst<Arc> *fst,
+    std::string_view str, MutableFst<Arc> *fst,
     TokenType token_type = TokenType::BYTE,
     const SymbolTable *symbols = nullptr,
     typename Arc::Weight weight = Arc::Weight::One()) {

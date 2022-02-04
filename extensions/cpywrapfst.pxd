@@ -17,6 +17,14 @@
 # See www.openfst.org for extensive documentation on this weighted
 # finite-state transducer library.
 
+from libc.stdint cimport int8_t
+from libc.stdint cimport int16_t
+from libc.stdint cimport int32_t
+from libc.stdint cimport int64_t
+from libc.stdint cimport uint8_t
+from libc.stdint cimport uint16_t
+from libc.stdint cimport uint32_t
+from libc.stdint cimport uint64_t
 
 from libcpp cimport bool
 from libcpp.memory cimport unique_ptr
@@ -25,7 +33,6 @@ from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 
 from cios cimport *
-from cintegral_types cimport *
 
 
 cdef extern from "<fst/util.h>" nogil:
@@ -36,85 +43,85 @@ cdef extern from "<fst/util.h>" nogil:
 cdef extern from "<fst/fstlib.h>" namespace "fst" nogil:
 
   # FST properties.
-  const uint64 kExpanded
-  const uint64 kMutable
-  const uint64 kError
-  const uint64 kAcceptor
-  const uint64 kNotAcceptor
-  const uint64 kIDeterministic
-  const uint64 kNonIDeterministic
-  const uint64 kODeterministic
-  const uint64 kNonODeterministic
-  const uint64 kEpsilons
-  const uint64 kNoEpsilons
-  const uint64 kIEpsilons
-  const uint64 kNoIEpsilons
-  const uint64 kOEpsilons
-  const uint64 kNoOEpsilons
-  const uint64 kILabelSorted
-  const uint64 kNotILabelSorted
-  const uint64 kOLabelSorted
-  const uint64 kNotOLabelSorted
-  const uint64 kWeighted
-  const uint64 kUnweighted
-  const uint64 kCyclic
-  const uint64 kAcyclic
-  const uint64 kInitialCyclic
-  const uint64 kInitialAcyclic
-  const uint64 kTopSorted
-  const uint64 kNotTopSorted
-  const uint64 kAccessible
-  const uint64 kNotAccessible
-  const uint64 kCoAccessible
-  const uint64 kNotCoAccessible
-  const uint64 kString
-  const uint64 kNotString
-  const uint64 kWeightedCycles
-  const uint64 kUnweightedCycles
-  const uint64 kNullProperties
-  const uint64 kCopyProperties
-  const uint64 kIntrinsicProperties
-  const uint64 kExtrinsicProperties
-  const uint64 kSetStartProperties
-  const uint64 kSetFinalProperties
-  const uint64 kAddStateProperties
-  const uint64 kAddArcProperties
-  const uint64 kSetArcProperties
-  const uint64 kDeleteStatesProperties
-  const uint64 kDeleteArcsProperties
-  const uint64 kStateSortProperties
-  const uint64 kArcSortProperties
-  const uint64 kILabelInvariantProperties
-  const uint64 kOLabelInvariantProperties
-  const uint64 kWeightInvariantProperties
-  const uint64 kAddSuperFinalProperties
-  const uint64 kRmSuperFinalProperties
-  const uint64 kBinaryProperties
-  const uint64 kTrinaryProperties
-  const uint64 kPosTrinaryProperties
-  const uint64 kNegTrinaryProperties
-  const uint64 kFstProperties
+  const uint64_t kExpanded
+  const uint64_t kMutable
+  const uint64_t kError
+  const uint64_t kAcceptor
+  const uint64_t kNotAcceptor
+  const uint64_t kIDeterministic
+  const uint64_t kNonIDeterministic
+  const uint64_t kODeterministic
+  const uint64_t kNonODeterministic
+  const uint64_t kEpsilons
+  const uint64_t kNoEpsilons
+  const uint64_t kIEpsilons
+  const uint64_t kNoIEpsilons
+  const uint64_t kOEpsilons
+  const uint64_t kNoOEpsilons
+  const uint64_t kILabelSorted
+  const uint64_t kNotILabelSorted
+  const uint64_t kOLabelSorted
+  const uint64_t kNotOLabelSorted
+  const uint64_t kWeighted
+  const uint64_t kUnweighted
+  const uint64_t kCyclic
+  const uint64_t kAcyclic
+  const uint64_t kInitialCyclic
+  const uint64_t kInitialAcyclic
+  const uint64_t kTopSorted
+  const uint64_t kNotTopSorted
+  const uint64_t kAccessible
+  const uint64_t kNotAccessible
+  const uint64_t kCoAccessible
+  const uint64_t kNotCoAccessible
+  const uint64_t kString
+  const uint64_t kNotString
+  const uint64_t kWeightedCycles
+  const uint64_t kUnweightedCycles
+  const uint64_t kNullProperties
+  const uint64_t kCopyProperties
+  const uint64_t kIntrinsicProperties
+  const uint64_t kExtrinsicProperties
+  const uint64_t kSetStartProperties
+  const uint64_t kSetFinalProperties
+  const uint64_t kAddStateProperties
+  const uint64_t kAddArcProperties
+  const uint64_t kSetArcProperties
+  const uint64_t kDeleteStatesProperties
+  const uint64_t kDeleteArcsProperties
+  const uint64_t kStateSortProperties
+  const uint64_t kArcSortProperties
+  const uint64_t kILabelInvariantProperties
+  const uint64_t kOLabelInvariantProperties
+  const uint64_t kWeightInvariantProperties
+  const uint64_t kAddSuperFinalProperties
+  const uint64_t kRmSuperFinalProperties
+  const uint64_t kBinaryProperties
+  const uint64_t kTrinaryProperties
+  const uint64_t kPosTrinaryProperties
+  const uint64_t kNegTrinaryProperties
+  const uint64_t kFstProperties
 
   # ArcIterator flags.
-  const uint8 kArcILabelValue
-  const uint8 kArcOLabelValue
-  const uint8 kArcWeightValue
-  const uint8 kArcNextStateValue
-  const uint8 kArcNoCache
-  const uint8 kArcValueFlags
-  const uint8 kArcFlags
+  const uint8_t kArcILabelValue
+  const uint8_t kArcOLabelValue
+  const uint8_t kArcWeightValue
+  const uint8_t kArcNextStateValue
+  const uint8_t kArcNoCache
+  const uint8_t kArcValueFlags
+  const uint8_t kArcFlags
 
   # EncodeMapper flags.
-  const uint8 kEncodeLabels
-  const uint8 kEncodeWeights
-  const uint8 kEncodeFlags
+  const uint8_t kEncodeLabels
+  const uint8_t kEncodeWeights
+  const uint8_t kEncodeFlags
 
   # Default argument constants.
   const float kDelta
   const float kShortestDelta
   const int kNoLabel
   const int kNoStateId
-  const int64 kNoSymbol
+  const int64_t kNoSymbol
 
   enum ClosureType:
     CLOSURE_STAR
@@ -166,7 +173,7 @@ cdef extern from "<fst/fstlib.h>" namespace "fst" nogil:
   # templated structs unless we pretend they are full-blown classes.
   cdef cppclass RandGenOptions[RandArcSelection]:
 
-    RandGenOptions(const RandArcSelection &, int32, int32, bool, bool)
+    RandGenOptions(const RandArcSelection &, int32_t, int32_t, bool, bool)
 
   enum ReplaceLabelType:
     REPLACE_LABEL_NEITHER
@@ -189,7 +196,7 @@ cdef extern from "<fst/fstlib.h>" namespace "fst" nogil:
 
       cppclass value_type:
 
-        int64 Label()
+        int64_t Label()
         string Symbol()
 
       # When wrapped in a unique_ptr siter.Label() and siter.Symbol() are
@@ -208,7 +215,7 @@ cdef extern from "<fst/fstlib.h>" namespace "fst" nogil:
   cdef cppclass SymbolTable:
 
     @staticmethod
-    int64 kNoSymbol
+    int64_t kNoSymbol
 
     SymbolTable()
 
@@ -224,27 +231,27 @@ cdef extern from "<fst/fstlib.h>" namespace "fst" nogil:
     @staticmethod
     SymbolTable *ReadText(const string &, const SymbolTableTextOptions &)
 
-    int64 AddSymbol(const string &, int64)
+    int64_t AddSymbol(const string &, int64_t)
 
-    int64 AddSymbol(const string &)
+    int64_t AddSymbol(const string &)
 
     SymbolTable *Copy()
 
     # Aliased for overload.
-    string FindSymbol "Find"(int64)
+    string FindSymbol "Find"(int64_t)
 
     # Aliased for overload.
-    int64 FindIndex "Find"(const string &)
+    int64_t FindIndex "Find"(const string &)
 
     # Aliased for overload.
     bool MemberSymbol "Member"(const string &)
 
     # Aliased for overload.
-    bool MemberIndex "Member"(int64)
+    bool MemberIndex "Member"(int64_t)
 
     void AddTable(const SymbolTable &)
 
-    int64 GetNthKey(ssize_t)
+    int64_t GetNthKey(ssize_t)
 
     const string &Name()
 
@@ -266,7 +273,7 @@ cdef extern from "<fst/fstlib.h>" namespace "fst" nogil:
 
     SymbolTableIterator end()
 
-    int64 AvailableKey()
+    int64_t AvailableKey()
 
     size_t NumSymbols()
 
@@ -328,33 +335,33 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
     ArcClass(const ArcClass &)
 
-    ArcClass(int64, int64, const WeightClass &, int64)
+    ArcClass(int64_t, int64_t, const WeightClass &, int64_t)
 
-    int64 ilabel
-    int64 olabel
+    int64_t ilabel
+    int64_t olabel
     WeightClass weight
-    int64 nextstate
+    int64_t nextstate
 
   cdef cppclass FstClass:
 
     FstClass(const FstClass &)
 
     @staticmethod
-    FstClass *Read(const string &)
+    unique_ptr[FstClass] Read(const string &)
 
     # Aliased for overload.
     @staticmethod
-    FstClass *ReadStream "Read"(istream &, const string &)
+    unique_ptr[FstClass] ReadStream "Read"(istream &, const string &)
 
-    int64 Start()
+    int64_t Start()
 
-    WeightClass Final(int64)
+    WeightClass Final(int64_t)
 
-    size_t NumArcs(int64)
+    size_t NumArcs(int64_t)
 
-    size_t NumInputEpsilons(int64)
+    size_t NumInputEpsilons(int64_t)
 
-    size_t NumOutputEpsilons(int64)
+    size_t NumOutputEpsilons(int64_t)
 
     const string &ArcType()
 
@@ -370,23 +377,23 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
     bool Write(ostream &, const string &)
 
-    uint64 Properties(uint64, bool)
+    uint64_t Properties(uint64_t, bool)
 
-    bool ValidStateId(int64)
+    bool ValidStateId(int64_t)
 
   cdef cppclass MutableFstClass(FstClass):
 
-    bool AddArc(int64, const ArcClass &)
+    bool AddArc(int64_t, const ArcClass &)
 
-    int64 AddState()
+    int64_t AddState()
 
     void AddStates(size_t)
 
-    bool DeleteArcs(int64, size_t)
+    bool DeleteArcs(int64_t, size_t)
 
-    bool DeleteArcs(int64)
+    bool DeleteArcs(int64_t)
 
-    bool DeleteStates(const vector[int64] &)
+    bool DeleteStates(const vector[int64_t] &)
 
     void DeleteStates()
 
@@ -394,21 +401,21 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
     SymbolTable *MutableOutputSymbols()
 
-    int64 NumStates()
+    int64_t NumStates()
 
-    bool ReserveArcs(int64, size_t)
+    bool ReserveArcs(int64_t, size_t)
 
-    void ReserveStates(int64)
+    void ReserveStates(int64_t)
 
-    bool SetStart(int64)
+    bool SetStart(int64_t)
 
-    bool SetFinal(int64, const WeightClass &)
+    bool SetFinal(int64_t, const WeightClass &)
 
     void SetInputSymbols(const SymbolTable *)
 
     void SetOutputSymbols(const SymbolTable *)
 
-    void SetProperties(uint64, uint64)
+    void SetProperties(uint64_t, uint64_t)
 
   cdef cppclass VectorFstClass(MutableFstClass):
 
@@ -418,7 +425,7 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
   cdef cppclass EncodeMapperClass:
 
-    EncodeMapperClass(const string &, uint32, EncodeType)
+    EncodeMapperClass(const string &, uint32_t, EncodeType)
 
     # Aliased to __call__ as Cython doesn't have good support for operator().
     ArcClass __call__ "operator()"(const ArcClass &)
@@ -427,16 +434,16 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
     const string &WeightType()
 
-    uint32 Flags()
+    uint32_t Flags()
 
-    uint64 Properties(uint64)
+    uint64_t Properties(uint64_t)
 
     @staticmethod
-    EncodeMapperClass *Read(const string &)
+    unique_ptr[EncodeMapperClass] Read(const string &)
 
     # Aliased for overload.
     @staticmethod
-    EncodeMapperClass *ReadStream "Read"(istream &, const string &)
+    unique_ptr[EncodeMapperClass] ReadStream "Read"(istream &, const string &)
 
     bool Write(const string &)
 
@@ -453,7 +460,7 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
   cdef cppclass ArcIteratorClass:
 
-    ArcIteratorClass(const FstClass &, int64)
+    ArcIteratorClass(const FstClass &, int64_t)
 
     bool Done()
 
@@ -467,13 +474,13 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
     size_t Position()
 
-    uint8 Flags()
+    uint8_t Flags()
 
-    void SetFlags(uint8, uint8)
+    void SetFlags(uint8_t, uint8_t)
 
   cdef cppclass MutableArcIteratorClass:
 
-    MutableArcIteratorClass(MutableFstClass *, int64)
+    MutableArcIteratorClass(MutableFstClass *, int64_t)
 
     bool Done()
 
@@ -489,9 +496,9 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
     size_t Position()
 
-    uint8 Flags()
+    uint8_t Flags()
 
-    void SetFlags(uint8, uint8)
+    void SetFlags(uint8_t, uint8_t)
 
   cdef cppclass StateIteratorClass:
 
@@ -499,16 +506,16 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
     bool Done()
 
-    int64 Value()
+    int64_t Value()
 
     void Next()
 
     void Reset()
 
 
-ctypedef pair[int64, const FstClass *] LabelFstClassPair
+ctypedef pair[int64_t, const FstClass *] LabelFstClassPair
 
-ctypedef pair[int64, int64] LabelPair
+ctypedef pair[int64_t, int64_t] LabelPair
 
 
 cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
@@ -529,22 +536,22 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
   cdef void ArcSort(MutableFstClass *, ArcSortType)
 
-  cdef ClosureType GetClosureType(bool)
+  cdef bool GetClosureType(const string &, ClosureType *)
 
   cdef void Closure(MutableFstClass *, ClosureType)
 
-  cdef unique_ptr[FstClass] CompileFstInternal(istream &,
-                                               const string &,
-                                               const string &,
-                                               const string &,
-                                               const SymbolTable *,
-                                               const SymbolTable *,
-                                               const SymbolTable*,
-                                               bool,
-                                               bool,
-                                               bool,
-                                               bool,
-                                               bool)
+  cdef unique_ptr[FstClass] CompileInternal(istream &,
+                                            const string &,
+                                            const string &,
+                                            const string &,
+                                            const SymbolTable *,
+                                            const SymbolTable *,
+                                            const SymbolTable*,
+                                            bool,
+                                            bool,
+                                            bool,
+                                            bool,
+                                            bool)
 
   cdef void Compose(FstClass &, FstClass &, MutableFstClass *,
                     const ComposeOptions &)
@@ -561,8 +568,8 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
     DeterminizeOptions(float,
                        const WeightClass &,
-                       int64,
-                       int64,
+                       int64_t,
+                       int64_t,
                        DeterminizeType,
                        bool)
 
@@ -572,7 +579,7 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
   cdef cppclass DisambiguateOptions:
 
-    DisambiguateOptions(float, const WeightClass &, int64, int64)
+    DisambiguateOptions(float, const WeightClass &, int64_t, int64_t)
 
   cdef void Disambiguate(const FstClass &,
                          MutableFstClass *,
@@ -604,7 +611,7 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
   cdef void Encode(MutableFstClass *, EncodeMapperClass *)
 
-  cdef EpsNormalizeType GetEpsNormalizeType(bool)
+  cdef bool GetEpsNormalizeType(const string &, EpsNormalizeType *)
 
   cdef void EpsNormalize(const FstClass &, MutableFstClass *, EpsNormalizeType)
 
@@ -663,13 +670,13 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
   cdef void Prune(const FstClass &,
                   MutableFstClass *,
                   const WeightClass &,
-                  int64, float)
+                  int64_t, float)
 
-  cdef void Prune(MutableFstClass *, const WeightClass &, int64, float)
+  cdef void Prune(MutableFstClass *, const WeightClass &, int64_t, float)
 
   cdef void Push(const FstClass &,
                  MutableFstClass *,
-                 uint8 flags,
+                 uint8_t flags,
                  ReweightType, float)
 
   cdef void Push(MutableFstClass *, ReweightType, float, bool)
@@ -683,15 +690,15 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
   cdef bool RandEquivalent(const FstClass &,
                            const FstClass &,
-                           int32,
+                           int32_t,
                            const RandGenOptions[RandArcSelection] &,
                            float,
-                           uint64)
+                           uint64_t)
 
   cdef void RandGen(const FstClass &,
                     MutableFstClass *,
                     const RandGenOptions[RandArcSelection] &,
-                    uint64)
+                    uint64_t)
 
   cdef void Relabel(MutableFstClass *,
                     const SymbolTable *,
@@ -708,7 +715,7 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
   cdef cppclass ReplaceOptions:
 
-     ReplaceOptions(int64, ReplaceLabelType, ReplaceLabelType, int64)
+     ReplaceOptions(int64_t, ReplaceLabelType, ReplaceLabelType, int64_t)
 
   cdef void Replace(const vector[LabelFstClassPair] &,
                     MutableFstClass *,
@@ -722,13 +729,13 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
 
   cdef cppclass RmEpsilonOptions:
 
-    RmEpsilonOptions(QueueType, bool, const WeightClass &, int64, float)
+    RmEpsilonOptions(QueueType, bool, const WeightClass &, int64_t, float)
 
   cdef void RmEpsilon(MutableFstClass *, const RmEpsilonOptions &)
 
   cdef cppclass ShortestDistanceOptions:
 
-    ShortestDistanceOptions(QueueType, ArcFilterType, int64, float)
+    ShortestDistanceOptions(QueueType, ArcFilterType, int64_t, float)
 
   cdef void ShortestDistance(const FstClass &,
                              vector[WeightClass] *,
@@ -741,11 +748,11 @@ cdef extern from "<fst/script/fstscript.h>" namespace "fst::script" nogil:
   cdef cppclass ShortestPathOptions:
 
     ShortestPathOptions(QueueType,
-                        int32,
+                        int32_t,
                         bool,
                         float,
                         const WeightClass &,
-                        int64)
+                        int64_t)
 
   cdef void ShortestPath(const FstClass &,
                          MutableFstClass *,
@@ -768,11 +775,11 @@ cdef extern from "<fst/script/getters.h>" namespace "fst::script" nogil:
 
   cdef bool GetDeterminizeType(const string &, DeterminizeType *)
 
-  cdef uint8 GetEncodeFlags(bool, bool)
+  cdef uint8_t GetEncodeFlags(bool, bool)
 
   cdef bool GetMapType(const string &, MapType *)
 
-  cdef uint8 GetPushFlags(bool, bool, bool, bool)
+  cdef uint8_t GetPushFlags(bool, bool, bool, bool)
 
   cdef bool GetQueueType(const string &, QueueType *)
 
@@ -780,7 +787,7 @@ cdef extern from "<fst/script/getters.h>" namespace "fst::script" nogil:
 
   cdef bool GetReplaceLabelType(string, bool, ReplaceLabelType *)
 
-  cdef ReweightType GetReweightType(bool)
+  cdef bool GetReweightType(const string &, ReweightType *)
 
   cdef bool GetTokenType(const string &, TokenType *)
 

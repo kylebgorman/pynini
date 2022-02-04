@@ -27,8 +27,9 @@ StringPathIteratorClass::StringPathIteratorClass(
     TokenType output_token_type, const SymbolTable *input_symbols,
     const SymbolTable *output_symbols)
     : impl_(nullptr) {
-  InitStringPathIteratorClassArgs args(fst, input_token_type, output_token_type,
-                                       input_symbols, output_symbols, this);
+  InitStringPathIteratorClassArgs args{
+      fst,           input_token_type, output_token_type,
+      input_symbols, output_symbols,   this};
   Apply<Operation<InitStringPathIteratorClassArgs>>(
       "InitStringPathIteratorClass", fst.ArcType(), &args);
 }

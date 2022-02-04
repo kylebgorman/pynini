@@ -40,8 +40,9 @@ class EditTest(absltest.TestCase):
   @classmethod
   def setUpClass(cls):
     super().setUpClass()
-    cls.automaton = edit_transducer.LevenshteinAutomaton(ALPHABET, LEXICON)
-    cls.distance = edit_transducer.LevenshteinDistance(ALPHABET)
+    cls.automaton = edit_transducer.LevenshteinAutomaton(
+        iter(ALPHABET), LEXICON)
+    cls.distance = edit_transducer.LevenshteinDistance(iter(ALPHABET))
 
   def query_and_distance(self, query: str, expected_closest: str,
                          expected_distance: float) -> None:
@@ -91,8 +92,8 @@ class BoundEditTest(absltest.TestCase):
   def setUpClass(cls):
     super().setUpClass()
     cls.automaton = edit_transducer.LevenshteinAutomaton(
-        ALPHABET, LEXICON, bound=2)
-    cls.distance = edit_transducer.LevenshteinDistance(ALPHABET, bound=2)
+        iter(ALPHABET), LEXICON, bound=2)
+    cls.distance = edit_transducer.LevenshteinDistance(iter(ALPHABET), bound=2)
 
   def query_and_distance(self, query: str, expected_closest: str,
                          expected_distance: float) -> None:

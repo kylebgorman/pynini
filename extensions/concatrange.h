@@ -22,7 +22,6 @@
 #include <cstdint>
 #include <memory>
 
-#include <fst/types.h>
 #include <fst/closure.h>
 #include <fst/concat.h>
 #include <fst/fst.h>

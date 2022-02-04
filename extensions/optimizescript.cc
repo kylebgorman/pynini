@@ -23,19 +23,19 @@ namespace fst {
 namespace script {
 
 void Optimize(MutableFstClass *fst, bool compute_props) {
-  OptimizeArgs args(fst, compute_props);
-  Apply<Operation<OptimizeArgs>>("Optimize", fst->ArcType(), &args);
+  FstOptimizeArgs args{fst, compute_props};
+  Apply<Operation<FstOptimizeArgs>>("Optimize", fst->ArcType(), &args);
 }
 
-REGISTER_FST_OPERATION_3ARCS(Optimize, OptimizeArgs);
+REGISTER_FST_OPERATION_3ARCS(Optimize, FstOptimizeArgs);
 
 void OptimizeDifferenceRhs(MutableFstClass *fst, bool compute_props) {
-  OptimizeArgs args(fst, compute_props);
-  Apply<Operation<OptimizeArgs>>("OptimizeDifferenceRhs", fst->ArcType(),
-                                 &args);
+  FstOptimizeArgs args{fst, compute_props};
+  Apply<Operation<FstOptimizeArgs>>("OptimizeDifferenceRhs", fst->ArcType(),
+                                    &args);
 }
 
-REGISTER_FST_OPERATION_3ARCS(OptimizeDifferenceRhs, OptimizeArgs);
+REGISTER_FST_OPERATION_3ARCS(OptimizeDifferenceRhs, FstOptimizeArgs);
 
 }  // namespace script
 }  // namespace fst

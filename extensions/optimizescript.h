@@ -17,6 +17,7 @@
 #ifndef PYNINI_OPTIMIZESCRIPT_H_
 #define PYNINI_OPTIMIZESCRIPT_H_
 
+#include <tuple>
 #include <utility>
 
 #include <fst/script/fst-class.h>
@@ -25,10 +26,10 @@
 namespace fst {
 namespace script {
 
-using OptimizeArgs = std::tuple<MutableFstClass *, bool>;
+using FstOptimizeArgs = std::tuple<MutableFstClass *, bool>;
 
 template <class Arc>
-void Optimize(OptimizeArgs *args) {
+void Optimize(FstOptimizeArgs *args) {
   MutableFst<Arc> *fst = std::get<0>(*args)->GetMutableFst<Arc>();
   Optimize(fst, std::get<1>(*args));
 }
@@ -36,7 +37,7 @@ void Optimize(OptimizeArgs *args) {
 void Optimize(MutableFstClass *fst, bool compute_props = false);
 
 template <class Arc>
-void OptimizeDifferenceRhs(OptimizeArgs *args) {
+void OptimizeDifferenceRhs(FstOptimizeArgs *args) {
   MutableFst<Arc> *fst = std::get<0>(*args)->GetMutableFst<Arc>();
   OptimizeDifferenceRhs(fst, std::get<1>(*args));
 }

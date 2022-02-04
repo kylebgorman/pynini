@@ -48,32 +48,18 @@ class RuleCascade:
     self.far = pynini.Far(far_path, "r")
     self.rules = []
 
-  def _validate_and_arcsort_rules(self,
-                                  rules: List[str]) -> Iterable[pynini.Fst]:
-    """Validates rules by testing for their presence in the input FAR.
-
-    Args:
-      rules: An iterable of strings naming rules in the input FAR.
-
-    Yields:
-       The requested rules, arc-sorted.
-
-    Raises:
-       Error: Cannot find rule.
-    """
-    for rule in rules:
-      if self.far.find(rule):
-        yield self.far.get_fst().arcsort(sort_type="ilabel")
-      else:
-        raise Error(f"Cannot find rule: {rule}")
-
-  def set_rules(self, rules):
+  def set_rules(self, rules: Iterable[str]) -> None:
     """Initializes a rule cascade.
 
     Args:
       rules: An iterable of strings naming rules in the input FAR.
     """
-    self.rules = list(self._validate_and_arcsort_rules(rules))
+    self.rules.clear()
+    for rule in rules:
+      if self.far.find(rule):
+        self.rules.append(self.far.get_fst().arcsort(sort_type="ilabel"))
+      else:
+        raise Error(f"Cannot find rule: {rule}")
 
   def _rewrite_lattice(
       self,

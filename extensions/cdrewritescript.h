@@ -18,50 +18,23 @@
 #define PYNINI_CDREWRITESCRIPT_H_
 
 #include <cstdint>
+#include <tuple>
 #include <utility>
 
-#include <fst/types.h>
+#include <fst/compat.h>
 #include <fst/script/fst-class.h>
 #include "cdrewrite.h"
 
 namespace fst {
 namespace script {
 
-using CDRewriteCompileArgs1 =
-    std::tuple<const FstClass &, const FstClass &, const FstClass &,
-               const FstClass &, const FstClass &, MutableFstClass *,
-               CDRewriteDirection, CDRewriteMode, int64_t, int64_t>;
-
-template <class Arc>
-void CDRewriteCompile(CDRewriteCompileArgs1 *args) {
-  const Fst<Arc> &phi = *(std::get<0>(*args).GetFst<Arc>());
-  const Fst<Arc> &psi = *(std::get<1>(*args).GetFst<Arc>());
-  const Fst<Arc> &lambda = *(std::get<2>(*args).GetFst<Arc>());
-  const Fst<Arc> &rho = *(std::get<3>(*args).GetFst<Arc>());
-  const Fst<Arc> &sigma = *(std::get<4>(*args).GetFst<Arc>());
-  MutableFst<Arc> *ofst = std::get<5>(*args)->GetMutableFst<Arc>();
-  const CDRewriteDirection dir = std::get<6>(*args);
-  const CDRewriteMode mode = std::get<7>(*args);
-  const typename Arc::Label initial_boundary_marker = std::get<8>(*args);
-  const typename Arc::Label final_boundary_marker = std::get<9>(*args);
-  CDRewriteCompile(phi, psi, lambda, rho, sigma, ofst, dir, mode,
-                   initial_boundary_marker, final_boundary_marker);
-}
-
-void CDRewriteCompile(const FstClass &phi, const FstClass &psi,
-                      const FstClass &lambda, const FstClass &rho,
-                      const FstClass &sigma, MutableFstClass *ofst,
-                      CDRewriteDirection dir, CDRewriteMode mode,
-                      int64_t initial_boundary_marker = kNoLabel,
-                      int64_t final_boundary_marker = kNoLabel);
-
-using CDRewriteCompileArgs2 =
+using FstCDRewriteCompileArgs =
     std::tuple<const FstClass &, const FstClass &, const FstClass &,
                const FstClass &, MutableFstClass *, CDRewriteDirection,
                CDRewriteMode, int64_t, int64_t>;
 
 template <class Arc>
-void CDRewriteCompile(CDRewriteCompileArgs2 *args) {
+void CDRewriteCompile(FstCDRewriteCompileArgs *args) {
   const Fst<Arc> &tau = *(std::get<0>(*args).GetFst<Arc>());
   const Fst<Arc> &lambda = *(std::get<1>(*args).GetFst<Arc>());
   const Fst<Arc> &rho = *(std::get<2>(*args).GetFst<Arc>());

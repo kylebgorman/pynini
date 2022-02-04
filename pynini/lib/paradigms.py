@@ -239,6 +239,9 @@ class Paradigm:
     # Rule to translate all boundary labels into human-readable strings.
     self._feature_label_rewriter = self._unconditioned_rewrite(
         self._category.feature_mapper)
+    # And one that maps the other way
+    self._feature_label_encoder = self._unconditioned_rewrite(
+        pynini.invert(self._category.feature_mapper))
     # Inherit from the parent paradigm.
     self._rules = None if rules is None else list(rules)
     self._parent_paradigm = parent_paradigm
@@ -403,7 +406,7 @@ class Paradigm:
       A list of possible analyses.
 
     Raises:
-      rewrite.Error: compostion failure.
+      rewrite.Error: composition failure.
     """
     return list(
         self._parse_lattice(rewrite.rewrite_lattice(word, self.analyzer)))
@@ -471,7 +474,7 @@ class Paradigm:
       A list of possible lemmatizations.
 
     Raises:
-      rewrite.Error: compostion failure.
+      rewrite.Error: composition failure.
     """
     return list(
         self._parse_lattice(rewrite.rewrite_lattice(word, self.lemmatizer)))
@@ -497,7 +500,7 @@ class Paradigm:
       A list of possible inflections.
 
     Raises:
-      rewrite.Error: compostion failure.
+      rewrite.Error: composition failure.
     """
     return rewrite.rewrites(lemma + featvec.acceptor, self.inflector)
 
@@ -522,12 +525,16 @@ class Paradigm:
     return self._stems
 
   @property
-  def stems_to_forms(self) -> Optional[pynini.Fst]:
+  def stems_to_forms(self) -> pynini.Fst:
     return self._stems_to_forms
 
   @property
   def feature_label_rewriter(self) -> pynini.Fst:
     return self._feature_label_rewriter
+
+  @property
+  def feature_label_encoder(self) -> pynini.Fst:
+    return self._feature_label_encoder
 
   @property
   def rules(self) -> Optional[List[pynini.Fst]]:

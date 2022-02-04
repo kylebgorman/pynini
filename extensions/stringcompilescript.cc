@@ -16,6 +16,8 @@
 
 #include "stringcompilescript.h"
 
+#include <string>
+
 #include <fst/script/script-impl.h>
 
 namespace fst {
@@ -28,13 +30,14 @@ bool StringCompile(const std::string &str, MutableFstClass *fst,
     fst->SetProperties(kError, kError);
     return false;
   }
-  StringCompileInnerArgs iargs(str, fst, token_type, symbols, weight);
-  StringCompileArgs args(iargs);
-  Apply<Operation<StringCompileArgs>>("StringCompile", fst->ArcType(), &args);
+  FstStringCompileInnerArgs iargs{str, fst, token_type, symbols, weight};
+  FstStringCompileArgs args(iargs);
+  Apply<Operation<FstStringCompileArgs>>("StringCompile", fst->ArcType(),
+                                         &args);
   return args.retval;
 }
 
-REGISTER_FST_OPERATION_3ARCS(StringCompile, StringCompileArgs);
+REGISTER_FST_OPERATION_3ARCS(StringCompile, FstStringCompileArgs);
 
 }  // namespace script
 }  // namespace fst

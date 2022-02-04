@@ -19,6 +19,8 @@
 
 #include <string>
 
+#include <string_view>
+
 namespace fst {
 
 // Defines comment syntax for string files.
@@ -28,11 +30,11 @@ namespace fst {
 //
 // To use the '#' literal (i.e., to ensure it is not interpreted as the start of
 // a comment) escape it with '\'; the escaping '\' in "\#" also removed.
-std::string StripCommentAndRemoveEscape(const std::string &line);
+std::string StripCommentAndRemoveEscape(std::string_view line);
 
 // Escapes characters (namely, backslash and square brackets) used to indicate
 // generated symbols.
-std::string Escape(const std::string &str);
+std::string Escape(std::string_view str);
 
 }  // namespace fst
 

@@ -7,6 +7,7 @@ MANIFEST.in
 NEWS
 README.md
 WORKSPACE.bazel
+requirements.txt
 setup.py
 bazel/BUILD.bazel
 bazel/cython.BUILD.bazel
@@ -22,7 +23,6 @@ extensions/cdrewrite.h
 extensions/cdrewritescript.cc
 extensions/cdrewritescript.h
 extensions/checkprops.h
-extensions/cintegral_types.pxd
 extensions/cios.pxd
 extensions/cmemory.pxd
 extensions/concatrange.h
@@ -33,12 +33,10 @@ extensions/cpywrapfst.pxd
 extensions/cross.h
 extensions/crossscript.cc
 extensions/crossscript.h
-extensions/cutility.pxd
 extensions/defaults.cc
 extensions/defaults.h
 extensions/getters.cc
 extensions/getters.h
-extensions/gtl.h
 extensions/lenientlycompose.h
 extensions/lenientlycomposescript.cc
 extensions/lenientlycomposescript.h
@@ -140,6 +138,7 @@ tests/testdata/BUILD.bazel
 tests/testdata/chatspeak_lexicon.tsv
 tests/testdata/str.map
 tests/testdata/tokenizer_testdata.tsv
+third_party/Dockerfile
 third_party/bazel/BUILD.bazel
 third_party/bazel/BUILD.tpl
 third_party/bazel/README.md

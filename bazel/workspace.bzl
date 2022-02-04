@@ -20,12 +20,12 @@ Please include this file in all the downstream Bazel dependencies of Pynini.
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("//third_party/bazel:python_configure.bzl", "python_configure")
 
-# Sanitize a dependency so that it works correctly from code that includes
+# Sanitizes a dependency so that it works correctly from code that includes
 # Pynini as a submodule.
 def _clean_dep(dep):
     return str(Label(dep))
 
-# Definite all external repositories required by Pynini.
+# Defines all external repositories required by Pynini.
 def pynini_repositories(name = ""):
     """All external dependencies for Pynini builds.
 
@@ -72,14 +72,17 @@ def pynini_repositories(name = ""):
 
     # -------------------------------------------------------------------------
     # Six is a Python 2 and 3 compatibility library: It is still required
-    # because absl-py still supports Python 2.
+    # because absl-py still supports Python 2. See:
+    #   https://github.com/benjaminp/six
     # -------------------------------------------------------------------------
+    six_version = "1.16.0"
+
     http_archive(
         name = "six_archive",
-        build_file = _clean_dep("//bazel:six.BUILD.bazel"),
-        sha256 = "70e8a77beed4562e7f14fe23a786b54f6296e34344c23bc42f07b15018ff98e9",
-        strip_prefix = "six-1.11.0",
-        urls = ["https://pypi.python.org/packages/16/d8/bc6316cf98419719bd59c91742194c111b6f2e85abac88e496adefaf7afe/six-1.11.0.tar.gz#md5=d12789f9baf7e9fb#524c0c64f1773f8"],
+        build_file = "@org_opengrm_pynini//bazel:six.BUILD.bazel",
+        sha256 = "af6745f78dceb1ad5107dc6c2d3646c8cb57cf4668ba7b5427145a71a690f60e",
+        strip_prefix = "six-%s" % six_version,
+        urls = ["https://github.com/benjaminp/six/archive/refs/tags/%s.tar.gz" % six_version],
     )
 
     # -------------------------------------------------------------------------
@@ -92,33 +95,32 @@ def pynini_repositories(name = ""):
     )
     http_archive(
         name = "io_abseil_py",
-        strip_prefix = "abseil-py-master",
-        urls = ["https://github.com/abseil/abseil-py/archive/master.zip"],
+        strip_prefix = "abseil-py-main",
+        urls = ["https://github.com/abseil/abseil-py/archive/main.zip"],
     )
 
     # -------------------------------------------------------------------------
     # OpenFst: See
     #    http://www.openfst.org/twiki/pub/FST/FstDownload/README
     # -------------------------------------------------------------------------
-    openfst_version = "1.8.1"
+    openfst_version = "1.8.2"
 
     http_archive(
         name = "org_openfst",
-        urls = ["http://www.openfst.org/twiki/pub/FST/FstDownload/openfst-%s.tar.gz"
-                % openfst_version],
-        sha256 = "24fb53b72bb687e3fa8ee96c72a31ff2920d99b980a0a8f61dda426fca6713f0",
+        urls = ["https://www.openfst.org/twiki/pub/FST/FstDownload/openfst-%s.tar.gz" % openfst_version],
+        sha256 = "de987bf3624721c5d5ba321af95751898e4f4bb41c8a36e2d64f0627656d8b42",
         strip_prefix = "openfst-%s" % openfst_version,
     )
 
     # -------------------------------------------------------------------------
     # Cython:
     # -------------------------------------------------------------------------
-    cython_version = "0.29.21"
+    cython_version = "0.29.24"
 
     http_archive(
         name = "org_cython",
         build_file = _clean_dep("//bazel:cython.BUILD.bazel"),
         urls = ["https://github.com/cython/cython/archive/%s.tar.gz" % cython_version],
-        sha256 = "e2e38e1f0572ca54d6085df3dec8b607d20e81515fb80215aed19c81e8fe2079",
+        sha256 = "a5efb97612f0f97164e87c54cc295b2e2d06c539487670079963adeab872de80",
         strip_prefix = "cython-%s" % cython_version,
     )

@@ -17,6 +17,7 @@
 #ifndef PYNINI_CROSSSCRIPT_H_
 #define PYNINI_CROSSSCRIPT_H_
 
+#include <tuple>
 #include <utility>
 
 #include <fst/script/fst-class.h>
@@ -25,11 +26,11 @@
 namespace fst {
 namespace script {
 
-using CrossArgs =
+using FstCrossArgs =
     std::tuple<const FstClass &, const FstClass &, MutableFstClass *>;
 
 template <class Arc>
-void Cross(CrossArgs *args) {
+void Cross(FstCrossArgs *args) {
   const Fst<Arc> &ifst1 = *(std::get<0>(*args).GetFst<Arc>());
   const Fst<Arc> &ifst2 = *(std::get<1>(*args).GetFst<Arc>());
   MutableFst<Arc> *ofst = std::get<2>(*args)->GetMutableFst<Arc>();
