@@ -9,8 +9,9 @@
 # This Dockerfile uses multi-stage builds; for more information, see:
 # https://docs.docker.com/develop/develop-images/multistage-build/
 # 
-# The recommended installation method for Pynini is through Conda-Forge. This gives Linux
-# x86-64 users another option: installing a precompiled module from PyPI.
+# The recommended installation method for Pynini is through Conda-Forge. This
+# gives Linux x86-64 users another option: installing a precompiled module from
+# PyPI.
 # 
 # 
 # To build wheels and run Pynini's tests, run:
@@ -31,9 +32,6 @@
 # ******************************************************
 FROM quay.io/pypa/manylinux2014_x86_64 AS common
 
-# We don't support some Python versions.
-RUN rm -rd /opt/python/cp310-cp310
-
 # The versions we want in the wheels.
 ENV FST_VERSION "1.8.2"
 ENV PYNINI_VERSION "2.1.5"
@@ -44,13 +42,13 @@ ENV PYNINI_VERSION "2.1.5"
 FROM common AS wheel-building-env
 
 # Location of OpenFst and Pynini.
-ENV FST_DOWNLOAD_PREFIX "http://www.openfst.org/twiki/pub/FST/FstDownload"
-ENV PYNINI_DOWNLOAD_PREFIX "http://www.opengrm.org/twiki/pub/GRM/PyniniDownload"
+ENV FST_DOWNLOAD_PREFIX "https://www.openfst.org/twiki/pub/FST/FstDownload"
+ENV PYNINI_DOWNLOAD_PREFIX "https://www.opengrm.org/twiki/pub/GRM/PyniniDownload"
 
 # Gets and unpack OpenFst source.
 RUN yum install -y wget
 RUN cd /tmp \
-    && wget -q "${FST_DOWNLOAD_PREFIX}/openfst-${FST_VERSION}.tar.gz" \
+    && wget --quiet --no-check-certificate "${FST_DOWNLOAD_PREFIX}/openfst-${FST_VERSION}.tar.gz" \
     && tar -xzf "openfst-${FST_VERSION}.tar.gz" \
     && rm "openfst-${FST_VERSION}.tar.gz"
 
@@ -62,12 +60,11 @@ RUN cd "/tmp/openfst-${FST_VERSION}" \
 
 # Gets and unpacks Pynini source.
 RUN mkdir -p /src && cd /src \
-    && wget -q "${PYNINI_DOWNLOAD_PREFIX}/pynini-${PYNINI_VERSION}.tar.gz" \
+    && wget --quiet --no-check-certificate "${PYNINI_DOWNLOAD_PREFIX}/pynini-${PYNINI_VERSION}.tar.gz" \
     && tar -xzf "pynini-${PYNINI_VERSION}.tar.gz" \
     && rm "pynini-${PYNINI_VERSION}.tar.gz"
 
 # Installs requirements in all our Pythons.
-COPY requirements.txt /src/pynini-${PYNINI_VERSION}/requirements.txt
 RUN for PYBIN in /opt/python/*/bin; do \
     "${PYBIN}/pip" install --upgrade \
         pip -r "/src/pynini-${PYNINI_VERSION}/requirements.txt" || exit; \
