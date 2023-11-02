@@ -1,4 +1,4 @@
-# Copyright 2016-2021 Google LLC
+# Copyright 2016-2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -126,7 +126,6 @@ def main() -> None:
           "Topic :: Scientific/Engineering :: Mathematics",
       ],
       license="Apache 2.0",
-      install_requires=["Cython >= 0.29"],
       ext_modules=cythonize([pywrapfst, pynini]),
       packages=find_packages(exclude=["scripts", "tests"]),
       package_data={
