@@ -1,3 +1,9 @@
+v. 2.1.5.post1 (compatible with OpenFst 1.8.2)
+========================================
+
+* Added `pyproject.toml` support
+* Sets minimum MacOS version to 10.12
+
 v. 2.1.5 (compatible with OpenFst 1.8.2)
 ========================================
 
