@@ -1,4 +1,4 @@
-#cython: c_string_encoding=utf8, c_string_type=unicode, language_level=3, nonecheck=True
+#cython: c_string_encoding=utf8, c_string_type=unicode, language_level=3, c_api_binop_methods=True, nonecheck=True
 # Copyright 2016-2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
