@@ -3,15 +3,14 @@
 # Copyright © Element AI Inc. All rights reserved.
 # Apache License, Version 2.0
 #
-# This builds `manylinux2014_x86_64` Python wheels for `pynini`, wrapping
+# This builds `manylinux_2_28_x86_64` Python wheels for `pynini`, wrapping
 # all its dependencies.
 #
 # This Dockerfile uses multi-stage builds; for more information, see:
 # https://docs.docker.com/develop/develop-images/multistage-build/
 # 
-# The recommended installation method for Pynini is through Conda-Forge. This
-# gives Linux x86-64 users another option: installing a precompiled module from
-# PyPI.
+# The recommended installation method for Pynini is through Conda-Forge. This gives Linux
+# x86-64 users another option: installing a precompiled module from PyPI.
 # 
 # 
 # To build wheels and run Pynini's tests, run:
@@ -30,11 +29,11 @@
 # ******************************************************
 # *** All the following images are based on this one ***
 # ******************************************************
-FROM quay.io/pypa/manylinux2014_x86_64 AS common
+from quay.io/pypa/manylinux_2_28_x86_64 AS common
 
 # The versions we want in the wheels.
-ENV FST_VERSION "1.8.2"
-ENV PYNINI_VERSION "2.1.5"
+ENV FST_VERSION "1.8.2.post1"
+ENV PYNINI_VERSION "2.1.5.post2"
 
 # ***********************************************************************
 # *** Image providing all the requirements for building Pynini wheels ***
@@ -45,10 +44,12 @@ FROM common AS wheel-building-env
 ENV FST_DOWNLOAD_PREFIX "https://www.openfst.org/twiki/pub/FST/FstDownload"
 ENV PYNINI_DOWNLOAD_PREFIX "https://www.opengrm.org/twiki/pub/GRM/PyniniDownload"
 
+# Note that our certificates are not known to the version of wget available in this image.
+
 # Gets and unpack OpenFst source.
 RUN yum install -y wget
 RUN cd /tmp \
-    && wget --quiet --no-check-certificate "${FST_DOWNLOAD_PREFIX}/openfst-${FST_VERSION}.tar.gz" \
+    && wget -q --no-check-certificate "${FST_DOWNLOAD_PREFIX}/openfst-${FST_VERSION}.tar.gz" \
     && tar -xzf "openfst-${FST_VERSION}.tar.gz" \
     && rm "openfst-${FST_VERSION}.tar.gz"
 
@@ -60,13 +61,13 @@ RUN cd "/tmp/openfst-${FST_VERSION}" \
 
 # Gets and unpacks Pynini source.
 RUN mkdir -p /src && cd /src \
-    && wget --quiet --no-check-certificate "${PYNINI_DOWNLOAD_PREFIX}/pynini-${PYNINI_VERSION}.tar.gz" \
+    && wget -q --no-check-certificate "${PYNINI_DOWNLOAD_PREFIX}/pynini-${PYNINI_VERSION}.tar.gz" \
     && tar -xzf "pynini-${PYNINI_VERSION}.tar.gz" \
     && rm "pynini-${PYNINI_VERSION}.tar.gz"
 
 # Installs requirements in all our Pythons.
 RUN for PYBIN in /opt/python/*/bin; do \
-    "${PYBIN}/pip" install --upgrade \
+    "${PYBIN}/pip" install --verbose --upgrade \
         pip -r "/src/pynini-${PYNINI_VERSION}/requirements.txt" || exit; \
 done
 
@@ -77,7 +78,7 @@ FROM wheel-building-env AS build-wheels
 
 # Compiles the wheels to a temporary directory.
 RUN for PYBIN in /opt/python/*/bin; do \
-    "${PYBIN}/pip" wheel "/src/pynini-${PYNINI_VERSION}" -w /tmp/wheelhouse/ \
+    "${PYBIN}/pip" wheel -v "/src/pynini-${PYNINI_VERSION}" -w /tmp/wheelhouse/ \
     || exit; \
 done
 
@@ -86,9 +87,6 @@ done
 RUN for WHL in /tmp/wheelhouse/pynini*.whl; do \
     auditwheel repair "${WHL}" -w /wheelhouse/ || exit; \
 done
-
-# Copies over Cython wheels.
-RUN cp /tmp/wheelhouse/Cython*.whl /wheelhouse
 
 # Removes the non-repaired wheels.
 RUN rm -rd /tmp/wheelhouse
@@ -107,7 +105,7 @@ RUN for PYBIN in /opt/python/*/bin; do \
 done
 
 # ***************************
-# *** Runs pynini's tests ***
+# *** Runs Pynini's tests ***
 # ***************************
 FROM install-pynini-from-wheel AS run-tests
 

@@ -1,2 +1,5 @@
-Cython>=0.29.17
+Cython>=3.0.6
 absl-py>=0.9.0
+build
+setuptools>=32.0.0
+wheel
