@@ -1,4 +1,4 @@
-# Copyright 2016-2020 Google LLC
+# Copyright 2016-2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 """Edit transducer classes.
@@ -22,14 +20,13 @@ distance and approximate string matches.
 
 Here, we provide three concrete classes:
 
-* EditTransducer: Constructs the transducer from an input alphabet and
-  cost matrix. Provides a protected `_create_lattice` method for lattice
-  construction, which may be overridden by derived classes.
-* LevenshteinDistance: Also adds a method for computing
-  Levenshtein distance from the lattice.
-* LevenshteinAutomaton: Uses the edit transducer and an
-  input vocabulary to construct a right-factored lexicon from which one can
-  compute the closest matches.
+* EditTransducer: Constructs the transducer from an input alphabet and cost
+  matrix.
+* LevenshteinDistance: Also adds a method for computing Levenshtein distance
+  from the lattice.
+* LevenshteinAutomaton: Uses the edit transducer and an input vocabulary to
+  construct a right-factored lexicon from which one can compute the closest
+  match(es).
 """
 
 from typing import Iterable, List
@@ -118,7 +115,7 @@ class EditTransducer:
     return ofst.relabel_pairs(ipairs=pairs)
 
   @staticmethod
-  def check_wellformed_lattice(lattice: pynini.Fst) -> None:
+  def check_lattice(lattice: pynini.Fst) -> None:
     """Raises an error if the lattice is empty.
 
     Args:
@@ -130,8 +127,7 @@ class EditTransducer:
     if lattice.start() == pynini.NO_STATE_ID:
       raise Error("Lattice is empty")
 
-  def create_lattice(self, iexpr: pynini.FstLike,
-                     oexpr: pynini.FstLike) -> pynini.Fst:
+  def lattice(self, iexpr: pynini.FstLike, oexpr: pynini.FstLike) -> pynini.Fst:
     """Creates edit lattice for a pair of input/output strings or acceptors.
 
     Args:
@@ -142,7 +138,7 @@ class EditTransducer:
       A lattice FST.
     """
     lattice = (iexpr @ self._e_i) @ (self._e_o @ oexpr)
-    EditTransducer.check_wellformed_lattice(lattice)
+    EditTransducer.check_lattice(lattice)
     return lattice
 
 
@@ -162,11 +158,11 @@ class LevenshteinDistance(EditTransducer):
     Returns:
       Minimum edit distance according to the edit transducer.
     """
-    lattice = self.create_lattice(iexpr, oexpr)
+    lattice = self.lattice(iexpr, oexpr)
     # The shortest cost from all final states to the start state is
     # equivalent to the cost of the shortest path.
-    start = lattice.start()
-    return float(pynini.shortestdistance(lattice, reverse=True)[start])
+    return float(
+        pynini.shortestdistance(lattice, reverse=True)[lattice.start()])
 
 
 class LevenshteinAutomaton(LevenshteinDistance):
@@ -179,6 +175,17 @@ class LevenshteinAutomaton(LevenshteinDistance):
                delete_cost: float = DEFAULT_DELETE_COST,
                substitute_cost: float = DEFAULT_SUBSTITUTE_COST,
                bound: int = 0):
+    """Constructor.
+
+    Args:
+      alphabet: edit alphabet (an iterable of strings).
+      lexicon: lexicon (an iterable of strings).
+      insert_cost: the cost for the insertion operation.
+      delete_cost: the cost for the deletion operation.
+      substitute_cost: the cost for the substitution operation.
+      bound: the number of permissible edits, or `0` (the default) if there is
+        no upper bound.
+    """
     super(LevenshteinAutomaton,
           self).__init__(alphabet, insert_cost, delete_cost, substitute_cost,
                          bound)
@@ -187,8 +194,7 @@ class LevenshteinAutomaton(LevenshteinDistance):
     self._l_o = self._e_o @ compiled_lexicon
     self._l_o.optimize(True)
 
-  def _create_levenshtein_automaton_lattice(
-      self, query: pynini.FstLike) -> pynini.Fst:
+  def lattice(self, query: pynini.FstLike) -> pynini.Fst:
     """Constructs a lattice for a query string.
 
     Args:
@@ -198,7 +204,7 @@ class LevenshteinAutomaton(LevenshteinDistance):
       A lattice FST.
     """
     lattice = (query @ self._e_i) @ self._l_o
-    EditTransducer.check_wellformed_lattice(lattice)
+    EditTransducer.check_lattice(lattice)
     return lattice
 
   def closest_match(self, query: pynini.FstLike) -> str:
@@ -217,7 +223,7 @@ class LevenshteinAutomaton(LevenshteinDistance):
     Returns:
       The closest string in the lexicon.
     """
-    lattice = self._create_levenshtein_automaton_lattice(query)
+    lattice = self.lattice(query)
     return pynini.shortestpath(lattice).string()
 
   def closest_matches(self, query: pynini.FstLike) -> List[str]:
@@ -235,8 +241,9 @@ class LevenshteinAutomaton(LevenshteinDistance):
     Returns:
       A list of the closest strings in the lexicon.
     """
-    lattice = self._create_levenshtein_automaton_lattice(query)
+    lattice = self.lattice(query)
     lattice.project("output").rmepsilon()
     # Prunes all paths whose weights are worse than the best path.
-    return list(pynini.determinize(lattice, weight=0).paths().ostrings())
+    lattice = pynini.determinize(lattice, weight=0)
+    return list(lattice.paths().ostrings())
 

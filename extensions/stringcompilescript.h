@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Google LLC
+// Copyright 2016-2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,16 +11,19 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-
 
 #ifndef PYNINI_STRINGCOMPILESCRIPT_H_
 #define PYNINI_STRINGCOMPILESCRIPT_H_
 
 #include <string>
+#include <tuple>
 
+#include <fst/mutable-fst.h>
+#include <fst/string.h>
+#include <fst/symbol-table.h>
 #include <fst/script/arg-packs.h>
 #include <fst/script/fst-class.h>
+#include <fst/script/weight-class.h>
 #include "stringcompile.h"
 
 namespace fst {

@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Google LLC
+// Copyright 2016-2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,11 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-
 
 #include "stringutil.h"
 
+#include <cstddef>
 #include <string>
 
 #include <fst/compat.h>
@@ -24,8 +23,8 @@
 namespace fst {
 namespace {
 
-void StringReplace(std::string *full, const std::string &before,
-                   const std::string &after) {
+void StringReplace(std::string *full, std::string_view before,
+                   std::string_view after) {
   size_t pos = 0;
   while ((pos = full->find(before, pos)) != std::string::npos) {
     full->replace(pos, before.size(), after);

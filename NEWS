@@ -1,5 +1,18 @@
-v. 2.1.5.post1 (compatible with OpenFst 1.8.2)
+v. 2.1.6 (compatible with OpenFst 1.8.3)
 ========================================
+
+* Simplifies `SymbolTable.read_text` options
+* Fixes reversion in MacOS version issue
+* Fixes classifiers for Python support
+
+v. 2.1.5.post2 (compatible with OpenFst 1.8.2.post1)
+====================================================
+
+* Fixes Cython versioning issue
+* Adds support through Python 3.12
+
+v. 2.1.5.post1 (compatible with OpenFst 1.8.2)
+==============================================
 
 * Added `pyproject.toml` support
 * Sets minimum MacOS version to 10.12
@@ -14,7 +27,7 @@ v. 2.1.5 (compatible with OpenFst 1.8.2)
   boolean argument
 * Modifies `push` and `reweight` to take a string (`to_initial`, `to_final`)
   rather than a boolean argument
-* Removes `int64` (etc.) type shims in place of <cstdint>
+* Uses <cstdint> definitions in place of `int64` (etc.) type shims
 
 v. 2.1.4 (compatible with OpenFst 1.8.1)
 ========================================
@@ -242,7 +255,7 @@ v. 1.0
   to compile the string, rather than assuming the string is a standard arc FST
 * Extensive low-level improvements to all string libraries
 * Adds traditional getter methods in place of Python properties in nearly all
-  ases
+  cases
 * Adds `containment` and `leniently_compose` methods
 * Adds `epsilon_machine` function
 * Adds `from_pywrapfst` method for downcasting pywrapfst FSTs

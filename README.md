@@ -71,12 +71,13 @@ running `bazel build //:all` anywhere in the source tree.
 ## Testing
 
 To confirm successful installation, run `pip install -r requirements`, then
-`python tests/pynini_test.py`. If all tests pass, the final line will read `OK`.
+`python tests/pynini_test.py`. If all tests pass, the final line will read `OK`;
+a successful run will log some errors to STDERR (this is working as expected).
 
 ## Python version support
 
 Pynini 2.0.0 and onward support Python 3. Pynini 2.1 versions (onward) drop
-Python 2 support.
+Python 2 support. The current release supports Python 3.6--3.12.
 
 # License
 

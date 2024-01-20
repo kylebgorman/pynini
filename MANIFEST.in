@@ -1,9 +1,9 @@
 include AUTHORS
 include CHEATSHEET
 include CONTRIBUTING
-include Dockerfile
 include LICENSE
 include NEWS
+include README.md
 include requirements.txt
 include extensions/*
 include pynini/*

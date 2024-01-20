@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Google LLC
+// Copyright 2016-2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,8 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-
 
 #ifndef PYNINI_STRINGFILE_H_
 #define PYNINI_STRINGFILE_H_
@@ -32,8 +30,8 @@ namespace internal {
 class StringFile {
  public:
   // Opens a file input stream using the provided filename.
-  explicit StringFile(const std::string &source)
-      : istrm_(source), linenum_(0), source_(source) {
+  explicit StringFile(std::string_view source)
+      : linenum_(0), source_(source), istrm_(source_) {
     Next();
   }
 
@@ -52,18 +50,16 @@ class StringFile {
   bool Error() const { return !istrm_.is_open() || istrm_.bad(); }
 
  private:
-  std::ifstream istrm_;
   std::string line_;
   size_t linenum_;
   const std::string source_;
+  std::ifstream istrm_;
 };
 
 // File iterator expecting multiple columns separated by tab.
 class ColumnStringFile {
  public:
-  explicit ColumnStringFile(const std::string &source) : sf_(source) {
-    Parse();
-  }
+  explicit ColumnStringFile(std::string_view source) : sf_(source) { Parse(); }
 
   void Reset();
 

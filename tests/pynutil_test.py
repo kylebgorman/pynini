@@ -1,4 +1,4 @@
-# Copyright 2016-2020 Google LLC
+# Copyright 2016-2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 """Tests pynutil."""
@@ -25,8 +23,6 @@ from absl.testing import absltest
 
 
 class UtilitiesTest(absltest.TestCase):
-
-  # TD-deletion in English, expressed as a mandatory rule.
 
   def testUnweightedInsert(self):
     inserter = pynutil.insert("Cheddar")
@@ -46,6 +42,38 @@ class UtilitiesTest(absltest.TestCase):
   def testWeightedDelete(self):
     deleter = pynutil.delete("Cheddar", 2)
     self.assertEqual(self.total_weight(deleter), 2)
+
+  def testAddUntypedWeightToUntypedExpression(self):
+    # Mismatch is impossible here.
+    cheese = pynutil.add_weight("Cheddar", 2)
+    self.assertEqual(cheese.weight_type(), "tropical")
+
+  def testAddUntypedWeightToTypedExpression(self):
+    # Mismatch is impossible here.
+    cheese = pynini.accep("Cheddar", arc_type="log")
+    cheese = pynutil.add_weight(cheese, 2)
+    self.assertEqual(cheese.weight_type(), "log")
+
+  def testAddTypedWeightToUntypedExpression(self):
+    # No mismatch because tropical comes from the default context.
+    weight = pynini.Weight("tropical", 2)
+    cheese = pynutil.add_weight("Cheddar", weight)
+    self.assertEqual(cheese.weight_type(), "tropical")
+    # Mismatch occurs here.
+    weight = pynini.Weight("log", 2)
+    with self.assertRaises(pynini.FstOpError):
+      unused_cheese = pynutil.add_weight("Cheddar", weight)
+
+  def testAddTypedWeightToTypedExpression(self):
+    # No mismatch.
+    cheese = pynini.accep("Cheddar", arc_type="log")
+    weight = pynini.Weight("log", 2)
+    cheese = pynutil.add_weight(cheese, weight)
+    self.assertEqual(cheese.weight_type(), "log")
+    # Mismatch occurs here.
+    weight = pynini.Weight("tropical", 2)
+    with self.assertRaises(pynini.FstOpError):
+      unused_cheese = pynutil.add_weight(cheese, weight)
 
   def testJoin(self):
     joined = pynutil.join("a", " ")

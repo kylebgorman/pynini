@@ -1,4 +1,4 @@
-# Copyright 2016-2020 Google LLC
+# Copyright 2016-2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
 """Interface for generating multiple FAR files from a Pynini file.
 
 Given a number of output FAR files (FST archive) via --output in the form
@@ -45,9 +43,9 @@ import logging
 from pynini.export import export
 
 
-flags.DEFINE_string('outputs', None,
-                    ('The output FAR files in the form '
-                     'designator1=file1,designator2=file2,...'))
+_OUTPUTS = flags.DEFINE_string('outputs', None,
+                               ('The output FAR files in the form '
+                                'designator1=file1,designator2=file2,...'))
 FLAGS = flags.FLAGS
 
 ExporterMapping = Mapping[str, export.Exporter]
@@ -92,7 +90,7 @@ def run(generator_main: Callable[[ExporterMapping], None]) -> None:
       if unused_argv:
         raise app.UsageError(
             f'Unexpected command line arguments: {unused_argv}')
-      target_file_pair = _get_target_file_map(FLAGS.outputs)
+      target_file_pair = _get_target_file_map(_OUTPUTS.value)
       if not target_file_pair:
         raise app.UsageError(
             '--outputs must specify at least one name=file pair.')

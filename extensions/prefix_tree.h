@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Google LLC
+// Copyright 2016-2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,23 +11,17 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-
 
 #ifndef PYNINI_PREFIX_TREE_H_
 #define PYNINI_PREFIX_TREE_H_
 
 #include <array>
-#include <map>
 #include <memory>
 #include <stack>
 #include <utility>
 
-#include <fst/log.h>
-#include <fst/arc.h>
-#include <fst/vector-fst.h>
+#include <fst/mutable-fst.h>
 #include <map>
-#include <fst/compat.h>
 #include <fst/compat.h>
 
 namespace fst {

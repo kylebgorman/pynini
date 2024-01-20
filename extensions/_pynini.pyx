@@ -1,5 +1,5 @@
-#cython: c_string_encoding=utf8, c_string_type=unicode, language_level=3, c_api_binop_methods=True, nonecheck=True
-# Copyright 2016-2020 Google LLC
+#cython: c_string_encoding=utf8, c_string_type=unicode, language_level=3, nonecheck=True
+# Copyright 2016-2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,8 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 """Pynini: finite-state grammar compilation for Python."""
@@ -37,8 +35,6 @@ from libcpp.memory cimport unique_ptr
 from libcpp.utility cimport pair
 from libcpp.string cimport string
 from libcpp.vector cimport vector
-
-from cmemory cimport WrapUnique
 
 from cpywrapfst cimport ArcSort
 from cpywrapfst cimport ArcSortType
@@ -64,15 +60,19 @@ from cpywrapfst cimport WeightClass
 from _pywrapfst cimport FarReader
 from _pywrapfst cimport FarWriter
 from _pywrapfst cimport Fst as _Fst
-from _pywrapfst cimport MutableFst as _MutableFst
+from _pywrapfst cimport MutableFst as \
+    _MutableFst
 from _pywrapfst cimport SymbolTable_ptr
 from _pywrapfst cimport const_SymbolTable_ptr
 from _pywrapfst cimport VectorFst as _VectorFst
 from _pywrapfst cimport Weight as _Weight
-from _pywrapfst cimport SymbolTable as _SymbolTable
-from _pywrapfst cimport SymbolTableView as _SymbolTableView
+from _pywrapfst cimport SymbolTable as \
+    _SymbolTable
+from _pywrapfst cimport SymbolTableView as \
+    _SymbolTableView
 from _pywrapfst cimport _get_WeightClass_or_one
-from _pywrapfst cimport _get_WeightClass_or_zero
+from _pywrapfst cimport \
+    _get_WeightClass_or_zero
 from _pywrapfst cimport _get_compose_filter
 from _pywrapfst cimport _get_queue_type
 from _pywrapfst cimport _get_replace_label_type
@@ -84,7 +84,8 @@ from _pywrapfst cimport path_tostring
 # C++ code for Pynini not from fst_util.
 
 from cpynini cimport CDRewriteCompile
-from cpynini cimport CDRewriteDirection as _CDRewriteDirection
+from cpynini cimport CDRewriteDirection as \
+    _CDRewriteDirection
 from cpynini cimport CDRewriteMode as _CDRewriteMode
 from cpynini cimport Compose
 from cpynini cimport ConcatRange
@@ -695,11 +696,21 @@ cdef class Fst(_VectorFst):
   def __add__(self, other):
     return concat(self, other)
 
+  def __radd__(self, other):
+    # Called as `fst.__radd__(string)` from the expression `string + fst`,
+    # hence the change in order of arguments.
+    return concat(other, self)
+
   def __iadd__(self, other):
     return self.concat(other)
 
   def __sub__(self, other):
     return difference(self, other)
+
+  def __rsub__(self, other):
+    # Called as `fst.__rsub__(string)` in the (weird) expression
+    # `string - fst`, hence the change in order of arguments.
+    return difference(other, self)
 
   # __isub__ is not implemented separately because difference is not an
   # in-place operation.
@@ -707,11 +718,10 @@ cdef class Fst(_VectorFst):
   def __pow__(self, other, modulo):
     """Constructively generates the range-concatenation of the FST.
 
-    For all natural numbers n, `f ** n` is the same as `f ** (n, n).
-    Note that `f ** (0, ...)` is the same as `f.star`,
-    `f ** (1, ...)` is `f.plus`,
-    `f ** (0, 1)` is the same as `f.ques`.
-    and `f ** (5, ...)` is the obvious generalization.
+    For all natural numbers n, `f ** n` is the same as `f ** (n, n). Note that
+    `f ** (0, ...)` is the same as `f.star`, `f ** (1, ...)` is `f.plus`,
+    `f ** (0, 1)` is the same as `f.ques`, and `f ** (5, ...)` is the obvious
+    generalization.
     """
     if not isinstance(self, Fst) or modulo is not None:
       return NotImplemented
@@ -730,19 +740,27 @@ cdef class Fst(_VectorFst):
         return closure(self, lower, upper)
     return NotImplemented
 
-  # TODO(kbg): Cython only has support for two-argument __ipow__; see:
+  # TODO(kbg): Cython <3.0 only has support for two-argument __ipow__; see:
   #
   #   http://github.com/cython/cython/commit/829d6
   #
-  # If this ever changes, implement __ipow__ in the obvious fashion.
+  # Implement __ipow__ once we move to Cython 3.
 
   def __matmul__(self, other):
     return compose(self, other)
+
+  def __rmatmul__(self, other):
+    # Called as `fst.__rmatmul__(string)` from the expression `string @ fst`,
+    # hence the change in order of arguments.
+    return compose(other, self)
 
   # __imatmul__ is not implemented separately because composition is not an
   # in-place operation.
 
   def __or__(self, other):
+    return union(self, other)
+
+  def __ror__(self, other):
     return union(self, other)
 
   def __ior__(self, other):
@@ -940,7 +958,7 @@ cpdef Fst cdrewrite(tau, l, r, sigma_star, direction="ltr", mode="obl"):
   within L, and "[EOS]" (end of string) denotes the right edge of a string
   within R. Note that these reserved symbols do not have any special
   interpretation anywhere else within this library.
-  
+
   Args:
     tau: A transducer representing the desired transduction tau.
     l: An unweighted acceptor representing the left context L.
@@ -1355,7 +1373,7 @@ cpdef Fst replace(pairs,
 
   Args:
     pairs: An iterable of (nonterminal label, FST) pairs, where the former is an
-        unsigned integer and the latter is an Fst instance.  
+        unsigned integer and the latter is an Fst instance.
     call_arc_labeling: A string indicating which call arc labels should be
         non-epsilon. One of: "input" (default), "output", "both", "neither".
         This value is set to "neither" if epsilon_on_replace is True.
@@ -1481,8 +1499,7 @@ cdef class PdtParentheses:
     """
     cdef PdtParentheses result = PdtParentheses.__new__(PdtParentheses)
     if not ReadLabelPairs[int64_t](path_tostring(filename),
-                                 addr(result._parens),
-                                 False):
+                                 addr(result._parens)):
       raise FstIOError(f"Read failed: {filename}")
     return result
 
@@ -1831,8 +1848,7 @@ cdef class MPdtParentheses:
     cdef MPdtParentheses result = MPdtParentheses.__new__(MPdtParentheses)
     if not ReadLabelTriples[int64_t](path_tostring(filename),
                                    addr(result._parens),
-                                   addr(result._assign),
-                                   False):
+                                   addr(result._assign)):
       raise FstIOError(f"Read failed: {filename}")
     return result
 
@@ -2128,7 +2144,7 @@ cdef class _StringPathIterator:
 
      Generates all (istring, ostring, weight) triples in the FST.
 
-     This method returns a generator over all triples of input strings, 
+     This method returns a generator over all triples of input strings,
      output strings, and path weights. The caller is responsible for resetting
      the iterator if desired.
 
@@ -2536,7 +2552,8 @@ from _pywrapfst import ACCESSIBLE
 from _pywrapfst import ACYCLIC
 from _pywrapfst import ADD_ARC_PROPERTIES
 from _pywrapfst import ADD_STATE_PROPERTIES
-from _pywrapfst import ADD_SUPERFINAL_PROPERTIES
+from _pywrapfst import \
+    ADD_SUPERFINAL_PROPERTIES
 from _pywrapfst import ARC_SORT_PROPERTIES
 from _pywrapfst import BINARY_PROPERTIES
 from _pywrapfst import COACCESSIBLE
@@ -2555,7 +2572,8 @@ from _pywrapfst import INITIAL_CYCLIC
 from _pywrapfst import INTRINSIC_PROPERTIES
 from _pywrapfst import I_DETERMINISTIC
 from _pywrapfst import I_EPSILONS
-from _pywrapfst import I_LABEL_INVARIANT_PROPERTIES
+from _pywrapfst import \
+    I_LABEL_INVARIANT_PROPERTIES
 from _pywrapfst import I_LABEL_SORTED
 from _pywrapfst import MUTABLE
 from _pywrapfst import NEG_TRINARY_PROPERTIES
@@ -2574,7 +2592,8 @@ from _pywrapfst import NO_O_EPSILONS
 from _pywrapfst import NULL_PROPERTIES
 from _pywrapfst import O_DETERMINISTIC
 from _pywrapfst import O_EPSILONS
-from _pywrapfst import O_LABEL_INVARIANT_PROPERTIES
+from _pywrapfst import \
+    O_LABEL_INVARIANT_PROPERTIES
 from _pywrapfst import O_LABEL_SORTED
 from _pywrapfst import POS_TRINARY_PROPERTIES
 from _pywrapfst import RM_SUPERFINAL_PROPERTIES
@@ -2589,7 +2608,8 @@ from _pywrapfst import UNWEIGHTED
 from _pywrapfst import UNWEIGHTED_CYCLES
 from _pywrapfst import WEIGHTED
 from _pywrapfst import WEIGHTED_CYCLES
-from _pywrapfst import WEIGHT_INVARIANT_PROPERTIES
+from _pywrapfst import \
+    WEIGHT_INVARIANT_PROPERTIES
 
 
 # Arc iterator properties.
