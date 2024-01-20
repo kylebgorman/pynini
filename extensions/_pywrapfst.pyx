@@ -1,5 +1,5 @@
-#cython: c_string_encoding=utf8, c_string_type=unicode, language_level=3, c_api_binop_methods=True, nonecheck=True
-# Copyright 2016-2020 Google LLC
+#cython: c_string_encoding=utf8, c_string_type=unicode, language_level=3, nonecheck=True
+# Copyright 2016-2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,8 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
 # See www.openfst.org for extensive documentation on this weighted
 # finite-state transducer library.
 
@@ -82,9 +80,6 @@ from cython.operator cimport address as addr       # &foo
 from cython.operator cimport dereference as deref  # *foo
 from cython.operator cimport preincrement as inc   # ++foo
 
-# C imports.
-from libc.time cimport time
-
 # C++ imports.
 from libcpp cimport bool
 from libcpp.cast cimport static_cast
@@ -134,7 +129,7 @@ QueueType = """typing.Literal["auto", "fifo", "lifo", "shortest", "state",
                               "top"]"""
 RandArcSelection = """typing.Literal["uniform", "log_prob", "fast_log_prob"]"""
 ReplaceLabelType = """typing.Literal["neither", "input", "output", "both"]"""
-ReweightType = """typing.Literal["to_inital", "to_final"]"""
+ReweightType = """typing.Literal["to_initial", "to_final"]"""
 SortType = """typing.Literal["ilabel", "olabel"]"""
 StateMapType = """typing.Literal["arc_sum", "arc_unique", "identity"]"""
 
@@ -322,7 +317,8 @@ cdef fst.DeterminizeType _get_determinize_type(const string &det_type) except *:
     raise FstArgError(f"Unknown determinization type: {det_type!r}")
   return _det_type
 
-cdef fst.EpsNormalizeType _get_eps_norm_type(const string &eps_norm_type) except *:
+cdef fst.EpsNormalizeType _get_eps_norm_type(
+    const string &eps_norm_type) except *:
   """Matches string with the appropriate EpsNormalizeType enum value.
 
   Args:
@@ -959,9 +955,9 @@ cdef class SymbolTableView:
     if not self._raw_ptr_or_raise().Write(path_tostring(source)):
       raise FstIOError(f"Write failed: {source!r}")
 
-  cpdef void write_text(self, source) except *:
+  def write_text(self, source, *, sep="\t "):
     """
-    write_text(self, source)
+    write_text(self, source, *, sep="\t ")
 
     Writes symbol table to text file.
 
@@ -969,11 +965,14 @@ cdef class SymbolTableView:
 
     Args:
       source: The string location of the output file.
+      sep: Characters to be used as a separator between fields in a textual
+          SymbolTable file, encoded as a string. Only the first byte is used.
 
     Raises:
       FstIOError: Write failed.
     """
-    if not self._raw_ptr_or_raise().WriteText(path_tostring(source)):
+    if not self._raw_ptr_or_raise().WriteText(path_tostring(source),
+                                              tostring(sep)):
       raise FstIOError(f"Write failed: {source!r}")
 
   cpdef bytes write_to_string(self):
@@ -1176,9 +1175,9 @@ cdef class SymbolTable(_MutableSymbolTable):
     return _init_SymbolTable(move(_symbols))
 
   @classmethod
-  def read_text(cls, source, bool allow_negative_labels=False):
+  def read_text(cls, source, *, sep="\t "):
     """
-    SymbolTable.read_text(source)
+    SymbolTable.read_text(source, *, sep="\t ")
 
     Reads symbol table from text file.
 
@@ -1186,17 +1185,14 @@ cdef class SymbolTable(_MutableSymbolTable):
 
     Args:
       source: The string location of the input text file.
-      allow_negative_labels: Should negative labels be allowed? (Not
-          recommended; may cause conflicts).
+      sep: Characters to be used as a separator between fields in a textual
+          SymbolTable file, encoded as a string. Only the first byte is used.
 
     Returns:
       A new SymbolTable instance.
     """
-    cdef unique_ptr[fst.SymbolTableTextOptions] _opts
-    _opts.reset(new fst.SymbolTableTextOptions(allow_negative_labels))
     cdef unique_ptr[fst.SymbolTable] _symbols
-    _symbols.reset(fst.SymbolTable.ReadText(path_tostring(source),
-                                            deref(_opts)))
+    _symbols.reset(fst.SymbolTable.ReadText(path_tostring(source), tostring(sep)))
     if _symbols.get() == NULL:
       raise FstIOError(f"Read failed: {source!r}")
     return _init_SymbolTable(move(_symbols))
@@ -2200,7 +2196,8 @@ cdef class MutableFst(Fst):
     itself with semiring One if `closure_type` is "star".
 
     Args:
-      closure_type: If "star", do not accept the empty string. If "plus", accept the empty string.
+      closure_type: If "star", do not accept the empty string. If "plus", accept
+      the empty string.
 
     Returns:
       self.
@@ -2521,7 +2518,8 @@ cdef class MutableFst(Fst):
            bool remove_total_weight=False,
            reweight_type="to_initial"):
     """
-    push(self, delta=1-e6, remove_total_weight=False, reweight_type="to_initial")
+    push(self, delta=1-e6, remove_total_weight=False,
+         reweight_type="to_initial")
 
     Pushes weights towards the initial or final states.
 
@@ -3908,7 +3906,7 @@ cpdef bool equal(Fst ifst1, Fst ifst2, float delta=fst.kDelta):
   return fst.Equal(deref(ifst1._fst), deref(ifst2._fst), delta)
 
 
-cpdef bool equivalent(Fst ifst1, Fst ifst2, float delta=fst.kDelta):
+cpdef bool equivalent(Fst ifst1, Fst ifst2, float delta=fst.kDelta) except *:
   """
   equivalent(ifst1, ifst2, delta=0.0009765625)
 
@@ -3925,8 +3923,17 @@ cpdef bool equivalent(Fst ifst1, Fst ifst2, float delta=fst.kDelta):
 
   Returns:
     True if the FSTs satisfy the above condition, else False.
+
+  Raises:
+    FstOpError: Some precondition of the argument FSTs does not hold.
   """
-  return fst.Equivalent(deref(ifst1._fst), deref(ifst2._fst), delta)
+  cdef bool err = False
+  is_equiv = fst.Equivalent(deref(ifst1._fst),
+                            deref(ifst2._fst),
+                            delta, addr(err))
+  if err:
+    raise FstOpError("Argument FST did not satisfy preconditions")
+  return is_equiv
 
 
 cpdef MutableFst intersect(Fst ifst1,
@@ -4029,7 +4036,8 @@ cpdef MutableFst push(Fst ifst,
                       reweight_type="to_initial"):
   """
   push(ifst, delta=0.0009765625, push_weights=False, push_labels=False,
-       remove_common_affix=False, remove_total_weight=False, reweight_type="to_initial")
+       remove_common_affix=False, remove_total_weight=False,
+       reweight_type="to_initial")
 
   Constructively pushes weights/labels towards initial or final states.
 
@@ -4067,8 +4075,8 @@ cpdef MutableFst push(Fst ifst,
   _tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
   cdef uint8_t flags = fst.GetPushFlags(push_weights,
                                       push_labels,
-                                      remove_common_affix,
-                                      remove_total_weight)
+                                      remove_total_weight,
+                                      remove_common_affix)
   fst.Push(deref(ifst._fst),
            _tfst.get(),
            flags,
@@ -4083,10 +4091,10 @@ cpdef bool randequivalent(Fst ifst1,
                           float delta=fst.kDelta,
                           select="uniform",
                           int32_t max_length=numeric_limits[int32_t].max(),
-                          uint64_t seed=0) except *:
+                          uint64_t seed=fst.kDefaultSeed) except *:
   """
   randequivalent(ifst1, ifst2, npath=1, delta=0.0009765625, select="uniform",
-                 max_length=2147483647, seed=0)
+                 max_length=2147483647, seed=-1)
 
   Are two acceptors stochastically equivalent?
 
@@ -4101,8 +4109,8 @@ cpdef bool randequivalent(Fst ifst1,
     ifst2: The second input FST.
     npath: The number of random paths to generate.
     delta: Comparison/quantization delta.
-    seed: An optional seed value for random path generation; if zero, the
-        current time and process ID is used.
+    seed: An optional seed value for random path generation; if not specified,
+        the current time is used.
     select: A string matching a known random arc selection type; one of:
         "uniform", "log_prob", "fast_log_prob".
     max_length: The maximum length of each random path.
@@ -4119,14 +4127,13 @@ cpdef bool randequivalent(Fst ifst1,
                                                     1,
                                                     False,
                                                     False))
-  if seed == 0:
-    seed = time(NULL)
+  cdef uint64_t _seed = fst.GetSeed(seed)
   return fst.RandEquivalent(deref(ifst1._fst),
                             deref(ifst2._fst),
                             npath,
                             deref(_opts),
                             delta,
-                            seed)
+                            _seed)
 
 
 cpdef MutableFst randgen(Fst ifst,
@@ -4135,10 +4142,10 @@ cpdef MutableFst randgen(Fst ifst,
                          int32_t max_length=numeric_limits[int32_t].max(),
                          bool weighted=False,
                          bool remove_total_weight=False,
-                         uint64_t seed=0):
+                         uint64_t seed=fst.kDefaultSeed):
   """
   randgen(ifst, npath=1, seed=0, select="uniform", max_length=2147483647,
-          weighted=False, remove_total_weight=False)
+          weighted=False, remove_total_weight=False, seed=-1)
 
   Randomly generate successful paths in an FST.
 
@@ -4153,8 +4160,8 @@ cpdef MutableFst randgen(Fst ifst,
   Args:
     ifst: The input FST.
     npath: The number of random paths to generate.
-    seed: An optional seed value for random path generation; if zero, the
-        current time and process ID is used.
+    seed: An optional seed value for random path generation; if not specified,
+        the current time is used.
     select: A string matching a known random arc selection type; one of:
         "uniform", "log_prob", "fast_log_prob".
     max_length: The maximum length of each random path.
@@ -4175,9 +4182,8 @@ cpdef MutableFst randgen(Fst ifst,
                                                    remove_total_weight))
   cdef unique_ptr[fst.VectorFstClass] _tfst
   _tfst.reset(new fst.VectorFstClass(ifst.arc_type()))
-  if seed == 0:
-    seed = time(NULL)
-  fst.RandGen(deref(ifst._fst), _tfst.get(), deref(_opts), seed)
+  cdef uint64_t _seed = fst.GetSeed(seed)
+  fst.RandGen(deref(ifst._fst), _tfst.get(), deref(_opts), _seed)
   return _init_MutableFst(_tfst.release())
 
 
@@ -4439,8 +4445,7 @@ cdef class Compiler:
   """
   Compiler(fst_type="vector", arc_type="standard", isymbols=None,
            osymbols=None, ssymbols=None, acceptor=False, keep_isymbols=False,
-           keep_osymbols=False, keep_state_numbering=False,
-           allow_negative_labels=False)
+           keep_osymbols=False, keep_state_numbering=False)
 
   Class used to compile FSTs from strings.
 
@@ -4481,8 +4486,6 @@ cdef class Compiler:
     keep_isymbols: Should the input symbol table be stored in the FST?
     keep_osymbols: Should the output symbol table be stored in the FST?
     keep_state_numbering: Should the state numbering be preserved?
-    allow_negative_labels: Should negative labels be allowed? (Not
-        recommended; may cause conflicts).
   """
 
   def __cinit__(self,
@@ -4494,8 +4497,7 @@ cdef class Compiler:
                 bool acceptor=False,
                 bool keep_isymbols=False,
                 bool keep_osymbols=False,
-                bool keep_state_numbering=False,
-                bool allow_negative_labels=False):
+                bool keep_state_numbering=False):
     self._sstrm.reset(new stringstream())
     self._fst_type = tostring(fst_type)
     self._arc_type = tostring(arc_type)
@@ -4512,7 +4514,6 @@ cdef class Compiler:
     self._keep_isymbols = keep_isymbols
     self._keep_osymbols = keep_osymbols
     self._keep_state_numbering = keep_state_numbering
-    self._allow_negative_labels = allow_negative_labels
 
   cpdef Fst compile(self):
     """
@@ -4539,8 +4540,7 @@ cdef class Compiler:
                                 self._acceptor,
                                 self._keep_isymbols,
                                 self._keep_osymbols,
-                                self._keep_state_numbering,
-                                self._allow_negative_labels)
+                                self._keep_state_numbering)
     self._sstrm.reset(new stringstream())
     if _tfst.get() == NULL:
       raise FstOpError("Compilation failed")

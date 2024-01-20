@@ -9,7 +9,6 @@ README.md
 WORKSPACE.bazel
 pyproject.toml
 requirements.txt
-setup.cfg
 setup.py
 bazel/BUILD.bazel
 bazel/cython.BUILD.bazel
@@ -49,7 +48,6 @@ extensions/paths.h
 extensions/pathsscript.cc
 extensions/pathsscript.h
 extensions/prefix_tree.h
-extensions/rewrite.h
 extensions/string-view-fst.h
 extensions/stringcompile.cc
 extensions/stringcompile.h
@@ -105,6 +103,7 @@ pynini/lib/py.typed
 pynini/lib/pynutil.py
 pynini/lib/rewrite.py
 pynini/lib/rule_cascade.py
+pynini/lib/stringfile.py
 pynini/lib/tagger.py
 pynini/lib/utf8.py
 pywrapfst/BUILD.bazel
@@ -131,6 +130,7 @@ tests/pynini_test.py
 tests/pynutil_test.py
 tests/rewrite_test.py
 tests/rule_cascade_test.py
+tests/stringfile_test.py
 tests/t9_test.py
 tests/tagger_test.py
 tests/utf8_test.py

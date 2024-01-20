@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Google LLC
+// Copyright 2016-2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,8 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-
 
 #ifndef PYNINI_STRINGMAP_H_
 #define PYNINI_STRINGMAP_H_
@@ -26,13 +24,13 @@
 #include <utility>
 #include <vector>
 
-#include <fstream>
 #include <fst/mutable-fst.h>
 #include <fst/string.h>
 #include <fst/symbol-table.h>
 #include "prefix_tree.h"
 #include "stringcompile.h"
 #include "stringfile.h"
+
 
 #include <fst/compat.h>
 #include <string_view>
@@ -97,6 +95,7 @@ class StringMapCompiler {
   PTree ptree_;
 };
 
+// StringType could reasonably be `std::string` or `std::string_view`.
 template <class StringType>
 bool StringMapLineIsAcceptor(std::vector<StringType> line) {
   switch (line.size()) {
@@ -151,8 +150,12 @@ inline bool StringMapCheckRepresentableAsAcceptor(
   return true;
 }
 
-template <class StringType>
-bool StringMapCheckRepresentableAsAcceptor(std::vector<StringType> lines,
+// `LineType` is (currently) any type with a `StringMapLineIsAcceptor` overload,
+// which currently includes `std::vector<std::string>`,
+// ``std::vector<std::string_view>`, and `std::tuple<std::string, std::string,
+// Weight>` (given some `Weight` type).
+template <class LineType>
+bool StringMapCheckRepresentableAsAcceptor(std::vector<LineType> lines,
                                            TokenType input_token_type,
                                            TokenType output_token_type,
                                            const SymbolTable *input_symbols,
@@ -268,10 +271,7 @@ bool StringMapCompile(
     const SymbolTable *output_symbols = nullptr) {
   internal::StringMapCompiler<Arc, PTree> compiler(
       input_token_type, output_token_type, input_symbols, output_symbols);
-  for (const auto &line : lines) {
-    const auto &istring = std::get<0>(line);
-    const auto &ostring = std::get<1>(line);
-    const auto &weight = std::get<2>(line);
+  for (const auto &[istring, ostring, weight] : lines) {
     if (!compiler.Add(istring, ostring, weight)) {
       LOG(ERROR) << "StringMapCompile: Ill-formed line: `(" << istring << ", "
                  << ostring << ", " << weight << ")`";
@@ -312,7 +312,7 @@ bool StringMapCompileWithAcceptorCheck(
 // and also the (token_type, symbols) is the same for input and output.
 template <class Arc>
 bool StringFileCompile(
-    const std::string &source, MutableFst<Arc> *fst,
+    std::string_view source, MutableFst<Arc> *fst,
     TokenType input_token_type = TokenType::BYTE,
     TokenType output_token_type = TokenType::BYTE,
     const SymbolTable *input_symbols = nullptr,

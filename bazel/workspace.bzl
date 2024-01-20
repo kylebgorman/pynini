@@ -115,12 +115,12 @@ def pynini_repositories(name = ""):
     # -------------------------------------------------------------------------
     # Cython:
     # -------------------------------------------------------------------------
-    cython_version = "0.29.24"
+    cython_version = "3.0.5"
 
     http_archive(
         name = "org_cython",
         build_file = _clean_dep("//bazel:cython.BUILD.bazel"),
         urls = ["https://github.com/cython/cython/archive/%s.tar.gz" % cython_version],
-        sha256 = "a5efb97612f0f97164e87c54cc295b2e2d06c539487670079963adeab872de80",
+        sha256 = "28eafb657bf3f2f8d78eb7948ebb089be31e51ec76119d84925347c4dea68b59",
         strip_prefix = "cython-%s" % cython_version,
     )

@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Google LLC
+// Copyright 2016-2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,21 +11,22 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-
 
 #include "getters.h"
+
+#include "cdrewrite.h"
+#include <string_view>
 
 namespace fst {
 namespace script {
 
 bool GetCDRewriteDirection(std::string_view str, CDRewriteDirection *rd) {
   if (str == "ltr") {
-    *rd = LEFT_TO_RIGHT;
+    *rd = CDRewriteDirection::LEFT_TO_RIGHT;
   } else if (str == "rtl") {
-    *rd = RIGHT_TO_LEFT;
+    *rd = CDRewriteDirection::RIGHT_TO_LEFT;
   } else if (str == "sim") {
-    *rd = SIMULTANEOUS;
+    *rd = CDRewriteDirection::SIMULTANEOUS;
   } else {
     return false;
   }
@@ -34,9 +35,9 @@ bool GetCDRewriteDirection(std::string_view str, CDRewriteDirection *rd) {
 
 bool GetCDRewriteMode(std::string_view str, CDRewriteMode *rm) {
   if (str == "obl") {
-    *rm = OBLIGATORY;
+    *rm = CDRewriteMode::OBLIGATORY;
   } else if (str == "opt") {
-    *rm = OPTIONAL;
+    *rm = CDRewriteMode::OPTIONAL;
   } else {
     return false;
   }

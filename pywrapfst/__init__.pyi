@@ -1,4 +1,4 @@
-# Copyright 2016-2020 Google LLC
+# Copyright 2016-2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,14 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
 # See www.openfst.org for extensive documentation on this weighted
 # finite-state transducer library.
 
 import enum
 import os
-from typing import Optional, Union, overload, TypeVar, Tuple, Any, Type, Iterable, Iterator, List
+from typing import Optional, Union, overload, TypeVar, Tuple, Any, Type, Iterable, Iterator, List, Literal
 
 ## Custom exceptions.
 class FstError(Exception): ...
@@ -35,14 +33,6 @@ _Label = int
 _StateId = int
 _ArcIteratorPropertiesType = int
 _EncodeMapperPropertiesType = int
-
-
-# TODO(wolfsonkin): Drop version check once Python 3.8 is our minimum version.
-import sys
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 ArcMapType = Literal["identity", "input_epsilon", "invert",
                      "output_epsilon", "plus", "power", "quantize",
@@ -71,7 +61,7 @@ ProjectType = Literal["input", "output"]
 QueueType = Literal["auto", "fifo", "lifo", "shortest", "state", "top"]
 RandArcSelection = Literal["uniform", "log_prob", "fast_log_prob"]
 ReplaceLabelType = Literal["neither", "input", "output", "both"]
-ReweightType = Literal["to_inital", "to_final"]
+ReweightType = Literal["to_initial", "to_final"]
 SortType = Literal["ilabel", "olabel"]
 StateMapType = Literal["arc_sum", "arc_unique", "identity"]
 
@@ -122,7 +112,10 @@ class SymbolTableView:
   def name(self) -> str: ...
   def num_symbols(self) -> int: ...
   def write(self, source: _Filename) -> None: ...
-  def write_text(self, source: _Filename) -> None: ...
+  def write_text(self,
+                 source: _Filename,
+                 *,
+                 sep: str = ...) -> None: ...
   def write_to_string(self) -> bytes: ...
 
 class _EncodeMapperSymbolTableView(SymbolTableView):
@@ -147,7 +140,8 @@ class SymbolTable(_MutableSymbolTable):
   @classmethod
   def read_text(cls,
                 source: _Filename,
-                allow_negative_labels: bool = ...) -> SymbolTable: ...
+                *,
+                sep: str = ...) -> SymbolTable: ...
   @classmethod
   def read_fst(cls, source: _Filename, input_table: bool) -> SymbolTable: ...
 

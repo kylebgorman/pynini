@@ -1,5 +1,5 @@
 #cython: language_level=3
-# Copyright 2016-2020 Google LLC
+# Copyright 2016-2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,8 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 
@@ -79,8 +77,7 @@ cdef extern from "<fst/extensions/mpdt/read_write_utils.h>" \
 
   bool ReadLabelTriples[L](const string &,
                            vector[pair[L, L]] *,
-                           vector[L] *,
-                           bool)
+                           vector[L] *)
 
   # TODO(kbg): The last argument is actually const but externally Cython 0.28
   # freaks out if it is so annotated. Re-annotate it const once this has been
@@ -164,7 +161,7 @@ cdef extern from "<fst/extensions/pdt/pdtscript.h>" \
 
 cdef extern from "<fst/util.h>" namespace "fst" nogil:
 
-  bool ReadLabelPairs[L](const string &, vector[pair[L, L]] *, bool)
+  bool ReadLabelPairs[L](const string &, vector[pair[L, L]] *)
 
   bool WriteLabelPairs[L](const string &, const vector[pair[L, L]] &)
 
@@ -172,14 +169,18 @@ cdef extern from "<fst/util.h>" namespace "fst" nogil:
 cdef extern from "cdrewrite.h" \
     namespace "fst" nogil:
 
-  enum CDRewriteDirection:
-    LEFT_TO_RIGHT
-    RIGHT_TO_LEFT
-    SIMULTANEOUS
+  # TODO(wolfsonkin): Don't do this hack if Cython gets proper enum class
+  # support: https://github.com/cython/cython/issues/1603
+  ctypedef enum CDRewriteDirection:
+    LEFT_TO_RIGHT "fst::CDRewriteDirection::LEFT_TO_RIGHT"
+    RIGHT_TO_LEFT "fst::CDRewriteDirection::RIGHT_TO_LEFT"
+    SIMULTANEOUS "fst::CDRewriteDirection::SIMULTANEOUS"
 
-  enum CDRewriteMode:
-    OBLIGATORY
-    OPTIONAL
+  # TODO(wolfsonkin): Don't do this hack if Cython gets proper enum class
+  # support: https://github.com/cython/cython/issues/1603
+  ctypedef enum CDRewriteMode:
+    OBLIGATORY "fst::CDRewriteMode::OBLIGATORY"
+    OPTIONAL "fst::CDRewriteMode::OPTOINAL"
 
 
 cdef extern from "cdrewritescript.h" \

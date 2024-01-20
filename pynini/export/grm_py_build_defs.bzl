@@ -1,4 +1,4 @@
-# Copyright 2016-2020 Google LLC
+# Copyright 2016-2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,17 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
 """Targets for compiling Pynini files into far files."""
 
 load("@org_openfst//:src/extensions/far/build_defs.bzl", "convert_far_types")
 
-def _compile_grm_py_bin_target(name, deps, data, is_multi_target):
+def _compile_grm_py_bin_target(name, src, deps, data, is_multi_target):
     """Defines a target that builds the binary from a given Pynini file.
 
     Args:
-      name: The name of the Pynini file (without extension).
+      name: The name of the target.
+      src: The Pynini file input.
       deps: The dependencies used in the Pynini file.
       is_multi_target: True, if the Pynini generates multiple outputs.
       data: Extra data dependencies used in the Pynini file.
@@ -38,7 +37,7 @@ def _compile_grm_py_bin_target(name, deps, data, is_multi_target):
     lib_name = "_" + name + "_lib"
     native.py_library(
         name = lib_name,
-        srcs = [name + ".py"],
+        srcs = [src],
         deps = deps + [
             "@org_opengrm_pynini//pynini/export:%sgrm" % template_prefix,
         ],
@@ -50,8 +49,8 @@ def _compile_grm_py_bin_target(name, deps, data, is_multi_target):
     bin_name = "_" + name + "_bin"
     native.py_binary(
         name = bin_name,
-        srcs = [name + ".py"],
-        main = name + ".py",
+        srcs = [src],
+        main = src,
         deps = [":" + lib_name],
         visibility = ["//visibility:private"],
         srcs_version = "PY3",
@@ -61,6 +60,7 @@ def _compile_grm_py_bin_target(name, deps, data, is_multi_target):
 
 def compile_grm_py(
         name,
+        src = None,
         far_type = None,
         fst_type = None,
         deps = None,
@@ -73,6 +73,7 @@ def compile_grm_py(
 
     Args:
       name: The BUILD rule name and the file prefix for the generated output.
+      src: Pynini file input. Defaults to name + ".py".
       far_type: An optional string specifying the FAR format.
       fst_type: An optional string specifying the format of the FSTs in the FAR
                 archive.  The type must be supported by
@@ -83,10 +84,11 @@ def compile_grm_py(
            followed by ".far".
       **kwds: Attributes common to all BUILD rules, e.g., testonly, visibility.
     """
+    src = src or (name + ".py")
     out = out or (name + ".far")
     if not out.endswith(".far"):
         fail("Output filename \"{}\" must end with \".far\".".format(out))
-    bin_name = _compile_grm_py_bin_target(name, deps, data, False)
+    bin_name = _compile_grm_py_bin_target(name, src, deps, data, False)
 
     # Pynini produces far_type=sttable, fst_type=vector output by default.
     convert_far = far_type or (fst_type and fst_type != "vector")
@@ -101,7 +103,7 @@ def compile_grm_py(
 
     native.genrule(
         name = genrule_name,
-        exec_tools = [bin_name],
+        tools = [bin_name],
         outs = [genrule_out],
         cmd = "$(location %s)" % bin_name + " --output \"$@\"",
         message = "Compiling Pynini file %s.py ==> %s in rule" % (name, genrule_out),
@@ -121,6 +123,7 @@ def compile_grm_py(
 def compile_multi_grm_py(
         name,
         outs,
+        src = None,
         far_type = None,
         fst_type = None,
         deps = None,
@@ -135,6 +138,7 @@ def compile_multi_grm_py(
       outs: A dictionary mapping designators to files, where designator
             is the designating name used in the Pynini file to refer to the
             corresponding file. The designated files must have extension ".far".
+      src: Pynini file input. Defaults to name + ".py".
       far_type: An optional string specifying the FAR format.
       fst_type: An optional string specifying the format of the FSTs in the FAR
                 archives.  The type must be supported by
@@ -145,7 +149,8 @@ def compile_multi_grm_py(
     """
     if not outs:
         fail("Must specify at least one mapping in `outs`.")
-    bin_name = _compile_grm_py_bin_target(name, deps, data, True)
+    src = src or (name + ".py")
+    bin_name = _compile_grm_py_bin_target(name, src, deps, data, True)
 
     # Pynini produces far_type=sttable, fst_type=vector output by default.
     convert_far = far_type or (fst_type and fst_type != "vector")
@@ -177,7 +182,7 @@ def compile_multi_grm_py(
 
     native.genrule(
         name = genrule_name,
-        exec_tools = [bin_name],
+        tools = [bin_name],
         outs = genrule_outs,
         cmd = ("$(location %s)" % bin_name +
                " --outputs " + ",".join(genrule_outs_strings)),

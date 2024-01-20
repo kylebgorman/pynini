@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Google LLC
+// Copyright 2016-2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,8 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-
 
 #ifndef PYNINI_CONCATRANGE_H_
 #define PYNINI_CONCATRANGE_H_
@@ -24,9 +22,10 @@
 
 #include <fst/closure.h>
 #include <fst/concat.h>
-#include <fst/fst.h>
 #include <fst/mutable-fst.h>
+#include <fst/properties.h>
 #include <fst/union.h>
+#include <fst/util.h>
 #include <fst/vector-fst.h>
 
 namespace fst {
@@ -82,7 +81,6 @@ void SetStartFinal(MutableFst<Arc> *fst) {
 //     /x{,N}/     ConcatRange(x, 0, N)
 template <class Arc>
 void ConcatRange(MutableFst<Arc> *fst, int32_t lower = 0, int32_t upper = 0) {
-  if (fst->Start() == kNoStateId) return;
   if (lower < 0 || upper < 0) {
     fst->SetProperties(kError, kError);
     FSTERROR() << "ConcatRange: range bounds must be positive, got {" << lower
@@ -104,10 +102,15 @@ void ConcatRange(MutableFst<Arc> *fst, int32_t lower = 0, int32_t upper = 0) {
       const auto reserved = size * lower + size + 1;
       fst->ReserveStates(reserved);
     }
-    // The last element in the concatenation is star-closed; remaining
-    // concatenations are copies of the input.
-    Closure(fst, CLOSURE_STAR);
-    for (; lower > 0; --lower) Concat(*copy, fst);
+    // If `lower` is zero, simply defer to star-closing. Otherwise,
+    // the last element in the concatenation is plus-closed; remaining
+    // `lower-1` concatenations are copies of the input.
+    if (lower == 0) {
+      Closure(fst, CLOSURE_STAR);
+    } else {
+      Closure(fst, CLOSURE_PLUS);
+      for (; lower > 1; --lower) Concat(*copy, fst);
+    }
   } else if (lower == 0) {
     // Finite upper bound, lower bound includes zero.
     {

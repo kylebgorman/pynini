@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Google LLC
+// Copyright 2016-2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,8 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-
 
 #ifndef PYNINI_OPTIMIZE_H_
 #define PYNINI_OPTIMIZE_H_
@@ -28,12 +26,12 @@
 
 #include <cstdint>
 
-#include <fst/compat.h>
 #include <fst/arcsort.h>
 #include <fst/determinize.h>
 #include <fst/encode.h>
 #include <fst/minimize.h>
 #include <fst/mutable-fst.h>
+#include <fst/properties.h>
 #include <fst/rmepsilon.h>
 #include <fst/state-map.h>
 #include <fst/weight.h>

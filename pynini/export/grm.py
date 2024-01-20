@@ -1,4 +1,4 @@
-# Copyright 2016-2020 Google LLC
+# Copyright 2016-2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
 """Interface for generating a FAR file from a Pynini file.
 
 Given an output FAR file (FST archive) via --output, a Pynini file produces this
@@ -43,7 +41,7 @@ from absl import flags
 
 from pynini.export import export
 
-flags.DEFINE_string('output', None, 'The output FAR file.')
+_OUTPUT = flags.DEFINE_string('output', None, 'The output FAR file.')
 FLAGS = flags.FLAGS
 
 # Expose this definition as `grm.Exporter`.
@@ -65,7 +63,7 @@ def run(generator_main: Callable[[export.Exporter], None]) -> None:
       if unused_argv:
         raise app.UsageError(
             f'Unexpected command line arguments: {unused_argv}')
-      exporter = export.Exporter(FLAGS.output)
+      exporter = export.Exporter(_OUTPUT.value)
       generator_main(exporter)
       exporter.close()
     except:

@@ -1,4 +1,4 @@
-# Copyright 2016-2023 Google LLC
+# Copyright 2016-2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ COMPILE_ARGS = [
 ]
 if sys.platform.startswith("darwin"):
   COMPILE_ARGS.append("-stdlib=libc++")
-  COMPILE_ARGS.append("-mmacosx-version-min=10.7")
+  COMPILE_ARGS.append("-mmacosx-version-min=10.12")
 
 
 LIBRARIES = ["fstfarscript", "fstfar", "fstscript", "fst", "m", "dl"]
@@ -114,6 +114,8 @@ def main() -> None:
           "Programming Language :: Python :: 3.8",
           "Programming Language :: Python :: 3.9",
           "Programming Language :: Python :: 3.10",
+          "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
           "Development Status :: 5 - Production/Stable",
           "Environment :: Other Environment",
           "Environment :: Console",

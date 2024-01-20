@@ -1,4 +1,4 @@
-# Copyright 2016-2020 Google LLC
+# Copyright 2016-2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 r"""Implementation of paradigms, mirroring and extending functionality in Thrax.
@@ -539,4 +537,8 @@ class Paradigm:
   @property
   def rules(self) -> Optional[List[pynini.Fst]]:
     return self._rules
+
+  @property
+  def deleter(self) -> pynini.FstLike:
+    return self._deleter
 

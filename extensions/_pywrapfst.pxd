@@ -1,5 +1,5 @@
 #cython: language_level=3
-# Copyright 2016-2020 Google LLC
+# Copyright 2016-2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,8 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
 # See www.openfst.org for extensive documentation on this weighted
 # finite-state transducer library.
 
@@ -131,8 +129,6 @@ cdef class SymbolTableView:
 
   cpdef void write(self, source) except *
 
-  cpdef void write_text(self, source) except *
-
   cpdef bytes write_to_string(self)
 
 
@@ -182,8 +178,8 @@ cdef _EncodeMapperSymbolTableView _init_EncodeMapperSymbolTableView(
     shared_ptr[fst.EncodeMapperClass] encoder, bool input_side)
 
 
-cdef _FstSymbolTableView _init_FstSymbolTableView(shared_ptr[fst.FstClass] ifst,
-                                                  bool input_side)
+cdef _FstSymbolTableView _init_FstSymbolTableView(
+    shared_ptr[fst.FstClass] ifst, bool input_side)
 
 
 cdef _MutableFstSymbolTableView _init_MutableFstSymbolTableView(
@@ -604,7 +600,6 @@ cdef class Compiler:
   cdef bool _keep_isymbols
   cdef bool _keep_osymbols
   cdef bool _keep_state_numbering
-  cdef bool _allow_negative_labels
 
   cpdef Fst compile(self)
 

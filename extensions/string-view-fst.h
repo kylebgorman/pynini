@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Google LLC
+// Copyright 2016-2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,19 +11,20 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
+#ifndef NLP_FST_UTIL_STRING_STRING_VIEW_FST_H_
+#define NLP_FST_UTIL_STRING_STRING_VIEW_FST_H_
 
-#ifndef PYNINI_STRING_VIEW_FST_H_
-#define PYNINI_STRING_VIEW_FST_H_
-
+#include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <utility>
 
-#include <fst/compat.h>
+#include <fst/expanded-fst.h>
 #include <fst/fst.h>
+#include <fst/impl-to-fst.h>
+#include <fst/properties.h>
 #include <fst/string.h>
-#include <fst/compat.h>
 #include <string_view>
 
 namespace fst {
@@ -49,7 +50,7 @@ class ByteViewer {
 };
 
 template <class Arc>
-class UTF8Viewer {
+class Utf8Viewer {
  public:
   using Label = typename Arc::Label;
   using StateId = typename Arc::StateId;
@@ -61,10 +62,10 @@ class UTF8Viewer {
   // from various Astral Planes. Naturally, it is always safer to use this with
   // larger Label precision (e.g., 64 bits).
   static_assert(sizeof(Label) >= 2,
-                "UTF8Viewer requires at least 16 bits of label precision");
+                "Utf8Viewer requires at least 16 bits of label precision");
 
   Arc operator()(std::string_view view, StateId byte_offset) const {
-    const auto label_size = UTF8Viewer<Arc>::GetLabelAndSize(view, byte_offset);
+    const auto label_size = Utf8Viewer<Arc>::GetLabelAndSize(view, byte_offset);
     return Arc(label_size.first, label_size.first,
                byte_offset + label_size.second);
   }
@@ -105,20 +106,26 @@ class ArcIterator<StringViewFst<Arc, Viewer>> : public ArcIteratorBase<Arc> {
  public:
   using StateId = typename Arc::StateId;
 
-  explicit ArcIterator(const StringViewFst<Arc, Viewer> &fst, StateId state) :
-      viewer_(),
-      has_arcs_(fst.NumArcs(state)),
-      arc_(viewer_(fst.GetImpl()->view(), state)),
-      done_(!has_arcs_ || arc_.ilabel < 0) {}
+  explicit ArcIterator(const StringViewFst<Arc, Viewer> &fst, StateId state)
+      : has_arcs_(fst.NumArcs(state)),
+        done_(!has_arcs_),
+        // Contents of `arc_` don't matter if we're `done_`.
+        arc_(done_ ? Arc() : Viewer()(fst.GetImpl()->view(), state)) {}
 
   bool Done() const final { return done_; }
 
-  const Arc &Value() const final { return arc_; }
+  const Arc &Value() const final {
+    DCHECK(!done_);
+    return arc_;
+  }
 
-  void Next() final { done_ = true; }
+  void Next() final {
+    DCHECK(!done_);
+    done_ = true;
+  }
 
   void Seek(size_t s) final {
-    done_ = (s != 0) || !has_arcs_ || arc_.ilabel < 0;
+    done_ = (s != 0) || !has_arcs_;
   }
 
   void Reset() final { Seek(0); }
@@ -130,10 +137,9 @@ class ArcIterator<StringViewFst<Arc, Viewer>> : public ArcIteratorBase<Arc> {
   size_t Position() const final { return done_ ? 1 : 0; }
 
  private:
-  Viewer viewer_;  // Stateless.
   const bool has_arcs_;
-  const Arc arc_;
   bool done_;
+  const Arc arc_;
 };
 
 namespace internal {
@@ -207,8 +213,8 @@ class StringViewFstImpl : public FstImpl<A> {
 // StringViewFst is essentially stateless except for the arc currently being
 // viewed.
 //
-// UTF8View provides a UTF-32 codepoint per arc, and ByteView provides a byte
-// per arc.
+// Utf8Viewer provides a UTF-32 codepoint per arc, and ByteViewer provides a
+// byte per arc.
 template <class A, class Viewer>
 class StringViewFst
     : public ImplToExpandedFst<internal::StringViewFstImpl<A, Viewer>> {
@@ -250,10 +256,16 @@ class StringViewFst
   StringViewFst &operator=(const StringViewFst &) = delete;
 };
 
-using StdByteStringViewFst = StringViewFst<StdArc, ByteViewer<StdArc>>;
-using StdUTF8StringViewFst = StringViewFst<StdArc, UTF8Viewer<StdArc>>;
+template <class Arc>
+using ByteStringViewFst = StringViewFst<Arc, ByteViewer<Arc>>;
+
+template <class Arc>
+using Utf8StringViewFst = StringViewFst<Arc, Utf8Viewer<Arc>>;
+
+using StdByteStringViewFst = ByteStringViewFst<StdArc>;
+using StdUtf8StringViewFst = Utf8StringViewFst<StdArc>;
 
 }  // namespace fst
 
-#endif  // PYNINI_STRING_VIEW_FST_H_
+#endif  // NLP_FST_UTIL_STRING_STRING_VIEW_FST_H_
 

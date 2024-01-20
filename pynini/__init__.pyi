@@ -1,4 +1,4 @@
-# Copyright 2016-2020 Google LLC
+# Copyright 2016-2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 
@@ -45,19 +43,13 @@ from _pywrapfst import SortType
 from _pywrapfst import StateMapType
 from _pywrapfst import WeightLike
 
-from typing import Type, TypeVar, Union, Tuple, Any, Optional, List, Iterable, Iterator, ContextManager, Callable
+from typing import Type, TypeVar, Union, Tuple, Any, Optional, List, Literal, \
+    Iterable, Iterator, ContextManager, Callable
 
 # Custom exceptions.
 class FstStringCompilationError(FstArgError, ValueError): ...
 
 # Custom types
-
-# TODO(wolfsonkin): Drop version check once Python 3.8 is our minimum version.
-import sys
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 _TokenTypeFlag = Literal["byte", "utf8"]
 CDRewriteDirection = Literal["ltr", "rtl", "sim"]
@@ -111,9 +103,6 @@ class Fst(_VectorFst):
               other: Union[int, Tuple[int, Union[int, ellipsis]]]) -> Fst: ...
   def __matmul__(self, other: FstLike) -> Fst: ...
   def __or__(self, other: FstLike) -> Fst: ...
-  # NOTE: Cython automatically generates the reversed overloads.
-  def __req__(self, other: FstLike) -> bool: ...
-  def __rne__(self, other: FstLike) -> bool: ...
   def __radd__(self, other: FstLike) -> Fst: ...
   def __rsub__(self, other: FstLike) -> Fst: ...
   def __rmatmul__(self, other: FstLike) -> Fst: ...
@@ -222,9 +211,9 @@ def shortestdistance(
     queue_type: QueueType = ...,
     reverse: bool = ...) -> List[Weight]: ...
 
-# # Two-argument constructive FST operations. If just one of the two FST
-# # arguments has been compiled, the arc type of the compiled argument is used to
-# # determine the arc type of the not-yet-compiled argument.
+# Two-argument constructive FST operations. If just one of the two FST
+# arguments has been compiled, the arc type of the compiled argument is used
+# to determine the arc type of the not-yet-compiled argument.
 
 # NOTE: These are copy-pasta from _pywrapfst.pyx but with
 # `s/ifst(\d): Fst/fst\1: FstLike/` and `s/-> MutableFst/-> Fst/`.
@@ -315,7 +304,10 @@ class MPdtParentheses:
   def __len__(self) -> int: ...
   def __iter__(self) -> Iterator[Tuple[_Label, _Label, _Label]]: ...
   def copy(self) -> MPdtParentheses: ...
-  def add_triple(self, push: _Label, pop: _Label, assignment: _Label) -> None: ...
+  def add_triple(self,
+                 push: _Label,
+                 pop: _Label,
+                 assignment: _Label) -> None: ...
   @classmethod
   def read(cls, filename: _Filename) -> MPdtParentheses: ...
   def write(self, filename: _Filename) -> None: ...
@@ -381,8 +373,7 @@ class Far:
   # Adds support for use as a PEP-343 context manager.
   def __enter__(self) -> Far: ...
   # TODO(wolfsonkin): Add typing to this.
-  # See https://github.com/python/typeshed/blob/master/stdlib/2and3/builtins.pyi#L1664
-  # for more detail.
+  # For more details, see https://github.com/python/typeshed/blob/master/stdlib/2and3/builtins.pyi#L1664.
   def __exit__(self, exc, value, tb): ...
 ## PYTHON IMPORTS.
 
@@ -411,7 +402,8 @@ from _pywrapfst import ACCESSIBLE
 from _pywrapfst import ACYCLIC
 from _pywrapfst import ADD_ARC_PROPERTIES
 from _pywrapfst import ADD_STATE_PROPERTIES
-from _pywrapfst import ADD_SUPERFINAL_PROPERTIES
+from _pywrapfst import \
+    ADD_SUPERFINAL_PROPERTIES
 from _pywrapfst import ARC_SORT_PROPERTIES
 from _pywrapfst import BINARY_PROPERTIES
 from _pywrapfst import COACCESSIBLE
@@ -430,7 +422,8 @@ from _pywrapfst import INITIAL_CYCLIC
 from _pywrapfst import INTRINSIC_PROPERTIES
 from _pywrapfst import I_DETERMINISTIC
 from _pywrapfst import I_EPSILONS
-from _pywrapfst import I_LABEL_INVARIANT_PROPERTIES
+from _pywrapfst import \
+    I_LABEL_INVARIANT_PROPERTIES
 from _pywrapfst import I_LABEL_SORTED
 from _pywrapfst import MUTABLE
 from _pywrapfst import NEG_TRINARY_PROPERTIES
@@ -449,10 +442,12 @@ from _pywrapfst import NO_O_EPSILONS
 from _pywrapfst import NULL_PROPERTIES
 from _pywrapfst import O_DETERMINISTIC
 from _pywrapfst import O_EPSILONS
-from _pywrapfst import O_LABEL_INVARIANT_PROPERTIES
+from _pywrapfst import \
+    O_LABEL_INVARIANT_PROPERTIES
 from _pywrapfst import O_LABEL_SORTED
 from _pywrapfst import POS_TRINARY_PROPERTIES
-from _pywrapfst import RM_SUPERFINAL_PROPERTIES
+from _pywrapfst import \
+    RM_SUPERFINAL_PROPERTIES
 from _pywrapfst import SET_ARC_PROPERTIES
 from _pywrapfst import SET_FINAL_PROPERTIES
 from _pywrapfst import SET_START_PROPERTIES
@@ -464,7 +459,8 @@ from _pywrapfst import UNWEIGHTED
 from _pywrapfst import UNWEIGHTED_CYCLES
 from _pywrapfst import WEIGHTED
 from _pywrapfst import WEIGHTED_CYCLES
-from _pywrapfst import WEIGHT_INVARIANT_PROPERTIES
+from _pywrapfst import \
+    WEIGHT_INVARIANT_PROPERTIES
 
 # Arc iterator properties.
 from _pywrapfst import ARC_FLAGS

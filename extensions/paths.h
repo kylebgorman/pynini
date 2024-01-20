@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Google LLC
+// Copyright 2016-2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,8 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-
 
 #ifndef PYNINI_PATHS_H_
 #define PYNINI_PATHS_H_
@@ -32,8 +30,11 @@
 #include <string>
 #include <vector>
 
+#include <fst/arc.h>
 #include <fst/fst.h>
+#include <fst/properties.h>
 #include <fst/string.h>
+#include <fst/util.h>
 
 namespace fst {
 

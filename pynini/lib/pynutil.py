@@ -1,4 +1,4 @@
-# Copyright 2016-2020 Google LLC
+# Copyright 2016-2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
 """Simple utility functions.
@@ -30,6 +28,21 @@ def add_weight(expr: pynini.FstLike,
                weight: pynini.WeightLike) -> pynini.Fst:
   """Attaches a weight to an automaton.
 
+  If neither expression nor weight are typed (i.e., neither has a `weight_type`
+  attribute), the arc and weight types of the default context ("standard" and
+  the associated "tropical", respectively, unless otherwise specified) are
+  used.
+
+  If the expression is typed but the weight is not, the expression's weight
+  type is used to type the weight object to prevent weight mismatch.
+
+  If the expression is untyped but the weight is typed, the weight types must
+  match the weight type of the default context ("tropical" unless otherwise
+  specified) or a weight mismatch exception will be thrown.
+
+  If both the expression and the weight are typed, their weight types must
+  match or a weight mismatch exception will be thrown.
+
   Args:
     expr: an automaton or string.
     weight: a weight or string.
@@ -37,7 +50,16 @@ def add_weight(expr: pynini.FstLike,
   Returns:
     An FST.
   """
-  return pynini.accep("", weight=weight).concat(expr)
+  if hasattr(expr, "weight_type"):
+    if hasattr(weight, "weight_type"):
+      weight_fst = weight
+    else:
+      weight_fst = pynini.accep("", arc_type=expr.arc_type(), weight=weight)
+  elif hasattr(weight, "weight_type"):
+    weight_fst = weight
+  else:
+    weight_fst = pynini.accep("", weight=weight)
+  return weight_fst.concat(expr)
 
 
 def insert(expr: pynini.FstLike,
