@@ -33,7 +33,7 @@ from quay.io/pypa/manylinux_2_28_x86_64 AS common
 
 # The versions we want in the wheels.
 ENV FST_VERSION "1.8.3"
-ENV PYNINI_VERSION "2.1.6"
+ENV PYNINI_VERSION "2.1.6.post1"
 
 # ***********************************************************************
 # *** Image providing all the requirements for building Pynini wheels ***
