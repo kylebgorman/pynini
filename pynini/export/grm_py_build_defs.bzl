@@ -65,6 +65,7 @@ def compile_grm_py(
         fst_type = None,
         deps = None,
         data = None,
+        genrule_flags = [],
         out = None,
         **kwds):
     """Provides a target to convert a Pynini file into a (portable) FAR file.
@@ -80,6 +81,7 @@ def compile_grm_py(
                 @org_openfst//:fst.
       deps: A list of other grammar targets that we'll need for this grammar.
       data: Extra data dependencies used in the Pynini file.
+      genrule_flags: Additional flags to be passed to the Pynini binary.
       out: Far file to be generated. If not present, then we'll use the `name`
            followed by ".far".
       **kwds: Attributes common to all BUILD rules, e.g., testonly, visibility.
@@ -104,8 +106,11 @@ def compile_grm_py(
     native.genrule(
         name = genrule_name,
         tools = [bin_name],
+        srcs = data or [],
         outs = [genrule_out],
-        cmd = "$(location %s)" % bin_name + " --output \"$@\"",
+        cmd = "$(location %s)" % bin_name +
+              "".join([(" " + flag) for flag in genrule_flags]) +
+              " --output \"$@\"",
         message = "Compiling Pynini file %s.py ==> %s in rule" % (name, genrule_out),
         **kwds
     )
@@ -128,6 +133,7 @@ def compile_multi_grm_py(
         fst_type = None,
         deps = None,
         data = None,
+        genrule_flags = [],
         **kwds):
     """Provides a target to convert a Pynini file into multiple (portable) FAR files.
 
@@ -145,6 +151,7 @@ def compile_multi_grm_py(
                 @org_openfst//:fst.
       deps: A list of other compile_grm rules that we'll need for this grammar.
       data: Extra data dependencies used in the Pynini file.
+      genrule_flags: Additional flags to be passed to the Pynini binary.
       **kwds: Attributes common to all BUILD rules, e.g., testonly, visibility.
     """
     if not outs:
@@ -185,6 +192,7 @@ def compile_multi_grm_py(
         tools = [bin_name],
         outs = genrule_outs,
         cmd = ("$(location %s)" % bin_name +
+               "".join([(" " + flag) for flag in genrule_flags]) +
                " --outputs " + ",".join(genrule_outs_strings)),
         message = "Compiling Pynini file %s.py into multiple FAR files in rule" % name,
         **kwds

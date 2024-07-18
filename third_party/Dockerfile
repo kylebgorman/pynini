@@ -33,7 +33,14 @@ from quay.io/pypa/manylinux_2_28_x86_64 AS common
 
 # The versions we want in the wheels.
 ENV FST_VERSION "1.8.3"
-ENV PYNINI_VERSION "2.1.6"
+ENV PYNINI_VERSION "2.1.6.post1"
+
+# Python 3.6m and 3.7m are end-of-life. The code genreated by Cython appears to
+# be incompatble with the Python 3.13t CPython API.
+RUN rm -rd \
+    /opt/python/cp36-cp36m \
+    /opt/python/cp37-cp37m \
+    /opt/python/cp313-cp313t
 
 # ***********************************************************************
 # *** Image providing all the requirements for building Pynini wheels ***
