@@ -14,6 +14,7 @@
 #
 # For general information on the Pynini grammar compilation library, see
 # pynini.opengrm.org.
+"""Setup for Pynini."""
 
 import os.path
 import pathlib
@@ -104,6 +105,7 @@ def main() -> None:
       long_description_content_type="text/markdown",
       url="http://pynini.opengrm.org",
       keywords=[
+          "computational linguistics",
           "natural language processing",
           "speech recognition",
           "machine learning",

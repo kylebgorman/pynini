@@ -20,7 +20,7 @@ requires = ["Cython>=3.0.6", "setuptools>=32.0.0", "wheel"]
 
 [project]
 name = "pynini"
-version = "2.1.6"
+version = "2.1.6.post1"
 description = "Finite-state grammar compilation"
 readme = "README.md"
 requires-python = ">= 3.6"

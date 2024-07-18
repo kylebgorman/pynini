@@ -33,7 +33,12 @@ from quay.io/pypa/manylinux_2_28_x86_64 AS common
 
 # The versions we want in the wheels.
 ENV FST_VERSION "1.8.3"
-ENV PYNINI_VERSION "2.1.6"
+ENV PYNINI_VERSION "2.1.6.post1"
+
+# TODO(kbg): We don't support this Python version because Cython appears to be
+# generating code incompatible with the CPython API. We will re-enable once
+# this is no longer the case.
+RUN rm -rd /opt/python/cp313-cp313t
 
 # ***********************************************************************
 # *** Image providing all the requirements for building Pynini wheels ***
