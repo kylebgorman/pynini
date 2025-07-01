@@ -28,7 +28,6 @@ from setuptools import setup
 
 COMPILE_ARGS = [
     "-std=c++17",
-    "-Wno-register",
     "-Wno-deprecated-declarations",
     "-Wno-unused-function",
     "-Wno-unused-local-typedefs",
@@ -37,6 +36,9 @@ COMPILE_ARGS = [
 if sys.platform.startswith("darwin"):
   COMPILE_ARGS.append("-stdlib=libc++")
   COMPILE_ARGS.append("-mmacosx-version-min=10.12")
+# Add this option only for non-Windows platforms.
+if sys.platform != "win32":
+    extra_compile_args.append("-Wno-register")
 
 
 LIBRARIES = ["fstfarscript", "fstfar", "fstscript", "fst", "m", "dl"]
