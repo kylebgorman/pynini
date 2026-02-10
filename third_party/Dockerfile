@@ -29,7 +29,9 @@
 # ******************************************************
 # *** All the following images are based on this one ***
 # ******************************************************
-FROM quay.io/pypa/manylinux_2_28_x86_64 AS common
+ARG TARGET_ARCH="x86_64"
+
+FROM quay.io/pypa/manylinux_2_28_${TARGET_ARCH} AS common
 
 # The versions we want in the wheels.
 ENV FST_VERSION "1.8.4"
